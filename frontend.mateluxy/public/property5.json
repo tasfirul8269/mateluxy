@@ -1,0 +1,35 @@
+{
+    "id": 5,
+    "title": "Premium Office Space",
+    "location": "Business Bay",
+    "mainImage": "https://images.unsplash.com/photo-1497366811353-6870744d04b2",
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3",
+      "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d",
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c"
+    ],
+    "price": "AED 4,500/yr/sq.ft",
+    "paymentTerms": "Flexible leasing options available",
+    "type": "Commercial",
+    "area": 5000,
+    "residentSize": 5000,
+    "bedrooms": 0,
+    "bathrooms": 4,
+    "yearBuilt": 2020,
+    "status": "Available for Lease",
+    "tags": ["Grade A", "River View", "Flexible Layout"],
+    "description": "Premium Grade A office space in the heart of Business Bay with stunning Dubai Canal views and world-class amenities.",
+    "features": [
+      "Floor-to-ceiling windows",
+      "24/7 security",
+      "High-speed elevators",
+      "On-site parking"
+    ],
+    "agent": {
+      "name": "Sarah Johnson",
+      "photo": "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1287&q=80",
+      "role": "Commercial Property Specialist",
+      "languages": ["English", "Arabic"],
+      "phone": "+971501234571"
+    }
+  }

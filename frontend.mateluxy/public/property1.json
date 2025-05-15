@@ -1,0 +1,58 @@
+{
+  "id": 1,
+  "title": "Burj Khalifa View Penthouse",
+  "location": {
+    "address": "Downtown Dubai, UAE",
+    "coordinates": [25.1975, 55.2744]
+  },
+  "mainImage": "https://images.unsplash.com/photo-1612637968894-660373e23b03?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+  "galleryImages": [
+    "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6",
+    "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6",
+    "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6",
+    "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3",
+    "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d"
+  ],
+  "price": "AED 8,500,000",
+  "paymentTerms": "20% down payment | 4-year payment plan",
+  "type": "Penthouse",
+  "area": 3200,
+  "residentSize": 2850,
+  "bedrooms": 4,
+  "bathrooms": 5,
+  "yearBuilt": 2021,
+  "status": "Ready to Move",
+  "tags": ["Luxury", "Brand New", "Burj View", "Smart Home"],
+  "description": "This exclusive penthouse offers direct views of Burj Khalifa and Dubai Fountain. Features floor-to-ceiling windows, smart home automation, and access to private infinity pool.",
+  "amenities": [
+    "24/7 Security",
+    "Concierge Service",
+    "Infinity Pool",
+    "State-of-the-art Gym",
+    "Underground Parking",
+    "Private Elevator",
+    "Smart Home System",
+    "High-speed Elevators",
+    "Central Air Conditioning",
+    "Laundry Service",
+    "Meeting Rooms",
+    "Kids Play Area"
+  ],
+  "features": [
+    "Direct Burj Khalifa views",
+    "Smart home automation",
+    "Private elevator",
+    "Infinity pool access"
+  ],
+  "agent": {
+    "name": "Ahmed Al Maktoum",
+    "photo": "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1287&q=80",
+    "role": "Luxury Property Specialist",
+    "languages": ["English", "Arabic", "Russian"],
+    "phone": "+971501234567"
+  },
+  "dldPermitInfo": {
+    "permitNumber": "DLD-PERMIT-123456",
+    "permitQrCode": "https://ggfx-handh3.s3.eu-west-2.amazonaws.com/i/qr_code/JPJ250558_71662574903_109717.png"
+  }
+}

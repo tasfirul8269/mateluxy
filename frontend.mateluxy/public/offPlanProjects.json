@@ -1,0 +1,108 @@
+[
+    {
+  "success": true,
+  "data": {
+    "pageTitle": "Thinking of buying an Off Plan property?",
+    "pageDescription": "We've selected some available projects that we think you might like.",
+    "viewAllLink": "/off-plan-projects",
+    "offPlanProjects": [
+      {
+        "id": 1,
+        "name": "Aalce Villas - Ostra",
+        "location": "The Crisis",
+        "units": [
+          {
+            "deliveryDate": "Oct 2029",
+            "price": "AED 13,130,000",
+            "developer": "BMA-RR"
+          },
+          {
+            "deliveryDate": "Dec 2028",
+            "price": "AED 1,860,000",
+            "developer": "Palma Holding"
+          },
+          {
+            "deliveryDate": "Mar 2028",
+            "price": "AED 10,800,000",
+            "developer": "Menata"
+          },
+          {
+            "deliveryDate": "Dec 2027",
+            "price": "AED 940,000",
+            "developer": "Hal"
+          }
+        ],
+        "contactOptions": ["Call", "Whatsapp"]
+      }
+    ],
+    "featuredProperties": [
+      {
+        "id": 101,
+        "price": "AED 1,679,000",
+        "address": "Peninsula Two, Business Bay, Dubai",
+        "title": "Sleek One Bed | Waterfront Views | July Completion",
+        "type": "Agreement",
+        "bedrooms": 1,
+        "bua": 614,
+        "agent": {
+          "name": "Melvron Mashayekh",
+          "languages": ["English", "Farsi/Persian"]
+        },
+        "contactOptions": ["Call", "Whatsapp", "Book a Viewing"]
+      },
+      {
+        "id": 102,
+        "price": "AED 1,800,000",
+        "address": "17 Icon Bay, Dubai Creek Harbour (The Lagoon), Dubai",
+        "title": "High Floor | Vacant | Modern Layout",
+        "type": "Agreement",
+        "bedrooms": 1,
+        "bua": 770,
+        "agent": {
+          "name": "Sam Porter",
+          "languages": ["English"]
+        },
+        "contactOptions": ["Call", "Whatsapp", "Book a Viewing"]
+      },
+      {
+        "id": 103,
+        "price": "AED 8,300,000",
+        "address": "Saheel 1, Arabian Ranches, Dubai",
+        "title": "Type 9 | Large Plot | 3 bed plus maid",
+        "type": "Villa",
+        "bedrooms": 3,
+        "bua": 3216,
+        "plotArea": 7899,
+        "agent": {
+          "name": "Melanie Bourtouroglou",
+          "languages": ["English", "German"]
+        },
+        "contactOptions": ["Call", "Whatsapp", "Book a Viewing"]
+      }
+    ],
+    "podcast": {
+      "title": "Dubai Real Estate Unplugged",
+      "description": "Our bi-weekly podcast features expert guests and authentic discussions about Dubai's property market."
+    },
+    "consultantSection": {
+      "title": "Find a Consultant",
+      "description": "Search our team of 280+ property experts to get professional guidance."
+    },
+    "marketReports": {
+      "title": "Quarterly Market Reports",
+      "description": "Explore recent trends, insights, and projections in our quarterly reports.",
+      "ctaText": "Explore Reports"
+    },
+    "pagination": {
+      "currentPage": 1,
+      "totalPages": 130,
+      "hasPrevious": false,
+      "hasNext": true
+    }
+  },
+  "meta": {
+    "timestamp": "2025-04-23T16:30:00Z",
+    "version": "1.0"
+  }
+}
+]

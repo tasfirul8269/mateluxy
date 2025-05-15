@@ -1,0 +1,495 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  ChevronLeft,
+  ChevronRight,
+  Heart, 
+  MapPin, 
+  Tag, 
+  Maximize,
+  Share,
+  X
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { IoBedOutline } from "react-icons/io5";
+import { LiaBathSolid } from "react-icons/lia";
+import { FaRegCalendarAlt } from "react-icons/fa";
+
+const PropertyHeroFixed = ({ property }) => {
+  // Create images array from property data for buy and rent properties
+  const getImages = () => {
+    const images = [];
+    const fallbackImage = 'https://placehold.co/1200x800/red/white?text=Property';
+    
+    console.log('Property data for images:', property);
+    
+    // Add featured image if available
+    if (property?.propertyFeaturedImage && property.propertyFeaturedImage.trim() !== '') {
+      console.log('Adding featured image:', property.propertyFeaturedImage);
+      images.push({
+        src: property.propertyFeaturedImage,
+        alt: property.propertyTitle || 'Property image'
+      });
+    }
+    
+    // Check for media array (according to Property.js model)
+    if (property?.media && Array.isArray(property.media) && property.media.length > 0) {
+      console.log('Adding media images:', property.media);
+      property.media.forEach((img, index) => {
+        if (img && typeof img === 'string' && img.trim() !== '') {
+          images.push({
+            src: img,
+            alt: `${property.propertyTitle || 'Property'} image ${index + 1}`
+          });
+        }
+      });
+    }
+    
+    // If no valid images found, use fallback
+    if (images.length === 0) {
+      console.log('No images found, using fallback');
+      images.push({
+        src: fallbackImage,
+        alt: 'Property placeholder'
+      });
+    }
+    
+    // Add some demo images for testing if we have less than 3 images
+    if (images.length < 3) {
+      const demoImages = [
+        'https://placehold.co/1200x800/red/white?text=Property+1',
+        'https://placehold.co/1200x800/red/white?text=Property+2',
+        'https://placehold.co/1200x800/red/white?text=Property+3'
+      ];
+      
+      for (let i = 0; i < demoImages.length && images.length < 5; i++) {
+        images.push({
+          src: demoImages[i],
+          alt: `Demo property image ${i + 1}`
+        });
+      }
+    }
+    
+    // Remove duplicates (in case featured image is also in media array)
+    const uniqueImages = [];
+    const seenUrls = new Set();
+    
+    images.forEach(img => {
+      if (!seenUrls.has(img.src)) {
+        seenUrls.add(img.src);
+        uniqueImages.push(img);
+      }
+    });
+    
+    console.log('Final images for slider:', uniqueImages);
+    return uniqueImages;
+  };
+
+  const images = getImages();
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const [isFavorite, setIsFavorite] = useState(false);
+  
+  // Extract property details for display
+  const propertyName = property?.propertyTitle || 'Property Name';
+  const location = property?.propertyAddress || property?.propertyState || 'Location';
+  const price = property?.propertyPrice ? `AED ${property.propertyPrice.toLocaleString()}` : 'Price on Request';
+  const area = property?.propertySize ? `${property.propertySize.toLocaleString()} sq ft` : null;
+  const bedrooms = property?.propertyBedrooms || null;
+  const bathrooms = property?.propertyBathrooms || null;
+  const propertyType = property?.propertyType || property?.category || 'Property';
+  
+  // Reset loading state when image changes
+  useEffect(() => {
+    setIsLoading(true);
+  }, [currentIndex]);
+  
+  // Handle image load error
+  const handleImageError = () => {
+    console.log('Image loading error');
+    setIsLoading(false);
+  };
+
+  // Handle image navigation
+  const goToPrevious = () => {
+    console.log('Going to previous image');
+    setCurrentIndex((prevIndex) => {
+      const newIndex = prevIndex === 0 ? images.length - 1 : prevIndex - 1;
+      console.log('Previous index:', prevIndex, 'New index:', newIndex);
+      return newIndex;
+    });
+  };
+  
+  const goToNext = () => {
+    console.log('Going to next image');
+    setCurrentIndex((prevIndex) => {
+      const newIndex = prevIndex === images.length - 1 ? 0 : prevIndex + 1;
+      console.log('Previous index:', prevIndex, 'New index:', newIndex);
+      return newIndex;
+    });
+  };
+  
+  // Auto-advance the slider every 5 seconds
+  useEffect(() => {
+    if (images.length <= 1) return; // Don't auto-advance if there's only one image
+    
+    const interval = setInterval(() => {
+      if (!isFullscreen) { // Only auto-advance when not in fullscreen mode
+        goToNext();
+      }
+    }, 5000);
+    
+    return () => clearInterval(interval);
+  }, [images.length, isFullscreen]);
+  
+  // Handle touch events for swipe functionality
+  const handleTouchStart = (e) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+  
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+  
+  const handleTouchEnd = () => {
+    if (touchStart - touchEnd > 50) {
+      // Swipe left, go to next
+      goToNext();
+    }
+    
+    if (touchEnd - touchStart > 50) {
+      // Swipe right, go to previous
+      goToPrevious();
+    }
+  };
+  
+  // Toggle fullscreen gallery
+  const toggleFullscreen = () => {
+    console.log('Toggling fullscreen gallery:', !isFullscreen);
+    setIsFullscreen(!isFullscreen);
+    // When opening fullscreen, make sure body doesn't scroll
+    if (!isFullscreen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  };
+  
+  // Scroll to contact form when booking a viewing
+  const scrollToContactForm = () => {
+    const contactForm = document.getElementById('contact-form');
+    if (contactForm) {
+      contactForm.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+  
+  // Share property
+  const shareProperty = () => {
+    const url = window.location.href;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url)
+        .then(() => {
+          alert('Property link copied to clipboard!');
+        })
+        .catch(err => {
+          console.error('Could not copy text: ', err);
+          alert('Failed to copy link. Please copy it manually.');
+        });
+    } else {
+      // Fallback for browsers that don't support clipboard API
+      const textArea = document.createElement('textarea');
+      textArea.value = url;
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        alert('Property link copied to clipboard!');
+      } catch (err) {
+        console.error('Could not copy text: ', err);
+        alert('Failed to copy link. Please copy it manually.');
+      }
+      document.body.removeChild(textArea);
+    }
+  };
+  
+  // Toggle favorite
+  const toggleFavorite = (e) => {
+    if (e) e.stopPropagation();
+    console.log('Toggling favorite state:', !isFavorite);
+    setIsFavorite(!isFavorite);
+    // Here you would typically save this to user preferences in a real app
+    // For demo purposes, just show a notification
+    if (!isFavorite) {
+      alert('Property added to wishlist!');
+    } else {
+      alert('Property removed from wishlist!');
+    }
+  };
+
+  return (
+    <section className="relative bg-white rounded-2xl shadow-sm overflow-hidden mb-8">
+      {/* Fullscreen Gallery */}
+      <AnimatePresence>
+        {isFullscreen && images && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black z-50 flex flex-col"
+          >
+            <div className="flex justify-between items-center p-4 text-white">
+              <h3 className="text-xl font-semibold">{property?.propertyTitle || 'Property Gallery'}</h3>
+              <button 
+                onClick={toggleFullscreen}
+                className="p-2 hover:bg-white/10 rounded-full transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div className="flex-1 flex items-center justify-center relative">
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  goToPrevious();
+                }}
+                className="absolute left-4 p-3 bg-black/30 hover:bg-black/50 rounded-full text-white transition-colors z-10"
+              >
+                <ChevronLeft size={32} />
+              </button>
+              
+              <div className="w-full h-full flex items-center justify-center p-4">
+                <img 
+                  src={images[currentIndex]?.src} 
+                  alt={images[currentIndex]?.alt}
+                  className="max-h-full max-w-full object-contain"
+                  onError={(e) => {
+                    console.log('Error loading fullscreen image, using fallback');
+                    e.target.src = 'https://placehold.co/1200x800/red/white?text=Property';
+                  }}
+                />
+              </div>
+              
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  goToNext();
+                }}
+                className="absolute right-4 p-3 bg-black/30 hover:bg-black/50 rounded-full text-white transition-colors z-10"
+              >
+                <ChevronRight size={32} />
+              </button>
+            </div>
+            
+            {/* Thumbnail gallery */}
+            <div className="p-4 bg-black/70">
+              <div className="flex space-x-2 overflow-x-auto pb-2">
+                {images.map((image, index) => (
+                  <div 
+                    key={index} 
+                    className={`w-16 h-16 flex-shrink-0 rounded-md overflow-hidden border-2 ${index === currentIndex ? 'border-red-500' : 'border-transparent'}`}
+                    onClick={() => setCurrentIndex(index)}
+                  >
+                    <img 
+                      src={image.src} 
+                      alt={image.alt}
+                      className="w-full h-full object-cover cursor-pointer"
+                      onError={(e) => {
+                        e.target.src = 'https://placehold.co/1200x800/red/white?text=Property';
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-between items-center text-white mt-2">
+                <div>{currentIndex + 1} / {images.length}</div>
+                <div>{property?.propertyType || 'Property'}</div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
+      {/* Main Slider */}
+      <div className="relative w-full h-[500px] bg-gray-100">
+        <div 
+          className="relative w-full h-full"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          <div className="relative w-full h-full overflow-hidden">
+            <div className="w-full h-full">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentIndex}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="absolute inset-0"
+                >
+                  <img 
+                    src={images[currentIndex].src} 
+                    alt={images[currentIndex].alt} 
+                    className="w-full h-full object-cover"
+                    onLoad={() => setIsLoading(false)}
+                    onError={handleImageError}
+                  />
+                  
+                  {/* Loading indicator */}
+                  {isLoading && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-gray-100/20 backdrop-blur-sm">
+                      <div className="w-10 h-10 border-4 border-red-500/30 border-t-red-500 rounded-full animate-spin"></div>
+                    </div>
+                  )}
+                  
+                  {/* Gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/70"></div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+            
+            {/* Navigation buttons */}
+            <button 
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent event bubbling
+                goToPrevious();
+              }}
+              className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-black/30 hover:bg-black/50 rounded-full text-white transition-colors z-20"
+              aria-label="Previous image"
+            >
+              <ChevronLeft size={24} />
+            </button>
+            <button 
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent event bubbling
+                goToNext();
+              }}
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-black/30 hover:bg-black/50 rounded-full text-white transition-colors z-20"
+              aria-label="Next image"
+            >
+              <ChevronRight size={24} />
+            </button>
+            
+            {/* Action buttons */}
+            <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  console.log('Opening fullscreen gallery');
+                  toggleFullscreen();
+                }}
+                className="p-3 bg-black/30 hover:bg-black/50 rounded-full text-white transition-colors z-10"
+                aria-label="View all photos"
+              >
+                <Maximize size={20} />
+              </button>
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  console.log('Toggling favorite');
+                  toggleFavorite(e);
+                }}
+                className={`p-3 rounded-full text-white transition-colors ${isFavorite ? 'bg-red-500 hover:bg-red-600' : 'bg-black/30 hover:bg-black/50'}`}
+                aria-label={isFavorite ? 'Remove from wishlist' : 'Add to wishlist'}
+              >
+                <Heart size={20} fill={isFavorite ? 'white' : 'none'} />
+              </button>
+            </div>
+            
+            {/* Image counter and view all button */}
+            <div className="absolute bottom-4 right-4 flex items-center gap-2 z-10">
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleFullscreen();
+                }}
+                className="bg-black/50 hover:bg-black/70 text-white px-4 py-1.5 rounded-full text-sm flex items-center gap-1 transition-colors"
+                aria-label="View all photos"
+              >
+                <Maximize size={16} />
+                <span>View All</span>
+              </button>
+              <div className="bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+                {currentIndex + 1} / {images.length}
+              </div>
+            </div>
+            
+            {/* Content overlay */}
+            <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/70 to-transparent">
+              <div className="container mx-auto">
+                <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+                  {property?.propertyTitle || 'Loading property...'}
+                </h1>
+                <p className="text-white/90 mb-4">
+                  {property?.propertyAddress || property?.propertyState || 'Property location'}
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  <button 
+                    onClick={scrollToContactForm}
+                    className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl font-medium flex items-center gap-2 transition-colors"
+                  >
+                    <FaRegCalendarAlt />
+                    <span>Book a viewing</span>
+                  </button>
+                  <button 
+                    onClick={shareProperty}
+                    className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-6 py-3 rounded-xl font-medium flex items-center gap-2 transition-colors"
+                  >
+                    <Share size={18} />
+                    <span>Share</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Property details */}
+      <div className="p-6">
+        <div className="flex flex-wrap items-center gap-4 mb-4">
+          <div className="flex items-center gap-2 text-gray-700">
+            <MapPin size={18} className="text-red-500" />
+            <span>{location}</span>
+          </div>
+          <div className="text-red-500 font-bold text-xl">{price}</div>
+        </div>
+        
+        <div className="flex flex-wrap gap-4 mb-4">
+          {area && (
+            <div className="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-lg">
+              <span className="text-gray-700">{area}</span>
+            </div>
+          )}
+          {bedrooms && (
+            <div className="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-lg">
+              <IoBedOutline className="text-red-500" />
+              <span className="text-gray-700">{bedrooms} Bed</span>
+            </div>
+          )}
+          {bathrooms && (
+            <div className="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-lg">
+              <LiaBathSolid className="text-red-500" />
+              <span className="text-gray-700">{bathrooms} Bath</span>
+            </div>
+          )}
+        </div>
+        
+        {property?.category && (
+          <div className="mb-4">
+            <span className="inline-block bg-red-100 text-red-600 px-3 py-1 rounded-lg text-sm font-medium">
+              {property.category}
+            </span>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+};
+
+export default PropertyHeroFixed;

@@ -1,0 +1,12 @@
+{
+    "slides": [
+      { "id": 1, "content": "Slide 1 Content" , "img": "https://ggfx-handh3.s3.eu-west-2.amazonaws.com/i/Emaar_1_f552ec662d.png"},
+      { "id": 2, "content": "Slide 2 Content" , "img": "https://ggfx-handh3.s3.eu-west-2.amazonaws.com/i/ellington_2_358b674e8b_c34178132e.jpg"},
+      { "id": 3, "content": "Slide 3 Content" , "img": "https://ggfx-handh3.s3.eu-west-2.amazonaws.com/i/Sobh_0734811ee8.png"},
+      { "id": 4, "content": "Slide 4 Content" , "img": "https://ggfx-handh3.s3.eu-west-2.amazonaws.com/i/meraas_4288d5a953.png"}, 
+      { "id": 5, "content": "Slide 5 Content" , "img": "https://ggfx-handh3.s3.eu-west-2.amazonaws.com/i/nakheel_1_1d80798ff3.png"},
+      { "id": 6, "content": "Slide 6 Content"  , "img": "https://ggfx-handh3.s3.eu-west-2.amazonaws.com/i/image_3_a2f4643b92_6ce6b16608.png"},
+      { "id": 7, "content": "Slide 7 Content", "img": "https://ggfx-handh3.s3.eu-west-2.amazonaws.com/i/Layer_2_01de242111.png" },
+      { "id": 8, "content": "Slide 8 Content", "img": "https://ggfx-handh3.s3.eu-west-2.amazonaws.com/i/Dubai_Properties_1_78be4665e0.png" }
+    ]
+}

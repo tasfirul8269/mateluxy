@@ -1,0 +1,35 @@
+{
+    "id": 6,
+    "title": "Family Townhouse",
+    "location": "Jumeirah Garden City",
+    "mainImage": "https://images.unsplash.com/photo-1600607688969-a5bfa64630e3",
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3",
+      "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d",
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c"
+    ],
+    "price": "AED 3,750,000",
+    "paymentTerms": "15% down payment | 3-year payment plan",
+    "type": "Townhouse",
+    "area": 2800,
+    "residentSize": 2450,
+    "bedrooms": 3,
+    "bathrooms": 3,
+    "yearBuilt": 2018,
+    "status": "Ready to Move",
+    "tags": ["Family Friendly", "Community Pool", "Private Garden"],
+    "description": "Spacious family townhouse in a quiet community with excellent facilities and private garden area.",
+    "features": [
+      "Private garden",
+      "Community swimming pool",
+      "Children's play area",
+      "24/7 security"
+    ],
+    "agent": {
+      "name": "Layla Hassan",
+      "photo": "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1287&q=80",
+      "role": "Residential Property Consultant",
+      "languages": ["English", "Arabic", "Urdu"],
+      "phone": "+971501234572"
+    }
+  }
