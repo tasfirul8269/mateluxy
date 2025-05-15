@@ -56,6 +56,7 @@ const NewsManagementPage = () => {
   const [editingNews, setEditingNews] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [formLoading, setFormLoading] = useState(false);
+  const [error, setError] = useState(null);
   
   const categories = ['All', 'Real Estate', 'Investment', 'Lifestyle', 'Business', 'Policy', 'Sustainability'];
   
@@ -86,10 +87,9 @@ const NewsManagementPage = () => {
       const data = await getAllNews();
       setNews(data);
       setFilteredNews(data);
-      setLoading(false);
     } catch (error) {
-      console.error('Error fetching news:', error);
-      toast.error('Failed to load news items');
+      setError('Failed to load news');
+    } finally {
       setLoading(false);
     }
   };
@@ -146,48 +146,35 @@ const NewsManagementPage = () => {
   
   // Save news (create or update)
   const saveNews = async (formData) => {
+    setFormLoading(true);
+    
     try {
-      setFormLoading(true);
-      
-      console.log('Saving news with data:', formData);
-      
-      let response;
       if (editingNews) {
-        // Update existing news
-        response = await updateNews(editingNews._id, formData);
+        await updateNews(editingNews._id, formData);
         toast.success('News updated successfully!');
       } else {
-        // Create new news
-        response = await createNews(formData);
+        await createNews(formData);
         toast.success('News created successfully!');
       }
       
-      console.log('Server response:', response);
-      
-      // Refresh the news list
-      fetchNews();
-      
-      // Close the form
+      reset();
       setIsFormOpen(false);
-      setFormLoading(false);
+      fetchNews();
     } catch (error) {
-      console.error('Error saving news:', error);
-      toast.error(editingNews ? 'Failed to update news' : 'Failed to create news');
+      toast.error('Error saving news');
+    } finally {
       setFormLoading(false);
     }
   };
   
   // Handle news deletion
   const handleDeleteNews = async (id) => {
-    if (window.confirm('Are you sure you want to delete this news item?')) {
+    if (window.confirm('Are you sure you want to delete this news?')) {
       try {
         await deleteNews(id);
-        toast.success('News deleted successfully!');
-        
-        // Refresh the news list
+        toast.success('News deleted successfully');
         fetchNews();
       } catch (error) {
-        console.error('Error deleting news:', error);
         toast.error('Failed to delete news');
       }
     }
@@ -212,12 +199,10 @@ const NewsManagementPage = () => {
     // Create new news with duplicated data
     createNews(duplicatedData)
       .then(response => {
-        console.log('Duplicated news successfully:', response);
         toast.success('News duplicated successfully!');
         fetchNews(); // Refresh the news list
       })
       .catch(error => {
-        console.error('Error duplicating news:', error);
         toast.error('Failed to duplicate news');
       });
   };

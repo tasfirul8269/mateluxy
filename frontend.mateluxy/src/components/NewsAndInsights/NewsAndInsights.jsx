@@ -30,37 +30,9 @@ const NewsAndInsights = () => {
             setNewsInsights(data);
             setLoading(false);
         } catch (error) {
-            console.error('Error fetching news:', error);
             setError('Failed to load news. Please try again later.');
             setLoading(false);
-            
-            // Fallback to static data if API fails
-            setNewsInsights([
-                {
-                    id: '1',
-                    image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80",
-                    title: "How easy is it to set up a business in Dubai?",
-                    description: "As a global business hub, Dubai attracts entrepreneurs and investors from all over the world.",
-                    date: "May 5, 2025",
-                    category: "Business"
-                },
-                {
-                    id: '2',
-                    image: "https://images.unsplash.com/photo-1582407947304-fd86f028f716?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80",
-                    title: "The latest trends in Dubai's luxury real estate market",
-                    description: "Discover what's driving the luxury property market in Dubai and where the best investment opportunities lie.",
-                    date: "May 2, 2025",
-                    category: "Real Estate"
-                },
-                {
-                    id: '3',
-                    image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80",
-                    title: "Top 5 neighborhoods for families in Dubai",
-                    description: "Find out which Dubai neighborhoods offer the best amenities, schools, and lifestyle for families.",
-                    date: "April 28, 2025",
-                    category: "Lifestyle"
-                }
-            ]);
+            setNewsInsights([]);
         }
     };
     

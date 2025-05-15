@@ -51,24 +51,6 @@ const PropertyHeroFixed = ({ property }) => {
       });
     }
     
-    // Add some demo images for testing if we have less than 3 images
-    if (images.length < 3) {
-      const demoImages = [
-        'https://placehold.co/1200x800/red/white?text=Property+1',
-        'https://placehold.co/1200x800/red/white?text=Property+2',
-        'https://placehold.co/1200x800/red/white?text=Property+3',
-        'https://placehold.co/1200x800/red/white?text=Property+4'
-      ];
-      
-      for (let i = 0; i < demoImages.length && images.length < 5; i++) {
-        images.push({
-          src: demoImages[i],
-          alt: `Demo property image ${i + 1}`
-        });
-      }
-    }
-    
-    console.log('Images for slider:', images);
     return images;
   };
 
@@ -81,11 +63,6 @@ const PropertyHeroFixed = ({ property }) => {
   const [touchEnd, setTouchEnd] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
   
-  // Log property data for debugging
-  useEffect(() => {
-    console.log('Property data:', property);
-  }, [property]);
-  
   // Reset loading state when image changes
   useEffect(() => {
     setIsLoading(true);
@@ -94,26 +71,21 @@ const PropertyHeroFixed = ({ property }) => {
   
   // Handle image load error
   const handleImageError = () => {
-    console.log('Image loading error');
     setImageError(true);
     setIsLoading(false);
   };
 
   // Handle image navigation
   const goToPrevious = () => {
-    console.log('Going to previous image');
     setCurrentIndex((prevIndex) => {
       const newIndex = prevIndex === 0 ? images.length - 1 : prevIndex - 1;
-      console.log('Previous index:', prevIndex, 'New index:', newIndex);
       return newIndex;
     });
   };
   
   const goToNext = () => {
-    console.log('Going to next image');
     setCurrentIndex((prevIndex) => {
       const newIndex = prevIndex === images.length - 1 ? 0 : prevIndex + 1;
-      console.log('Previous index:', prevIndex, 'New index:', newIndex);
       return newIndex;
     });
   };
@@ -154,7 +126,6 @@ const PropertyHeroFixed = ({ property }) => {
   
   // Toggle fullscreen gallery
   const toggleFullscreen = () => {
-    console.log('Toggling fullscreen gallery:', !isFullscreen);
     setIsFullscreen(!isFullscreen);
     // When opening fullscreen, make sure body doesn't scroll
     if (!isFullscreen) {
@@ -167,10 +138,8 @@ const PropertyHeroFixed = ({ property }) => {
   // Toggle favorite
   const toggleFavorite = (e) => {
     if (e) e.stopPropagation();
-    console.log('Toggling favorite state:', !isFavorite);
     setIsFavorite(!isFavorite);
     // Here you would typically save this to user preferences in a real app
-    // For demo purposes, just show a notification
     if (!isFavorite) {
       alert('Property added to wishlist!');
     } else {

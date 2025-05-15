@@ -16,7 +16,7 @@ const Amenities = () => {
         },
         {
             title: "Cinema",
-            image: "https://ggfx-handh3.s3.eu-west-2.amazonaws.com/i/cinema_old_c0567f4d7c.svg"
+            image: "https://ggfx-handh3.s3.eu-west-2.amazonaws.com/i/cinema_c0567f4d7c.svg"
         },
         {
             title: "Retail shops",

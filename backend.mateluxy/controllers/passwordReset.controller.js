@@ -27,32 +27,14 @@ const PasswordResetToken = mongoose.models.PasswordResetToken ||
     }
   }));
 
-// Create a test account for development and a real transporter for production
+// Create a transporter for email
 const createTransporter = async () => {
-  // For development/testing, create a test account if no email credentials are provided
+  // Use the configured email service
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
-    console.log('No email credentials found, creating a test account...');
-    const testAccount = await nodemailer.createTestAccount();
-    console.log('Test email account created:');
-    console.log('- Email:', testAccount.user);
-    console.log('- Password:', testAccount.pass);
-    
-    return {
-      transporter: nodemailer.createTransport({
-        host: 'smtp.ethereal.email',
-        port: 587,
-        secure: false,
-        auth: {
-          user: testAccount.user,
-          pass: testAccount.pass
-        }
-      }),
-      isTestAccount: true,
-      testAccount
-    };
+    throw new Error('Email credentials are not configured');
   }
   
-  // For production, use Gmail SMTP
+  // Use Gmail SMTP
   return {
     transporter: nodemailer.createTransport({
       service: 'gmail',
@@ -69,22 +51,17 @@ const createTransporter = async () => {
 export const forgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
-    console.log('Email requested:', email);
     
     // Find the admin by email
-    console.log('Searching for admin with email:', email);
     const admin = await Admin.findOne({ email });
     
     if (!admin) {
-      console.log('No admin found with email:', email);
       // Return an error message indicating no admin was found with this email
       return res.status(404).json({ 
         success: false,
         message: "No admin account found with this email address."
       });
     }
-    
-    console.log('Admin found:', admin.username || admin._id);
 
     // Generate a random token
     const resetToken = crypto.randomBytes(32).toString('hex');
@@ -98,7 +75,6 @@ export const forgotPassword = async (req, res, next) => {
     }).save();
 
     // Create reset URL using the existing CLIENT_URL environment variable
-    // First try the dedicated reset page, but fall back to admin login if needed
     let baseUrl = process.env.CLIENT_URL || 'http://localhost:5173';
     
     // Check if the frontend has been updated with the reset password page
@@ -108,20 +84,13 @@ export const forgotPassword = async (req, res, next) => {
     const resetUrl = useAdminLoginFallback
       ? `${baseUrl}/admin-login?reset_token=${resetToken}`
       : `${baseUrl}/reset-password/${resetToken}`;
-      
-    console.log('Generated reset URL:', resetUrl);
-    console.log('CLIENT_URL value:', baseUrl);
-    console.log('Using admin login fallback:', useAdminLoginFallback);
 
     try {
-      console.log('Setting up email transport...');
-      // Create a transporter (either test or production)
-      const { transporter, isTestAccount, testAccount } = await createTransporter();
-      console.log('Email transport created, using', isTestAccount ? 'test account' : 'production settings');
+      // Create a transporter
+      const { transporter } = await createTransporter();
       
       // Set up email options
-      const from = process.env.EMAIL_FROM || 
-                 (isTestAccount ? '"MateLuxy Test" <test@example.com>' : '"MateLuxy" <info@frooxi.com>');
+      const from = process.env.EMAIL_FROM || '"MateLuxy" <info@frooxi.com>';
       
       const mailOptions = {
         from,
@@ -140,25 +109,10 @@ export const forgotPassword = async (req, res, next) => {
       };
 
       // Send the email
-      const info = await transporter.sendMail(mailOptions);
-      
-      // If using a test account, log the preview URL
-      if (isTestAccount) {
-        console.log('\n===== TEST EMAIL SENT =====');
-        console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-        console.log('Click the link above to view the test email');
-        console.log('Reset token for testing:', resetToken);
-        console.log('Reset URL:', resetUrl);
-        console.log('===========================\n');
-      }
+      await transporter.sendMail(mailOptions);
     } catch (emailError) {
-      // If email sending fails, just log the error but don't stop the process
-      console.error('\n===== EMAIL SENDING FAILED =====');
-      console.error('Error details:', emailError.message);
-      console.error('Error stack:', emailError.stack);
-      console.log('For development testing, use this reset token:', resetToken);
-      console.log('Reset URL:', resetUrl);
-      console.log('===============================\n');
+      // If email sending fails, don't stop the process
+      // This allows the reset token to be created even if email fails
     }
 
     res.status(200).json({
