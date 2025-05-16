@@ -23,10 +23,12 @@ export const adminSignIn = async (req, res, next) => {
         
         // Set cookie options based on environment and rememberMe
         const isProduction = process.env.NODE_ENV === 'production';
+        const useSecureCookies = process.env.USE_SECURE_COOKIES === 'true';
+        
         const cookieOptions = {
             httpOnly: true,
-            secure: isProduction, // Only use secure in production
-            sameSite: isProduction ? "None" : "Lax", // Use Lax for local development
+            secure: useSecureCookies, // Only use secure if explicitly configured
+            sameSite: isProduction ? "Lax" : "Lax", // Use Lax for both to work with HTTP
             path: '/' // Ensure cookie is sent with all requests
         };
         
@@ -39,6 +41,11 @@ export const adminSignIn = async (req, res, next) => {
         }
         
         console.log('Setting JWT token with secret:', process.env.JWT_SECRET ? 'Secret exists' : 'SECRET MISSING!');
+        console.log('Cookie settings:', JSON.stringify({
+            httpOnly: cookieOptions.httpOnly,
+            secure: cookieOptions.secure,
+            sameSite: cookieOptions.sameSite
+        }));
         
         // Set cookie and return response
         res.cookie("access_token", token, cookieOptions)

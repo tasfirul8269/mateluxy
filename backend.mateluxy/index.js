@@ -28,9 +28,9 @@ dotenv.config();
 const app = express();
 const allowedOrigins = [
     'http://localhost:5173',
-    'https://mateluxy-frontend-sudw.vercel.app',
-    'https://real-state-frontend-sigma.vercel.app',
-    'https://frontend-mateluxy.vercel.app'
+    'http://69.62.83.15:4173',
+    'https://mateluxy.com',
+    'https://www.mateluxy.com'
   ];
   
 app.use(cors({

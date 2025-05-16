@@ -7,6 +7,11 @@ export const verifyToken = (req, res, next) => {
   console.log('Verifying token:', token ? 'Token exists' : 'No token');
   console.log('Cookies received:', req.cookies);
   console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
+  console.log('Request headers:', JSON.stringify({
+    origin: req.headers.origin,
+    referer: req.headers.referer,
+    host: req.headers.host
+  }));
 
   if (!token) {
     console.log('No access_token cookie found');

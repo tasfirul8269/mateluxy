@@ -49,11 +49,14 @@ export const agentSignIn = async (req, res, next) => {
         console.log(`Setting cookie for agent ${email}`);
         
         // Set cookie with more compatible settings
+        const isProduction = process.env.NODE_ENV === 'production';
+        const useSecureCookies = process.env.USE_SECURE_COOKIES === 'true';
+        
         res.cookie("agent_token", token, {
             httpOnly: true,
-            // In production use secure: true, for local development this can be false
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? "None" : "Lax",
+            secure: useSecureCookies,
+            sameSite: isProduction ? "Lax" : "Lax",
+            path: '/',
             // Set a long expiration (e.g., 30 days)
             maxAge: 30 * 24 * 60 * 60 * 1000
         }).status(200).json(rest);

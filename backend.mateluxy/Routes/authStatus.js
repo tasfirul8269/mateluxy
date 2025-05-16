@@ -11,10 +11,13 @@ router.get("/check-auth", verifyToken, (req, res) => {
 // Enhanced logout endpoint
 router.post("/logout", (req, res) => {
   // Clear the authentication cookie - make sure to match the cookie settings from login
+  const isProduction = process.env.NODE_ENV === 'production';
+  const useSecureCookies = process.env.USE_SECURE_COOKIES === 'true';
+  
   res.clearCookie('access_token', { 
     httpOnly: true,
-    secure: true,
-    sameSite: 'None',
+    secure: useSecureCookies,
+    sameSite: isProduction ? "Lax" : "Lax",
     path: '/'
   }).status(200).json({ 
     success: true, 

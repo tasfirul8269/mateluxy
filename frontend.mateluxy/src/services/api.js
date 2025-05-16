@@ -1,5 +1,6 @@
 // Simplified API constants with updated domain
-const API_URL = `https://backend-mateluxy.onrender.com/api`;
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_URL = BASE_URL.endsWith('/api') ? BASE_URL : `${BASE_URL}/api`;
 
 // Ensure property data includes all required fields
 const ensureRequiredPropertyFields = (propertyData) => {

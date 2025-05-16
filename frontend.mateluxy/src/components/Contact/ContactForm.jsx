@@ -9,6 +9,7 @@ const ContactForm = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formSuccess, setFormSuccess] = useState(false);
+  const [formError, setFormError] = useState(null);
   const [activeStep, setActiveStep] = useState(0);
 
   // Watch contact method selections
@@ -41,6 +42,7 @@ const ContactForm = () => {
   const onSubmit = async (data) => {
     if (activeStep < steps.length - 1) { handleNext(); return; }
     setIsSubmitting(true);
+    setFormError(null);
     try {
       // Create an array of preferred contact methods
       const preferredContactMethods = [];
@@ -169,6 +171,16 @@ const ContactForm = () => {
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.3 }}
             >
+  {formError && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl text-red-700 flex items-center gap-3"
+                >
+                  <AlertCircle size={20} className="text-red-500" />
+                  <span>{formError}</span>
+                </motion.div>
+              )}
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 {/* Step 1: Personal Details */}
                 {activeStep === 0 && (

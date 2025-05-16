@@ -1,5 +1,6 @@
 import Message from '../models/message.model.js';
-import { sendEmail } from '../utils/email.js';
+// Remove the unused sendEmail import to prevent initialization errors
+// import { sendEmail } from '../utils/email.js';
 
 // Create a new message from contact form
 export const createMessage = async (req, res) => {
