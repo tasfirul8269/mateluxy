@@ -485,22 +485,33 @@ const handleQrUpload = async (e) => {
 
 // Developer Logo upload
 const handleDeveloperLogoUpload = async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  
-  setUploadingDeveloperLogo(true);
-  setUploadErrorDeveloperLogo("");
-  
   try {
-    // Upload file to S3 in the 'properties/developer/' folder
-    const fileUrl = await uploadFileToS3(file, 'properties/developer/');
-    setForm((prev) => ({ ...prev, developerImage: fileUrl }));
-  } catch (err) {
-    console.error("Error uploading developer logo:", err);
-    setUploadErrorDeveloperLogo("Upload failed. Try again.");
+    setUploadingDeveloperLogo(true);
+    setUploadErrorDeveloperLogo("");
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const imageUrl = await uploadFileToS3(file, 'properties/developer/');
+    setForm(prev => ({
+      ...prev,
+      developerImage: imageUrl
+    }));
+    if (onFormChange) onFormChange({ developerImage: imageUrl });
+  } catch (error) {
+    console.error("Error uploading developer logo:", error);
+    setUploadErrorDeveloperLogo("Failed to upload developer logo");
+  } finally {
+    setUploadingDeveloperLogo(false);
   }
-  
-  setUploadingDeveloperLogo(false);
+};
+
+// Handle removing developer logo
+const handleRemoveDeveloperLogo = () => {
+  setForm(prev => ({
+    ...prev,
+    developerImage: ""
+  }));
+  if (onFormChange) onFormChange({ developerImage: "" });
 };
 
 // Brochure upload
@@ -521,6 +532,15 @@ const handleBrochureUpload = async (e) => {
   }
   
   setUploadingBrochure(false);
+};
+
+// Handle removing brochure
+const handleRemoveBrochure = () => {
+  setForm(prev => ({
+    ...prev,
+    brochureFile: ""
+  }));
+  if (onFormChange) onFormChange({ brochureFile: "" });
 };
 
 // Location image upload
