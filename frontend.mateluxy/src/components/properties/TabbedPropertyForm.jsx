@@ -254,7 +254,7 @@ export default function TabbedPropertyForm({ onSubmit, onCancel, selectedCategor
       propertyTitle: "",
       propertyDescription: "",
       propertyAddress: "",
-      propertyCountry: "",
+      propertyCountry: "UAE", // Default to UAE
       propertyState: "",
       propertyZip: "",
       featuredImage: "",
@@ -760,14 +760,31 @@ const handleRemoveInteriorImage = (index) => {
       { field: 'longitude', label: 'Longitude' }
     ];
 
-    // Filter out required fields based on category
+    // Add additional required fields based on category
     if (selectedCategory === "Rent" || selectedCategory === "Commercial for Rent") {
       requiredFields.push({ field: 'numberOfCheques', label: 'Number of Cheques' });
     }
+  
+    // Add Off Plan specific required fields
+    if (selectedCategory === "Off Plan") {
+      requiredFields.push(
+        { field: 'developer', label: 'Developer' },
+        { field: 'developerImage', label: 'Developer Logo' },
+        { field: 'launchType', label: 'Launch Type' },
+        { field: 'shortDescription', label: 'Short Description' },
+        { field: 'exactLocation', label: 'Exact Location' },
+        { field: 'completionDate', label: 'Completion Date' },
+        { field: 'paymentPlan', label: 'Payment Plan' }
+      );
+    } 
 
     // Check for empty required fields
     const missingFields = requiredFields.filter(item => {
       const value = formData[item.field];
+      // Special check for arrays (like media, exteriorGallery, etc.)
+      if (Array.isArray(value)) {
+        return value.length === 0;
+      }
       return value === undefined || value === null || value === '' || 
              (typeof value === 'number' && (isNaN(value) || value <= 0));
     });
