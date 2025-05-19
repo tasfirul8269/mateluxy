@@ -1,0 +1,49 @@
+{
+    "status": "success",
+    "data": [
+      {
+        "areaName": "Expo",
+        "imgUrl": "https://ggfx-handh3.s3.eu-west-2.amazonaws.com/x/200x140/imgAlt.webp",
+        "image_alt": "Expo - Haus and Haus",
+        "property_count": 6,
+        "link": "/off-plan/properties/for-sale/in-dubai/in-expo/"
+      },
+      {
+        "areaName": "Dubailand",
+        "imgUrl": "https://ggfx-handh3.s3.eu-west-2.amazonaws.com/x/200x140/a9_685a03ab01.webp",
+        "imgAlt": "Dubailand - Haus and Haus",
+        "propertyCount": 7,
+        "link": "/off-plan/properties/for-sale/in-dubai/in-dubailand/"
+      },
+      {
+        "areaName": "Dubai Marina",
+        "imgUrl": "https://ggfx-handh3.s3.eu-west-2.amazonaws.com/x/200x140/a8_a85b596c32.webp",
+        "imgAlt": "Dubai Marina - Haus and Haus",
+        "propertyCount": 9,
+        "link": "/off-plan/properties/for-sale/in-dubai/in-dubai-marina/"
+      },
+      {
+        "areaName": "Jumeirah Village Circle (JVC)",
+        "imgUrl": "https://ggfx-handh3.s3.eu-west-2.amazonaws.com/x/200x140/imgAlt.webp",
+        "image_alt": "Jumeirah Village Circle - Haus and Haus",
+        "property_count": 9,
+        "link": "/off-plan/properties/for-sale/in-dubai/in-jumeirah-village-circle/"
+      },
+      {
+        "areaName": "South",
+        "imgUrl": "https://ggfx-handh3.s3.eu-west-2.amazonaws.com/x/200x140/imgAlt.webp",
+        "image_alt": "South - Haus and Haus",
+        "property_count": 6,
+        "link": "/off-plan/properties/for-sale/in-dubai/in-south/"
+      },
+      {
+        "areaName": "Business Bay",
+        "imgUrl": "https://ggfx-handh3.s3.eu-west-2.amazonaws.com/x/200x140/imgAlt.webp",
+        "image_alt": "Business Bay - Haus and Haus",
+        "property_count": 19,
+        "link": "/off-plan/properties/for-sale/in-dubai/in-business-bay/"
+      }
+    ],
+    "count": 6,
+    "timestamp": "2023-11-02T12:00:00Z"
+  }

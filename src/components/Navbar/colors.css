@@ -1,0 +1,37 @@
+.bg-pink-red {
+  background-color: #ff777f;
+}
+.bg-soft-red{
+    background-color: #FF6666;
+}
+.bg-coral-red{
+    background-color: #FF4C4C ;
+}
+
+.bg-bright-red{
+    border-color: #FF3232;
+}
+.bg-pure-red{
+    background-color: #FF0000;
+}
+
+.bg-azure-blue{
+    background-color: #007FFF;
+}
+.bg-light-blue{
+    background-color: #00BFFF;
+}
+.bg-dodger-blue{
+    background-color: #258FFF ;
+}
+.bg-vivid-blue{
+    background-color: #259FFF;
+}
+.bg-electric-blue{
+    background-color: #25AFFF;
+}
+
+
+.active{
+    background-color: #258FFF
+}
