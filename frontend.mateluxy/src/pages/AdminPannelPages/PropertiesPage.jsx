@@ -41,8 +41,9 @@ const PropertiesPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("all");
-  const [maxPrice, setMaxPrice] = useState(4000000); // Default max price
-  const [priceRange, setPriceRange] = useState([0, 4000000]);
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(1000000); // Initial default, will be updated
+  const [priceRange, setPriceRange] = useState([0, 1000000]);
   const [isFormDialogOpen, setIsFormDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [propertyToEdit, setPropertyToEdit] = useState(null);
@@ -75,21 +76,31 @@ const PropertiesPage = () => {
   // Extract all states/locations from properties
   const locations = Array.from(new Set(properties.map((property) => property.propertyState)));
   
-  // Calculate max price from all properties
+  // Calculate min and max price from all properties
   useEffect(() => {
     if (properties && properties.length > 0) {
-      const highestPrice = Math.max(...properties.map(property => 
-        property.propertyPrice ? Number(property.propertyPrice) : 0
-      ));
+      // Get all valid property prices
+      const validPrices = properties
+        .map(property => property.propertyPrice ? Number(property.propertyPrice) : null)
+        .filter(price => price !== null && !isNaN(price) && price > 0);
       
-      // Round up to the nearest million for a cleaner UI
-      const roundedMaxPrice = Math.ceil(highestPrice / 1000000) * 1000000;
-      const newMaxPrice = Math.max(roundedMaxPrice, 4000000); // Ensure minimum of 4M
-      
-      setMaxPrice(newMaxPrice);
-      // Update price range if the current max is less than the new max
-      if (priceRange[1] < newMaxPrice) {
-        setPriceRange([priceRange[0], newMaxPrice]);
+      if (validPrices.length > 0) {
+        // Find the lowest and highest prices
+        const lowestPrice = Math.min(...validPrices);
+        const highestPrice = Math.max(...validPrices);
+        
+        // Set min price (round down to nearest 1000 for cleaner UI)
+        const roundedMinPrice = Math.floor(lowestPrice / 1000) * 1000;
+        setMinPrice(roundedMinPrice);
+        
+        // Set max price (round up to nearest 1000 for cleaner UI)
+        const roundedMaxPrice = Math.ceil(highestPrice / 1000) * 1000;
+        setMaxPrice(roundedMaxPrice);
+        
+        // Update price range to reflect the actual data range
+        setPriceRange([roundedMinPrice, roundedMaxPrice]);
+        
+        console.log(`Price range set to: ${roundedMinPrice} - ${roundedMaxPrice}`);
       }
     }
   }, [properties]);
@@ -242,7 +253,7 @@ const PropertiesPage = () => {
                   <Filter size={16} className="mr-2 text-blue-500" />
                   <span>Filters</span>
                   <span className="ml-1.5 bg-blue-100 text-blue-600 text-xs font-semibold px-2 py-0.5 rounded-full">
-                    {selectedLocation !== 'all' || priceRange[0] !== 0 || priceRange[1] !== maxPrice ? '2' : '0'}
+                    {selectedLocation !== 'all' || priceRange[0] !== minPrice || priceRange[1] !== maxPrice ? '2' : '0'}
                   </span>
                 </button>
               </PopoverTrigger>
@@ -292,40 +303,67 @@ const PropertiesPage = () => {
                     
                     <div className="px-1 pt-4 pb-6">
                       <Slider
-                        defaultValue={[0, maxPrice]}
+                        defaultValue={[minPrice, maxPrice]}
                         value={priceRange}
+                        min={minPrice}
                         max={maxPrice}
-                        step={Math.max(100000, Math.floor(maxPrice / 40))} // Adjust step size based on max price
+                        step={Math.max(1000, Math.floor((maxPrice - minPrice) / 100))} // Dynamic step size
                         onValueChange={(value) => setPriceRange(value)}
                         className="mb-6"
                       />
                       
                       <div className="flex justify-between text-xs text-gray-500 px-1 relative">
                         <div className="absolute left-0 w-full flex justify-between -top-4">
-                          {Array.from({ length: 5 }, (_, i) => Math.floor(maxPrice * i / 4)).map((value, index) => (
+                          {Array.from({ length: 5 }, (_, i) => {
+                            const range = maxPrice - minPrice;
+                            return Math.floor(minPrice + (range * i / 4));
+                          }).map((value, index) => (
                             <div key={index} className="h-1.5 w-0.5 bg-gray-200"></div>
                           ))}
                         </div>
-                        <span className="text-center">$0</span>
-                        <span className="text-center">{formatPrice(maxPrice/4)}</span>
-                        <span className="text-center">{formatPrice(maxPrice/2)}</span>
-                        <span className="text-center">{formatPrice(3*maxPrice/4)}</span>
+                        <span className="text-center">{formatPrice(minPrice)}</span>
+                        <span className="text-center">{formatPrice(minPrice + (maxPrice - minPrice)/4)}</span>
+                        <span className="text-center">{formatPrice(minPrice + (maxPrice - minPrice)/2)}</span>
+                        <span className="text-center">{formatPrice(minPrice + 3*(maxPrice - minPrice)/4)}</span>
                         <span className="text-center">{formatPrice(maxPrice)}</span>
                       </div>
                     </div>
                     
                     <div className="grid grid-cols-4 gap-2 mt-4">
                       {(() => {
-                        // Dynamically generate price range presets based on max price
-                        const step = Math.ceil(maxPrice / 6); // Divide into 6 ranges
-                        return [
-                          { label: `< ${formatPrice(step)}`, min: 0, max: step },
-                          { label: `${formatPrice(step)}-${formatPrice(2*step)}`, min: step, max: 2*step },
-                          { label: `${formatPrice(2*step)}-${formatPrice(3*step)}`, min: 2*step, max: 3*step },
-                          { label: `${formatPrice(3*step)}-${formatPrice(4*step)}`, min: 3*step, max: 4*step },
-                          { label: `${formatPrice(4*step)}-${formatPrice(5*step)}`, min: 4*step, max: 5*step },
-                          { label: `${formatPrice(5*step)}+`, min: 5*step, max: maxPrice },
-                        ].map((preset, index) => (
+                        // Dynamically generate price range presets based on actual price range
+                        const range = maxPrice - minPrice;
+                        const step = Math.ceil(range / 6); // Divide into 6 ranges
+                        
+                        // Create evenly distributed price ranges
+                        const presets = [];
+                        
+                        // First preset is from min to min+step
+                        presets.push({ 
+                          label: `${formatPrice(minPrice)}-${formatPrice(minPrice + step)}`, 
+                          min: minPrice, 
+                          max: minPrice + step 
+                        });
+                        
+                        // Middle presets
+                        for (let i = 1; i < 5; i++) {
+                          const min = minPrice + (i * step);
+                          const max = minPrice + ((i + 1) * step);
+                          presets.push({ 
+                            label: `${formatPrice(min)}-${formatPrice(max)}`, 
+                            min, 
+                            max 
+                          });
+                        }
+                        
+                        // Last preset is from max-step to max
+                        presets.push({ 
+                          label: `${formatPrice(maxPrice - step)}+`, 
+                          min: maxPrice - step, 
+                          max: maxPrice 
+                        });
+                        
+                        return presets.map((preset, index) => (
                           <button
                             key={index}
                             className={`px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
@@ -346,7 +384,7 @@ const PropertiesPage = () => {
                     <button 
                       onClick={() => {
                         setSelectedLocation('all');
-                        setPriceRange([0, 4000000]);
+                        setPriceRange([minPrice, maxPrice]);
                       }}
                       className="px-4 py-2 text-sm font-medium rounded-md border border-gray-200 hover:bg-gray-50 transition-colors flex-1"
                     >
