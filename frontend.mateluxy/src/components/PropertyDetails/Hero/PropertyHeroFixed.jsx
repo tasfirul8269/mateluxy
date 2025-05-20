@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useFullScreen } from '../../../context/FullScreenContext';
 import { 
   ArrowRight, 
   ChevronLeft,
@@ -101,7 +102,7 @@ const PropertyHeroFixed = ({ property }) => {
     }, 5000);
     
     return () => clearInterval(interval);
-  }, [images.length, isFullscreen, goToNext]);
+  }, [images.length, isFullscreen]);
   
   // Handle touch events for swipe functionality
   const handleTouchStart = (e) => {
@@ -124,11 +125,17 @@ const PropertyHeroFixed = ({ property }) => {
     }
   };
   
+  // Import the FullScreenContext
+  const { setFullScreen } = useFullScreen();
+  
   // Toggle fullscreen gallery
   const toggleFullscreen = () => {
-    setIsFullscreen(!isFullscreen);
+    const newState = !isFullscreen;
+    setIsFullscreen(newState);
+    // Update the global full-screen state
+    setFullScreen(newState);
     // When opening fullscreen, make sure body doesn't scroll
-    if (!isFullscreen) {
+    if (newState) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -174,7 +181,7 @@ const PropertyHeroFixed = ({ property }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black z-100 flex flex-col"
+            className="fixed inset-0 bg-black z-[9999] flex flex-col"
           >
             <div className="flex justify-between items-center p-4 text-white">
               <h3 className="text-xl font-semibold">{property?.propertyTitle || 'Property Gallery'}</h3>

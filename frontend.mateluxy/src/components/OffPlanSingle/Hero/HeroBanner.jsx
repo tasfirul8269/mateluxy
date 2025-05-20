@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useFullScreen } from '../../../context/FullScreenContext';
 import { 
   ArrowRight, 
   Calendar, 
@@ -92,9 +93,15 @@ const HeroBanner = ({ property }) => {
     }
   };
   
+  // Import the FullScreenContext
+  const { setFullScreen } = useFullScreen();
+  
   // Toggle fullscreen gallery
   const toggleFullscreen = () => {
-    setIsFullscreen(!isFullscreen);
+    const newState = !isFullscreen;
+    setIsFullscreen(newState);
+    // Update the global full-screen state
+    setFullScreen(newState);
   };
   
   // Toggle favorite
@@ -139,7 +146,7 @@ const HeroBanner = ({ property }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/95 z-50 flex flex-col justify-center items-center p-4"
+            className="fixed inset-0 bg-black/95 z-[9999] flex flex-col justify-center items-center p-4"
           >
             <button 
               onClick={toggleFullscreen}

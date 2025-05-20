@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useFullScreen } from '../../../context/FullScreenContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Image, X, ChevronLeft, ChevronRight, Grid } from 'lucide-react';
 
@@ -35,11 +36,16 @@ const GallerySection = ({ property }) => {
   const openLightbox = (index) => {
     setCurrentIndex(index);
     setSelectedImage(images[index]);
+    setFullScreen(true);
   };
+  
+  // Import the FullScreenContext
+  const { setFullScreen } = useFullScreen();
   
   // Close lightbox
   const closeLightbox = () => {
     setSelectedImage(null);
+    setFullScreen(false);
   };
   
   // Navigate to next image in lightbox
@@ -88,7 +94,7 @@ const GallerySection = ({ property }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/95 flex flex-col"
+            className="fixed inset-0 z-[9999] bg-black/95 flex flex-col"
           >
             <div className="flex justify-between items-center p-4 text-white">
               <h3 className="text-xl font-semibold">Gallery</h3>
