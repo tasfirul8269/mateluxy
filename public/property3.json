@@ -1,0 +1,35 @@
+{
+    "id": 3,
+    "title": "Marina Skyline Apartment",
+    "location": "Dubai Marina, UAE",
+    "mainImage": "https://images.unsplash.com/photo-1600121848594-d8644e57abab?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3",
+      "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d",
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c"
+    ],
+    "price": "AED 2,200,000",
+    "paymentTerms": "Flexible payment plans available",
+    "type": "Apartment",
+    "area": 1450,
+    "residentSize": 1320,
+    "bedrooms": 2,
+    "bathrooms": 2,
+    "yearBuilt": 2019,
+    "status": "Ready to Move",
+    "tags": ["Marina View", "Gym", "Concierge"],
+    "description": "Modern apartment with stunning views of Dubai Marina and direct access to the marina promenade.",
+    "features": [
+      "Floor-to-ceiling windows",
+      "Walk-in closet",
+      "Balcony with marina view",
+      "24/7 security"
+    ],
+    "agent": {
+      "name": "Karim Abdullah",
+      "photo": "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1287&q=80",
+      "role": "Property Consultant",
+      "languages": ["English", "Arabic"],
+      "phone": "+971501234569"
+    }
+  }

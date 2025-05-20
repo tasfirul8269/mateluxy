@@ -1,0 +1,171 @@
+{
+    "teamMembers": [
+      {
+        "id": 1,
+        "name": "Alexander Mitchell",
+        "position": "CEO & Founder",
+        "department": "Management",
+        "languages": ["English", "French"],
+        "email": "alex.mitchell@company.com",
+        "phone": "+1 (555) 123-4567",
+        "image": "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "bio": "Alex has over 20 years of experience in the industry and founded the company in 2010."
+      },
+      {
+        "id": 2,
+        "name": "Sarah Johnson",
+        "position": "Head of Sales",
+        "department": "Sales",
+        "languages": ["English", "Spanish"],
+        "email": "sarah.johnson@company.com",
+        "phone": "+1 (555) 234-5678",
+        "image": "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "bio": "Sarah leads our sales team with passion and has consistently exceeded targets for the past 5 years."
+      },
+      {
+        "id": 3,
+        "name": "Michael Zhang",
+        "position": "Marketing Director",
+        "department": "Marketing",
+        "languages": ["English", "Chinese"],
+        "email": "michael.zhang@company.com",
+        "phone": "+1 (555) 345-6789",
+        "image": "https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "bio": "Michael brings creative vision to our marketing strategies and has a background in digital advertising."
+      },
+      {
+        "id": 4,
+        "name": "Emily Parker",
+        "position": "Senior Developer",
+        "department": "IT",
+        "languages": ["English", "German"],
+        "email": "emily.parker@company.com",
+        "phone": "+1 (555) 456-7890",
+        "image": "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "bio": "Emily leads our development team and has expertise in cloud architecture and microservices."
+      },
+      {
+        "id": 5,
+        "name": "David Chen",
+        "position": "Financial Analyst",
+        "department": "Finance",
+        "languages": ["English", "Chinese", "French"],
+        "email": "david.chen@company.com",
+        "phone": "+1 (555) 567-8901",
+        "image": "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "bio": "David specializes in financial modeling and investment strategy analysis."
+      },
+      {
+        "id": 6,
+        "name": "Sophie Martinez",
+        "position": "Marketing Specialist",
+        "department": "Marketing",
+        "languages": ["English", "Spanish", "French"],
+        "email": "sophie.martinez@company.com",
+        "phone": "+1 (555) 678-9012",
+        "image": "https://images.pexels.com/photos/1036623/pexels-photo-1036623.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "bio": "Sophie excels in digital marketing and social media strategy."
+      },
+      {
+        "id": 7,
+        "name": "James Wilson",
+        "position": "Sales Manager",
+        "department": "Sales",
+        "languages": ["English", "French"],
+        "email": "james.wilson@company.com",
+        "phone": "+1 (555) 789-0123",
+        "image": "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "bio": "James has a proven track record of building and leading successful sales teams."
+      },
+      {
+        "id": 8,
+        "name": "Anna Kowalski",
+        "position": "HR Director",
+        "department": "Management",
+        "languages": ["English", "German", "Russian"],
+        "email": "anna.kowalski@company.com",
+        "phone": "+1 (555) 890-1234",
+        "image": "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "bio": "Anna oversees all HR operations and employee development programs."
+      },
+      {
+        "id": 9,
+        "name": "Robert Kim",
+        "position": "IT Security Specialist",
+        "department": "IT",
+        "languages": ["English", "Korean"],
+        "email": "robert.kim@company.com",
+        "phone": "+1 (555) 901-2345",
+        "image": "https://images.pexels.com/photos/775358/pexels-photo-775358.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "bio": "Robert ensures our systems are secure and compliant with industry standards."
+      },
+      {
+        "id": 10,
+        "name": "Maria Garcia",
+        "position": "Account Manager",
+        "department": "Sales",
+        "languages": ["English", "Spanish"],
+        "email": "maria.garcia@company.com",
+        "phone": "+1 (555) 012-3456",
+        "image": "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "bio": "Maria maintains strong relationships with our key clients and drives account growth."
+      },
+      {
+        "id": 11,
+        "name": "Thomas Anderson",
+        "position": "Systems Architect",
+        "department": "IT",
+        "languages": ["English", "German"],
+        "email": "thomas.anderson@company.com",
+        "phone": "+1 (555) 123-4567",
+        "image": "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "bio": "Thomas designs and implements our core technology infrastructure."
+      },
+      {
+        "id": 12,
+        "name": "Lisa Wang",
+        "position": "Financial Controller",
+        "department": "Finance",
+        "languages": ["English", "Chinese"],
+        "email": "lisa.wang@company.com",
+        "phone": "+1 (555) 234-5678",
+        "image": "https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "bio": "Lisa oversees all financial operations and reporting procedures."
+      },
+      {
+        "id": 13,
+        "name": "Carlos Rodriguez",
+        "position": "Product Manager",
+        "department": "Management",
+        "languages": ["English", "Spanish", "Portuguese"],
+        "email": "carlos.rodriguez@company.com",
+        "phone": "+1 (555) 345-6789",
+        "image": "https://images.pexels.com/photos/937481/pexels-photo-937481.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "bio": "Carlos leads product development and innovation initiatives."
+      },
+      {
+        "id": 14,
+        "name": "Emma Thompson",
+        "position": "Marketing Manager",
+        "department": "Marketing",
+        "languages": ["English", "French"],
+        "email": "emma.thompson@company.com",
+        "phone": "+1 (555) 456-7890",
+        "image": "https://images.pexels.com/photos/762020/pexels-photo-762020.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "bio": "Emma develops and executes comprehensive marketing strategies."
+      },
+      {
+        "id": 15,
+        "name": "Daniel Lee",
+        "position": "Sales Executive",
+        "department": "Sales",
+        "languages": ["English", "Korean", "Japanese"],
+        "email": "daniel.lee@company.com",
+        "phone": "+1 (555) 567-8901",
+        "image": "https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        "bio": "Daniel specializes in international business development."
+      }
+    ],
+    "departments": ["All", "Sales", "Marketing", "Management", "Finance", "IT"],
+    "languages": ["All", "English", "Arabic", "French", "German", "Spanish", "Russian", "Chinese", "Korean", "Japanese", "Portuguese"]
+  }

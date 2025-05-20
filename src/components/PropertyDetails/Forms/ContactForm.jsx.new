@@ -1,0 +1,432 @@
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Phone, Mail, Calendar, Send, User, MessageSquare, Clock, CheckCircle, AlertCircle, Home } from 'lucide-react';
+import { IoCallOutline } from "react-icons/io5";
+import { FaEnvelope, FaRegCalendarAlt, FaWhatsapp } from "react-icons/fa";
+
+const ContactForm = ({ property }) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    message: '',
+    date: '',
+    time: '',
+    propertyType: property?.type || 'Apartment',
+  });
+  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+  const [step, setStep] = useState(1);
+  const [selectedOption, setSelectedOption] = useState('viewing');
+  
+  // Handle form input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+  
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitError(null);
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Success
+      setSubmitSuccess(true);
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        message: '',
+        date: '',
+        time: '',
+        propertyType: property?.type || 'Apartment',
+      });
+      setStep(1);
+      
+      // Reset success message after 5 seconds
+      setTimeout(() => {
+        setSubmitSuccess(false);
+      }, 5000);
+    } catch (error) {
+      setSubmitError('An error occurred. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+  // Handle option selection
+  const handleOptionSelect = (option) => {
+    setSelectedOption(option);
+    let defaultMessage = '';
+    
+    if (option === 'viewing') {
+      defaultMessage = `I would like to schedule a viewing for this ${property?.type || 'property'}.`;
+    } else if (option === 'inquiry') {
+      defaultMessage = `I'm interested in this ${property?.type || 'property'} and would like more information.`;
+    } else if (option === 'offer') {
+      defaultMessage = `I would like to make an offer for this ${property?.type || 'property'}.`;
+    }
+    
+    setFormData(prev => ({
+      ...prev,
+      message: defaultMessage
+    }));
+  };
+  
+  return (
+    <motion.div 
+      className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8 border border-gray-100"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="bg-gradient-to-r from-red-600 to-red-700 p-6 text-white relative overflow-hidden">
+        <div className="absolute -right-10 -top-10 w-40 h-40 bg-red-500 opacity-20 rounded-full"></div>
+        <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-red-500 opacity-10 rounded-full"></div>
+        <div className="relative z-10">
+          <h3 className="text-2xl font-bold mb-2">Interested in this property?</h3>
+          <p className="text-white/90">Connect with our property specialist to learn more about this exclusive listing</p>
+        </div>
+      </div>
+      
+      <div className="p-6">
+        {/* Contact Options */}
+        <div className="flex flex-col sm:flex-row gap-3 mb-8">
+          <a 
+            href={`tel:${property?.contactPhone || '+971500000000'}`} 
+            className="flex-1 flex items-center justify-center gap-2 p-3.5 bg-red-50 hover:bg-red-100 rounded-xl border border-red-100 transition-all text-red-600 group"
+          >
+            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center group-hover:bg-red-50 transition-colors">
+              <IoCallOutline className="text-red-500" size={18} />
+            </div>
+            <span className="font-medium">Call Agent</span>
+          </a>
+          
+          <a 
+            href={`https://wa.me/${property?.contactPhone?.replace(/[^0-9]/g, '') || '971500000000'}`}
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex-1 flex items-center justify-center gap-2 p-3.5 bg-green-50 hover:bg-green-100 rounded-xl border border-green-100 transition-all text-green-600 group"
+          >
+            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center group-hover:bg-green-50 transition-colors">
+              <FaWhatsapp className="text-green-500" size={18} />
+            </div>
+            <span className="font-medium">WhatsApp</span>
+          </a>
+          
+          <a 
+            href={`mailto:${property?.contactEmail || 'info@mateluxy.com'}`} 
+            className="flex-1 flex items-center justify-center gap-2 p-3.5 bg-blue-50 hover:bg-blue-100 rounded-xl border border-blue-100 transition-all text-blue-600 group"
+          >
+            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center group-hover:bg-blue-50 transition-colors">
+              <FaEnvelope className="text-blue-500" size={16} />
+            </div>
+            <span className="font-medium">Email</span>
+          </a>
+        </div>
+        
+        {/* Contact Form */}
+        <form id="booking-form" onSubmit={handleSubmit}>
+          {/* Success Message */}
+          {submitSuccess && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 p-4 bg-green-50 border border-green-100 rounded-xl text-green-700 flex items-center gap-3"
+            >
+              <CheckCircle size={20} className="text-green-500" />
+              <span>Your request has been submitted successfully! Our agent will contact you soon.</span>
+            </motion.div>
+          )}
+          
+          {/* Error Message */}
+          {submitError && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl text-red-700 flex items-center gap-3"
+            >
+              <AlertCircle size={20} className="text-red-500" />
+              <span>{submitError}</span>
+            </motion.div>
+          )}
+          
+          {/* Request Type Selection */}
+          <div className="mb-6">
+            <h4 className="text-gray-700 font-medium mb-3">What would you like to do?</h4>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <button
+                type="button"
+                onClick={() => handleOptionSelect('viewing')}
+                className={`p-4 rounded-xl border ${selectedOption === 'viewing' ? 'border-red-300 bg-red-50 text-red-700' : 'border-gray-200 bg-gray-50 text-gray-700'} flex flex-col items-center gap-2 transition-all`}
+              >
+                <Calendar size={20} className={selectedOption === 'viewing' ? 'text-red-500' : 'text-gray-400'} />
+                <span className="font-medium">Schedule Viewing</span>
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => handleOptionSelect('inquiry')}
+                className={`p-4 rounded-xl border ${selectedOption === 'inquiry' ? 'border-red-300 bg-red-50 text-red-700' : 'border-gray-200 bg-gray-50 text-gray-700'} flex flex-col items-center gap-2 transition-all`}
+              >
+                <MessageSquare size={20} className={selectedOption === 'inquiry' ? 'text-red-500' : 'text-gray-400'} />
+                <span className="font-medium">Ask a Question</span>
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => handleOptionSelect('offer')}
+                className={`p-4 rounded-xl border ${selectedOption === 'offer' ? 'border-red-300 bg-red-50 text-red-700' : 'border-gray-200 bg-gray-50 text-gray-700'} flex flex-col items-center gap-2 transition-all`}
+              >
+                <Home size={20} className={selectedOption === 'offer' ? 'text-red-500' : 'text-gray-400'} />
+                <span className="font-medium">Make an Offer</span>
+              </button>
+            </div>
+          </div>
+          
+          {/* Form Steps */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className={`flex items-center ${step >= 1 ? 'text-red-500' : 'text-gray-400'}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 1 ? 'bg-red-100' : 'bg-gray-100'}`}>
+                  <User size={16} />
+                </div>
+                <span className="ml-2 text-sm font-medium">Your Info</span>
+              </div>
+              <div className="h-px w-12 bg-gray-200"></div>
+              <div className={`flex items-center ${step >= 2 ? 'text-red-500' : 'text-gray-400'}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 2 ? 'bg-red-100' : 'bg-gray-100'}`}>
+                  <Calendar size={16} />
+                </div>
+                <span className="ml-2 text-sm font-medium">Schedule</span>
+              </div>
+              <div className="h-px w-12 bg-gray-200"></div>
+              <div className={`flex items-center ${step >= 3 ? 'text-red-500' : 'text-gray-400'}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 3 ? 'bg-red-100' : 'bg-gray-100'}`}>
+                  <MessageSquare size={16} />
+                </div>
+                <span className="ml-2 text-sm font-medium">Message</span>
+              </div>
+            </div>
+          </div>
+          
+          {/* Step 1: Personal Information */}
+          {step === 1 && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6"
+            >
+              {/* Name */}
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <User size={18} className="text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                    placeholder="John Doe"
+                  />
+                </div>
+              </div>
+              
+              {/* Email */}
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Mail size={18} className="text-gray-400" />
+                  </div>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                    placeholder="john@example.com"
+                  />
+                </div>
+              </div>
+              
+              {/* Phone */}
+              <div>
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Phone size={18} className="text-gray-400" />
+                  </div>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    required
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                    placeholder="+971 50 123 4567"
+                  />
+                </div>
+              </div>
+            </motion.div>
+          )}
+          
+          {/* Step 2: Schedule */}
+          {step === 2 && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6"
+            >
+              {/* Date */}
+              <div>
+                <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">Preferred Viewing Date</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Calendar size={18} className="text-gray-400" />
+                  </div>
+                  <input
+                    type="date"
+                    id="date"
+                    name="date"
+                    value={formData.date}
+                    onChange={handleChange}
+                    min={new Date().toISOString().split('T')[0]}
+                    required
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                  />
+                </div>
+              </div>
+              
+              {/* Time */}
+              <div>
+                <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-1">Preferred Time</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Clock size={18} className="text-gray-400" />
+                  </div>
+                  <select
+                    id="time"
+                    name="time"
+                    value={formData.time}
+                    onChange={handleChange}
+                    required
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 appearance-none bg-white"
+                  >
+                    <option value="">Select a time</option>
+                    <option value="9:00 AM">9:00 AM</option>
+                    <option value="10:00 AM">10:00 AM</option>
+                    <option value="11:00 AM">11:00 AM</option>
+                    <option value="12:00 PM">12:00 PM</option>
+                    <option value="1:00 PM">1:00 PM</option>
+                    <option value="2:00 PM">2:00 PM</option>
+                    <option value="3:00 PM">3:00 PM</option>
+                    <option value="4:00 PM">4:00 PM</option>
+                    <option value="5:00 PM">5:00 PM</option>
+                    <option value="6:00 PM">6:00 PM</option>
+                  </select>
+                </div>
+              </div>
+            </motion.div>
+          )}
+          
+          {/* Step 3: Message */}
+          {step === 3 && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="mb-6"
+            >
+              <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Message</label>
+              <div className="relative">
+                <div className="absolute top-3 left-3 pointer-events-none">
+                  <MessageSquare size={18} className="text-gray-400" />
+                </div>
+                <textarea
+                  id="message"
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  rows="4"
+                  required
+                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                  placeholder="I'm interested in this property and would like more information..."
+                ></textarea>
+              </div>
+            </motion.div>
+          )}
+          
+          {/* Navigation Buttons */}
+          <div className="flex justify-between mb-6">
+            {step > 1 && (
+              <button
+                type="button"
+                onClick={() => setStep(step - 1)}
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                Back
+              </button>
+            )}
+            
+            {step < 3 ? (
+              <button
+                type="button"
+                onClick={() => setStep(step + 1)}
+                className="ml-auto px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
+              >
+                Continue
+              </button>
+            ) : (
+              <motion.button
+                type="submit"
+                disabled={isSubmitting}
+                className="ml-auto bg-red-500 hover:bg-red-600 text-white font-medium py-2.5 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    <span>Submitting...</span>
+                  </>
+                ) : (
+                  <>
+                    <Send size={18} />
+                    <span>Submit Request</span>
+                  </>
+                )}
+              </motion.button>
+            )}
+          </div>
+          
+          <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+            <p className="text-sm text-gray-600 flex items-start gap-2">
+              <CheckCircle size={16} className="text-green-500 mt-0.5 flex-shrink-0" />
+              <span>Your information is secure and will only be used to contact you about this property. By submitting this form, you agree to our privacy policy and terms of service.</span>
+            </p>
+          </div>
+        </form>
+      </div>
+    </motion.div>
+  );
+};
+
+export default ContactForm;

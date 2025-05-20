@@ -1,0 +1,35 @@
+{
+    "id": 2,
+    "title": "Beachfront Luxury Villa",
+    "location": "Palm Jumeirah, Dubai",
+    "mainImage": "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1600607688969-a5bfa64630e3",
+      "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d",
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c"
+    ],
+    "price": "AED 15,000,000",
+    "paymentTerms": "30% down payment | Custom payment plan",
+    "type": "Villa",
+    "area": 8500,
+    "residentSize": 7200,
+    "bedrooms": 6,
+    "bathrooms": 7,
+    "yearBuilt": 2023,
+    "status": "Under Construction",
+    "tags": ["Private Beach", "Infinity Pool", "Smart Home"],
+    "description": "Brand new beachfront villa with private beach access, infinity pool, and smart home technology throughout the property.",
+    "features": [
+      "Direct beach access",
+      "Home theater",
+      "Staff quarters",
+      "Smart home system"
+    ],
+    "agent": {
+      "name": "Fatima Al Mansoori",
+      "photo": "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1287&q=80",
+      "role": "Luxury Property Specialist",
+      "languages": ["English", "Arabic", "French"],
+      "phone": "+971501234568"
+    }
+  }
