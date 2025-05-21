@@ -93,6 +93,36 @@ const ProjectDetailsCard = ({ property }) => {
           View Payment Plan
         </motion.button>
       )}
+      
+      {/* DLD Verification */}
+      {(property?.dldPermitNumber || property?.dldQrCode) && (
+        <div className="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-100">
+          <div className="flex items-center justify-between mb-3">
+            <h5 className="font-medium text-gray-800">DLD Verification</h5>
+            <div className="bg-red-50 px-2 py-1 rounded text-xs text-red-600 font-medium">
+              {property?.dldPermitNumber || 'Permit #12345678'}
+            </div>
+          </div>
+          <div className="flex items-center justify-center">
+            <div className="bg-white p-3 rounded-lg border border-gray-200 w-32 h-32 flex items-center justify-center">
+              {property?.dldQrCode ? (
+                <img 
+                  src={property.dldQrCode} 
+                  alt="DLD QR Code" 
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-xs text-center p-2">
+                  DLD QR Code
+                </div>
+              )}
+            </div>
+          </div>
+          <p className="text-gray-500 text-xs text-center mt-3">
+            Scan QR code to verify property details with Dubai Land Department
+          </p>
+        </div>
+      )}
     </motion.div>
   );
 };

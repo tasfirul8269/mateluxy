@@ -48,9 +48,10 @@ const LatestLaunchesSlider = ({ properties }) => {
     });
   };
 
-  // Navigate to property details
+  // Navigate to property details in a new tab
   const handlePropertyClick = (propertyId) => {
-    navigate(`/off-plan-single/${propertyId}`);
+    // Use window.open to open in a new tab
+    window.open(`/off-plan-single/${propertyId}`, '_blank');
   };
 
   // Format date

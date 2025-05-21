@@ -1050,17 +1050,6 @@ const handleRemoveInteriorImage = (index) => {
                     className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition"
                   />
                 </div>
-                <div>
-                  <label className="block text-base font-medium mb-2">Kitchens</label>
-                  <input
-                    name="propertyKitchen"
-                    value={form.propertyKitchen}
-                    onChange={handleInput}
-                    placeholder="Kitchens"
-                    type="number"
-                    className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition"
-                  />
-                </div>
                 {selectedCategory !== "Off Plan" && (
                   <div>
                     <label className="block text-base font-medium mb-2">Bedrooms</label>
@@ -1074,6 +1063,17 @@ const handleRemoveInteriorImage = (index) => {
                     />
                   </div>
                 )}
+                <div>
+                  <label className="block text-base font-medium mb-2">Kitchens</label>
+                  <input
+                    name="propertyKitchen"
+                    value={form.propertyKitchen}
+                    onChange={handleInput}
+                    placeholder="Kitchens"
+                    type="number"
+                    className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition"
+                  />
+                </div>
                 <div>
                   <label className="block text-base font-medium mb-2">Bathrooms</label>
                   <input
@@ -1464,8 +1464,58 @@ const handleRemoveInteriorImage = (index) => {
                     {uploading && <div className="text-xs text-gray-500 mt-2">Uploading...</div>}
                     {uploadError && <div className="text-xs text-red-500 mt-2">{uploadError}</div>}
                   </div>
-                  {/* Removed DLD Permit and QR Code from here */}
-                  {/* Brochure Section remains unchanged */}
+                  {/* DLD Permit and QR Code Section */}
+                  <div className="bg-white rounded-2xl p-6 shadow border border-[#f3f3f3] mb-6">
+                    <div className="text-lg font-semibold mb-3">DLD Verification</div>
+                    <div className="mb-4">
+                      <label className="block text-base font-medium mb-2">DLD Permit Number</label>
+                      <input
+                        name="dldPermitNumber"
+                        value={form.dldPermitNumber}
+                        onChange={handleInput}
+                        placeholder="DLD Permit Number"
+                        className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition"
+                      />
+                    </div>
+                    
+                    {/* DLD QR Code display similar to PropertyDetailsCard */}
+                    <div className="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                      <div className="flex items-center justify-between mb-3">
+                        <h5 className="font-medium text-gray-800">DLD Verification</h5>
+                        <div className="bg-red-50 px-2 py-1 rounded text-xs text-red-600 font-medium">
+                          {form.dldPermitNumber || 'Enter Permit Number'}
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-center">
+                        <label className="bg-white p-3 rounded-lg border border-gray-200 w-32 h-32 flex items-center justify-center cursor-pointer hover:border-[#ff4d4f] transition">
+                          {form.dldQrCode ? (
+                            <img 
+                              src={form.dldQrCode} 
+                              alt="DLD QR Code" 
+                              className="w-full h-full object-contain"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-xs text-center p-2">
+                              Click to upload DLD QR Code
+                            </div>
+                          )}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleQrUpload}
+                            disabled={uploadingQr}
+                          />
+                        </label>
+                      </div>
+                      {uploadingQr && <div className="text-xs text-gray-500 mt-2 text-center">Uploading...</div>}
+                      {uploadErrorQr && <div className="text-xs text-red-500 mt-2 text-center">{uploadErrorQr}</div>}
+                      <p className="text-gray-500 text-xs text-center mt-3">
+                        Scan QR code to verify property details with Dubai Land Department
+                      </p>
+                    </div>
+                  </div>
+                  {/* Brochure Section */}
                   <div className="bg-white rounded-2xl p-6 shadow border border-[#f3f3f3]">
                     <div className="text-lg font-semibold mb-3">Brochure</div>
                     <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-[#e5e7eb] rounded-xl cursor-pointer hover:border-[#ff4d4f] transition">
@@ -1596,13 +1646,13 @@ const handleRemoveInteriorImage = (index) => {
                     />
                   </div>
                   <div>
-                    <label className="block text-base font-medium mb-2">Bedrooms</label>
+                    <label className="block text-base font-medium mb-3">Bedrooms</label>
                     <input
                       name="propertyBedrooms"
                       value={form.propertyBedrooms}
                       onChange={handleInput}
-                      placeholder="Enter bedroom options (e.g., Studio, 1-3, 2 & 3)"
-                      className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition"
+                      placeholder="Enter bedroom options (e.g., Studio, 0-3, 2 & 3)"
+                      className="w-full rounded-lg border border-[#e4e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition"
                     />
                   </div>
                 </div>

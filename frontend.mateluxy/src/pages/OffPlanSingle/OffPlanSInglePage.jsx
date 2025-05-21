@@ -183,29 +183,43 @@ const OffPlanSinglePage = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     {relatedProperties
                       .filter(prop => prop.category === 'Off Plan')
-                      .map((relatedProperty, index) => (
-                        <motion.div 
-                          key={relatedProperty._id}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.1 * index, duration: 0.4 }}
-                          className="bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 hover:shadow-md transition-all cursor-pointer"
-                          onClick={() => window.location.href = `/off-plan/${relatedProperty._id}`}
-                        >
-                          <div className="h-48 overflow-hidden">
-                            <img 
-                              src={relatedProperty.propertyFeaturedImage} 
-                              alt={relatedProperty.propertyTitle} 
-                              className="w-full h-full object-cover transition-transform hover:scale-105 duration-500"
-                            />
-                          </div>
-                          <div className="p-4">
-                            <h3 className="font-semibold text-lg text-gray-800 mb-1 line-clamp-1">{relatedProperty.propertyTitle}</h3>
-                            <p className="text-gray-600 text-sm mb-2 line-clamp-1">{relatedProperty.propertyState || relatedProperty.propertyAddress}</p>
-                            <p className="text-blue-500 font-medium">{formatPrice(relatedProperty.propertyPrice) || 'Price on request'}</p>
-                          </div>
-                        </motion.div>
-                    ))}
+                      .map((relatedProperty, index) => {
+                        // Create the full URL including origin to ensure it works properly
+                        const fullUrl = `${window.location.origin}/off-plan-single/${relatedProperty._id}`;
+                        
+                        return (
+                          <motion.div 
+                            key={relatedProperty._id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1 * index, duration: 0.4 }}
+                            className="bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 hover:shadow-md transition-all"
+                          >
+                            <div 
+                              className="cursor-pointer"
+                              onClick={() => {
+                                const newWindow = window.open('', '_blank');
+                                if (newWindow) {
+                                  newWindow.location.href = `/off-plan-single/${relatedProperty._id}`;
+                                }
+                              }}
+                            >
+                              <div className="h-48 overflow-hidden">
+                                <img 
+                                  src={relatedProperty.propertyFeaturedImage} 
+                                  alt={relatedProperty.propertyTitle} 
+                                  className="w-full h-full object-cover transition-transform hover:scale-105 duration-500"
+                                />
+                              </div>
+                              <div className="p-4">
+                                <h3 className="font-semibold text-lg text-gray-800 mb-1 line-clamp-1">{relatedProperty.propertyTitle}</h3>
+                                <p className="text-gray-600 text-sm mb-2 line-clamp-1">{relatedProperty.propertyState || relatedProperty.propertyAddress}</p>
+                                <p className="text-blue-500 font-medium">{formatPrice(relatedProperty.propertyPrice) || 'Price on request'}</p>
+                              </div>
+                            </div>
+                          </motion.div>
+                        );
+                      })}
                   </div>
                 </section>
               )}
