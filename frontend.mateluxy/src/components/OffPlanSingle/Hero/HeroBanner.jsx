@@ -130,7 +130,9 @@ const HeroBanner = ({ property }) => {
   
   // Format completion date if available
   const formattedCompletionDate = completionDate 
-    ? new Date(completionDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+    ? (completionDate.includes('-') 
+        ? new Date(completionDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+        : completionDate) // If it's not a standard date format (e.g., "Q4 2025"), use as is
     : 'Not specified';
 
   // Only render if we have at least some property data
