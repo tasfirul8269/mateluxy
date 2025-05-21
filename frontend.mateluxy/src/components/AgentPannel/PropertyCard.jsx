@@ -93,13 +93,9 @@ export function PropertyCard({ property, onDelete, onEdit }) {
             <div className="mb-3 text-sm text-left text-gray-500">
               <span className="flex items-center justify-start">
                 <Calendar size={16} className="mr-1.5 flex-shrink-0" />
-                Delivery: {new Date(property.completionDate).toLocaleDateString('en-US', { 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}
+                Delivery: {property.completionDate}
               </span>
-        </div>
+            </div>
           )}
         
         {/* Developer for Off Plan */}

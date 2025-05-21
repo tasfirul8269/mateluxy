@@ -1051,17 +1051,6 @@ const handleRemoveInteriorImage = (index) => {
                   />
                 </div>
                 <div>
-                  <label className="block text-base font-medium mb-2">Bedrooms</label>
-                  <input
-                    name="propertyBedrooms"
-                    value={form.propertyBedrooms}
-                    onChange={handleInput}
-                    placeholder="Bedrooms"
-                    type="number"
-                    className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition"
-                  />
-                </div>
-                <div>
                   <label className="block text-base font-medium mb-2">Kitchens</label>
                   <input
                     name="propertyKitchen"
@@ -1072,6 +1061,19 @@ const handleRemoveInteriorImage = (index) => {
                     className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition"
                   />
                 </div>
+                {selectedCategory !== "Off Plan" && (
+                  <div>
+                    <label className="block text-base font-medium mb-2">Bedrooms</label>
+                    <input
+                      name="propertyBedrooms"
+                      value={form.propertyBedrooms}
+                      onChange={handleInput}
+                      placeholder="Bedrooms"
+                      type="number"
+                      className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition"
+                    />
+                  </div>
+                )}
                 <div>
                   <label className="block text-base font-medium mb-2">Bathrooms</label>
                   <input
