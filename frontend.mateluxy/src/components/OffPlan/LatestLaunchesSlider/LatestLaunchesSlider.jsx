@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { formatPrice } from '../../../utils/formatPrice';
 
 const LatestLaunchesSlider = ({ properties }) => {
   const navigate = useNavigate();
@@ -141,7 +142,7 @@ const LatestLaunchesSlider = ({ properties }) => {
                 
                 <div className="flex justify-between items-center border-t border-gray-100 pt-3 mt-2">
                   <div className="px-3 py-1 bg-gray-100 rounded-full text-gray-700 text-xs font-medium">{property.propertyType}</div>
-                  <div className="text-[#FF2626] font-bold">AED {property.propertyPrice.toLocaleString()}</div>
+                  <div className="text-[#FF2626] font-bold">{formatPrice(property.propertyPrice)}</div>
                 </div>
               </div>
             </div>

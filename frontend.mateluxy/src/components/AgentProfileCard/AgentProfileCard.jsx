@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { MapPin, Mail, Phone, Download, MessageCircle, Globe, Briefcase, Building, Home, ArrowRight, Star, ChevronRight, Calendar, Users, ChevronDown } from "lucide-react";
 import { convertS3UrlToProxyUrl } from "../../utils/s3UrlConverter";
 import { toast } from "sonner";
+import { formatPrice } from "../../utils/formatPrice";
 
 const AgentProfileCard = () => {
   const [agentData, setAgentData] = useState({});
@@ -407,7 +408,7 @@ const AgentProfileCard = () => {
                       
                       {/* Price tag */}
                       <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-red-600 px-4 py-2 rounded-lg font-bold shadow-md transform transition-transform duration-300 group-hover:scale-105">
-                        AED {property.propertyPrice.toLocaleString()}
+                        {formatPrice(property.propertyPrice)}
                       </div>
                       
                       {/* Property type badge */}

@@ -3,6 +3,7 @@ import { Download, MapPin, Building2, Home } from 'lucide-react';
 import { FaWhatsapp, FaRegBuilding } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { formatPrice } from '../../../utils/formatPrice';
 
 const PropertyCard = ({ property }) => {
   const navigate = useNavigate();
@@ -139,7 +140,7 @@ const PropertyCard = ({ property }) => {
               <p className="text-sm font-medium truncate max-w-[180px]">{property.propertyAddress}</p>
             </div>
             <div className="bg-white text-[#FF2626] font-bold px-3 py-1 rounded-md shadow-md text-sm">
-              AED {property.propertyPrice?.toLocaleString() || property.propertyPrice}
+              {formatPrice(property.propertyPrice)}
             </div>
           </div>
         </div>

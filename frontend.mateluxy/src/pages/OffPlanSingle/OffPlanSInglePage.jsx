@@ -3,6 +3,7 @@ import { useLoaderData, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Share2, Heart, Bookmark } from 'lucide-react';
+import { formatPrice } from '../../utils/formatPrice';
 import Tabs from '../../components/OffPlanSingle/Navigation/Tabs';
 import ProjectDetailsCard from '../../components/OffPlanSingle/ProjectDetails/ProjectDetailsCard';
 import ContactForm from '../../components/OffPlanSingle/Forms/ContactForm';
@@ -201,7 +202,7 @@ const OffPlanSinglePage = () => {
                           <div className="p-4">
                             <h3 className="font-semibold text-lg text-gray-800 mb-1 line-clamp-1">{relatedProperty.propertyTitle}</h3>
                             <p className="text-gray-600 text-sm mb-2 line-clamp-1">{relatedProperty.propertyState || relatedProperty.propertyAddress}</p>
-                            <p className="text-blue-500 font-medium">AED {relatedProperty.propertyPrice?.toLocaleString() || 'Price on request'}</p>
+                            <p className="text-blue-500 font-medium">{formatPrice(relatedProperty.propertyPrice) || 'Price on request'}</p>
                           </div>
                         </motion.div>
                     ))}

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FaArrowLeft, FaMapMarkerAlt, FaLocationArrow } from 'react-icons/fa';
+import { formatPrice } from '../../utils/formatPrice';
 
 // Import the CSS file
 import './mapView.css';
@@ -319,12 +320,9 @@ const MapView = () => {
         const popupContent = document.createElement('div');
         popupContent.className = 'property-popup';
         
-        // Format price properly
+        // Format price properly using the formatPrice utility
         const formattedPrice = property.propertyPrice ? 
-          property.propertyPrice.toLocaleString('en-US', {
-            maximumFractionDigits: 0,
-            minimumFractionDigits: 0
-          }) : '0';
+          formatPrice(property.propertyPrice).replace('AED ', '') : '0';
         
         // Get a clean title
         const propertyTitle = property.propertyTitle || 

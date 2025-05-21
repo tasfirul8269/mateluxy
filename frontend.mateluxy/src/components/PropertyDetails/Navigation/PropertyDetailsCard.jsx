@@ -4,12 +4,13 @@ import { Tag, MapPin, Home, Calendar, DollarSign, User, CheckCircle, Shield, Pho
 import { IoBedOutline } from "react-icons/io5";
 import { LiaBathSolid } from "react-icons/lia";
 import axios from 'axios';
+import { formatPrice } from '../../../utils/formatPrice';
 
 const PropertyDetailsCard = ({ property, agent: agentFromProps }) => {
   if (!property) return null;
   
   // Get property details with proper error handling
-  const price = property?.propertyPrice ? `AED ${property.propertyPrice.toLocaleString()}` : 'Price on request';
+  const price = property?.propertyPrice ? formatPrice(property.propertyPrice) : 'Price on request';
   const size = property?.propertySize ? `${property.propertySize} sq. ft` : 'Not specified';
   const bedrooms = property?.propertyBedrooms?.toString() || 'Not specified';
   const bathrooms = property?.propertyBathrooms?.toString() || 'Not specified';

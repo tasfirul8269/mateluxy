@@ -158,8 +158,8 @@ const AboutSection = ({ property }) => {
             transition={{ delay: 0.2, duration: 0.5 }}
           >
             <div className={showFullDescription ? '' : 'max-h-[150px] overflow-hidden relative'}>
-              <p className="text-gray-700 leading-relaxed text-lg">
-                {property.propertyDescription}
+              <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+                {showFullDescription ? property.propertyDescription : property.propertyDescription.substring(0, 300) + '...'}
               </p>
               
               {!showFullDescription && property.propertyDescription.length > 300 && (

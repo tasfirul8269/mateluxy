@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FiSearch, FiSliders, FiMapPin, FiHome, FiDollarSign } from "react-icons/fi";
+import { formatPrice } from '../../utils/formatPrice';
 import * as DropdownMenu from "../AdminPannel/ui/dropdown-menu";
 import { Slider } from "../AdminPannel/ui/slider";
 import DIRHAM from "@/assets/uae-dirham.png"; // Assuming you have a dirham icon

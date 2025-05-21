@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FaCalendarAlt, FaTimes } from 'react-icons/fa';
 import axios from 'axios';
+import { formatPrice } from '../../utils/formatPrice';
 
 const BookingDialog = ({ isOpen, onClose, property }) => {
   const [formData, setFormData] = useState({
@@ -94,7 +95,7 @@ const BookingDialog = ({ isOpen, onClose, property }) => {
               <h3 className="font-medium text-gray-800">{property.propertyTitle}</h3>
               <p className="text-sm text-gray-600">{property.propertyAddress}, {property.propertyState}</p>
               <p className="text-sm font-medium text-red-600 mt-1">
-                AED {property.propertyPrice?.toLocaleString() || property.propertyPrice}
+                {formatPrice(property.propertyPrice)}
                 {property.category === 'Rent' ? '/month' : ''}
               </p>
             </div>

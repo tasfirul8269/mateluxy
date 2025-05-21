@@ -7,6 +7,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import BookingDialog from "../BookingDialog";
+import { formatPrice } from "../../utils/formatPrice";
 
 const PropertyCard = ({ property, loading, error }) => {
   const [isFavorite, setIsFavorite] = useState(false);
@@ -162,7 +163,7 @@ const PropertyCard = ({ property, loading, error }) => {
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <div className="text-2xl font-bold text-red-600">
-                AED {property.propertyPrice?.toLocaleString() || property.propertyPrice}
+                {formatPrice(property.propertyPrice)}
                 <span className="text-xs text-gray-500 font-normal ml-1">{property.category === 'Rent' ? '/month' : ''}</span>
               </div>
             </div>

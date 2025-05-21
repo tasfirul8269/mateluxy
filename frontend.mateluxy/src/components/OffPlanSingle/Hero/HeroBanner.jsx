@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { convertS3UrlToProxyUrl } from '../../../utils/s3UrlConverter';
+import { formatPrice } from '../../../utils/formatPrice';
 
 const HeroBanner = ({ property }) => {
   // Create images array from property data
@@ -113,7 +114,7 @@ const HeroBanner = ({ property }) => {
   // Get all property details dynamically
   const projectName = property?.propertyTitle;
   const description = property?.propertyDescription;
-  const price = property?.propertyPrice ? `AED ${property.propertyPrice.toLocaleString()}` : 'Price on request';
+  const price = property?.propertyPrice ? formatPrice(property.propertyPrice) : 'Price on request';
   const area = property?.propertySize ? `${property.propertySize} sq. ft` : 'Area not specified';
   const bedrooms = property?.propertyBedrooms?.toString() || 'Not specified';
   const location = property?.propertyState || property?.propertyAddress || 'Location not specified';

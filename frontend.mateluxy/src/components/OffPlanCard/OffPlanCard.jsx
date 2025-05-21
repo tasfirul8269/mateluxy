@@ -13,6 +13,7 @@ import kitchen from "../../assets/vector-1.svg";
 import divider from "../../assets/line-2.svg";
 import { LiaBathSolid, LiaBedSolid } from "react-icons/lia";
 import { useLocation } from "react-router-dom";
+import { formatPrice } from "../../utils/formatPrice";
 
 const OffPlanCard = ({ property }) => {
 
@@ -82,7 +83,7 @@ const OffPlanCard = ({ property }) => {
             Speaks {property?.languages?.slice(0,2).join(", ")}
           </p>
         </div>
-        <h2 className="text-[18px] font-medium">{property?.price}</h2>
+        <h2 className="text-[18px] font-medium">{formatPrice(property?.price)}</h2>
       </div>
 
       <div class="h-[1px] w-80% bg-[#e6e6e6] my-4"></div>

@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { IoBedOutline } from "react-icons/io5";
 import { LiaBathSolid } from "react-icons/lia";
 import { FaRegCalendarAlt } from "react-icons/fa";
+import { formatPrice } from '../../../utils/formatPrice';
 
 
 const PropertyHeroFixed = ({ property }) => {
@@ -157,7 +158,7 @@ const PropertyHeroFixed = ({ property }) => {
   // Get all property details dynamically
   const propertyName = property?.propertyTitle;
   const description = property?.propertyDescription;
-  const price = property?.propertyPrice ? `AED ${property.propertyPrice.toLocaleString()}` : 'Price on request';
+  const price = property?.propertyPrice ? formatPrice(property.propertyPrice) : 'Price on request';
   const area = property?.propertySize ? `${property.propertySize} sq. ft` : 'Area not specified';
   const bedrooms = property?.propertyBedrooms?.toString() || 'Not specified';
   const bathrooms = property?.propertyBathrooms?.toString() || 'Not specified';
