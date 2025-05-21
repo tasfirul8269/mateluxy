@@ -734,7 +734,7 @@ const handleRemoveInteriorImage = (index) => {
         propertyType: formData.propertyType || "Apartment",
         propertySize: formData.propertySize || 0,
         propertyRooms: formData.propertyRooms || 0,
-        propertyBedrooms: formData.propertyBedrooms || 0,
+        propertyBedrooms: formData.propertyBedrooms || "", // Use empty string as default, not 0
         propertyBathrooms: formData.propertyBathrooms || 0,
         propertyKitchen: formData.propertyKitchen || 0,
         // Ensure payment percentages are included as numbers

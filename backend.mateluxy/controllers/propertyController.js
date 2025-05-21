@@ -61,8 +61,15 @@ export async function createProperty(req, res) {
       return res.status(400).json({ message: "Agent ID is required" });
     }
     
-    const newProperty = await new Property(req.body).save();
-    console.log(`Property created successfully with ID: ${newProperty._id} for agent: ${req.body.agent}`);
+    // Ensure propertyBedrooms is always treated as a string
+    const propertyData = { ...req.body };
+    if (propertyData.propertyBedrooms !== undefined) {
+      propertyData.propertyBedrooms = String(propertyData.propertyBedrooms);
+      console.log("Converted propertyBedrooms to string:", propertyData.propertyBedrooms);
+    }
+    
+    const newProperty = await new Property(propertyData).save();
+    console.log(`Property created successfully with ID: ${newProperty._id} for agent: ${propertyData.agent}`);
     
     res.status(201).json(newProperty);
   } catch (error) {
@@ -74,7 +81,14 @@ export async function createProperty(req, res) {
 // Update a property - simplified with single query
 export async function updateProperty(req, res) {
   try {
-    const property = await Property.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    // Ensure propertyBedrooms is always treated as a string
+    const propertyData = { ...req.body };
+    if (propertyData.propertyBedrooms !== undefined) {
+      propertyData.propertyBedrooms = String(propertyData.propertyBedrooms);
+      console.log("Converted propertyBedrooms to string during update:", propertyData.propertyBedrooms);
+    }
+    
+    const property = await Property.findByIdAndUpdate(req.params.id, propertyData, { new: true });
     if (!property) return res.status(404).json({ message: 'Property not found' });
     res.status(200).json(property);
   } catch (error) {
