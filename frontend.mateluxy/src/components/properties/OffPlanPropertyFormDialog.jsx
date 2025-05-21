@@ -76,7 +76,7 @@ export const OffPlanPropertyFormDialog = ({ isOpen, onClose }) => {
         
         // Property features
         propertySize: data.area,
-        propertyBedrooms: data.bedrooms,
+        propertyBedrooms: data.propertyBedrooms ? data.propertyBedrooms.toString() : data.bedrooms ? data.bedrooms.toString() : '',
         
         // Legal
         dldPermitNumber: data.dldPermitNumber,
