@@ -6,7 +6,9 @@ import { formatPrice } from '../../../utils/formatPrice';
 const ProjectDetailsCard = ({ property }) => {
   // Format completion date if available
   const formattedCompletionDate = property?.completionDate 
-    ? new Date(property.completionDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+    ? (property.completionDate.includes('-') 
+        ? new Date(property.completionDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+        : property.completionDate) // If it's not a date format (e.g., "Q4 2025"), use as is
     : 'Not specified';
     
   // Dynamic details derived from property data with icons
@@ -23,7 +25,7 @@ const ProjectDetailsCard = ({ property }) => {
     },
     { 
       label: 'Number of Bedrooms', 
-      value: property?.propertyBedrooms ?? 'Not specified',
+      value: property?.propertyBedrooms ? property.propertyBedrooms.toString() : 'Not specified',
       icon: <Bed size={18} className="text-red-500" />
     },
     { 

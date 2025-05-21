@@ -157,7 +157,7 @@ const OffPlanPropertiesPage = () => {
                       key={property.id}
                       className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 animate__animated animate__fadeInUp"
                     >
-                      <Link to={`/off-plan-single/${property.id}`}  rel="noopener noreferrer">
+                      <Link to={`/off-plan-single/${property.id}`} target="_blank" rel="noopener noreferrer">
                         <div className="h-48 overflow-hidden cursor-pointer">
                           <img
                             src={property.image}
