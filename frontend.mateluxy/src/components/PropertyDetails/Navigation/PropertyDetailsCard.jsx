@@ -12,7 +12,7 @@ const PropertyDetailsCard = ({ property, agent: agentFromProps }) => {
   // Get property details with proper error handling
   const price = property?.propertyPrice ? formatPrice(property.propertyPrice) : 'Price on request';
   const size = property?.propertySize ? `${property.propertySize} sq. ft` : 'Not specified';
-  const bedrooms = property?.propertyBedrooms?.toString() || 'Not specified';
+  const bedrooms = property?.propertyBedrooms || 'Not specified';
   const bathrooms = property?.propertyBathrooms?.toString() || 'Not specified';
   const propertyType = property?.propertyType || 'Not specified';
   const location = property?.propertyState || property?.propertyAddress || 'Not specified';

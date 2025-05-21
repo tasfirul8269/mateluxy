@@ -45,7 +45,7 @@ const OffPlanCard = ({ property }) => {
       <div className={`${location.pathname === "/off-plan-properties" ? "hidden" : "flex"}  justify-start gap-[30px] items-center my-4`}>
         <div className="text-[#999999] flex justify-start items-center gap-3">
           <LiaBedSolid className="w-[20px] h-[20px] text-[2xl]" />
-          <p className="font-medium text-[16px]">{property?.beds}</p>
+          <p className="font-medium text-[16px]">{property?.propertyBedrooms || property?.beds || 'Not specified'}</p>
         </div>
 
         <div class="h-3 w-[1.5px] bg-[#e6e6e6] mx-4"></div>

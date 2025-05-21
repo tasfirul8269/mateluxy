@@ -399,7 +399,13 @@ export default function TabbedPropertyForm({ onSubmit, onCancel, selectedCategor
   
   const handleInput = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    
+    // Ensure propertyBedrooms is always treated as a string
+    if (name === 'propertyBedrooms') {
+      setForm((prev) => ({ ...prev, [name]: value.toString() }));
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }));
+    }
   };
   
   // Handler for media gallery upload (Buy/Rent properties)

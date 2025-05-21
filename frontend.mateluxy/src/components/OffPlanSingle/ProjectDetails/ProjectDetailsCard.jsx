@@ -24,8 +24,8 @@ const ProjectDetailsCard = ({ property }) => {
       icon: <Ruler size={18} className="text-red-500" />
     },
     { 
-      label: 'Number of Bedrooms', 
-      value: property?.propertyBedrooms ? property.propertyBedrooms.toString() : 'Not specified',
+      label: 'Bedrooms', 
+      value: property?.propertyBedrooms || 'Not specified',
       icon: <Bed size={18} className="text-red-500" />
     },
     { 
