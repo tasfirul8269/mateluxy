@@ -61,11 +61,16 @@ export async function createProperty(req, res) {
       return res.status(400).json({ message: "Agent ID is required" });
     }
     
-    // Ensure propertyBedrooms is always treated as a string
+    // Ensure propertyBedrooms and completionDate are always treated as strings
     const propertyData = { ...req.body };
     if (propertyData.propertyBedrooms !== undefined) {
       propertyData.propertyBedrooms = String(propertyData.propertyBedrooms);
       console.log("Converted propertyBedrooms to string:", propertyData.propertyBedrooms);
+    }
+    
+    if (propertyData.completionDate !== undefined) {
+      propertyData.completionDate = String(propertyData.completionDate);
+      console.log("Converted completionDate to string:", propertyData.completionDate);
     }
     
     const newProperty = await new Property(propertyData).save();
@@ -81,11 +86,16 @@ export async function createProperty(req, res) {
 // Update a property - simplified with single query
 export async function updateProperty(req, res) {
   try {
-    // Ensure propertyBedrooms is always treated as a string
+    // Ensure propertyBedrooms and completionDate are always treated as strings
     const propertyData = { ...req.body };
     if (propertyData.propertyBedrooms !== undefined) {
       propertyData.propertyBedrooms = String(propertyData.propertyBedrooms);
       console.log("Converted propertyBedrooms to string during update:", propertyData.propertyBedrooms);
+    }
+    
+    if (propertyData.completionDate !== undefined) {
+      propertyData.completionDate = String(propertyData.completionDate);
+      console.log("Converted completionDate to string during update:", propertyData.completionDate);
     }
     
     const property = await Property.findByIdAndUpdate(req.params.id, propertyData, { new: true });

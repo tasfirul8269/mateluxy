@@ -45,9 +45,13 @@ const ensureRequiredPropertyFields = (propertyData) => {
       }
     });
     
-  // Ensure propertyBedrooms is always a string
+  // Ensure propertyBedrooms and completionDate are always treated as strings
   if (completeData.propertyBedrooms !== undefined) {
     completeData.propertyBedrooms = String(completeData.propertyBedrooms);
+  }
+  
+  if (completeData.completionDate !== undefined) {
+    completeData.completionDate = String(completeData.completionDate);
   }
   
   return completeData;
