@@ -1605,6 +1605,7 @@ const handleRemoveInteriorImage = (index) => {
                       onChange={handleInput}
                       placeholder="Enter bedroom options (e.g., Studio, 0-3, 2 & 3)"
                       className="w-full rounded-lg border border-[#e4e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition"
+                      type="text" // Explicitly set as text type to ensure it's treated as a string
                     />
                   </div>
                 </div>

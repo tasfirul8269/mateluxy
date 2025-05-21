@@ -47,7 +47,7 @@ const propertySchema = new mongoose.Schema({
     // Property Features
     propertySize: { type: Number }, // in sq ft
     propertyRooms: { type: Number },
-    propertyBedrooms: { type: Number },
+    propertyBedrooms: { type: String }, // Changed to String to support formats like "5-6" or "Studio, 1 & 2"
     propertyKitchen: { type: Number },
     propertyBathrooms: { type: Number },
     
