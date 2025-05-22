@@ -378,11 +378,14 @@ export default function TabbedPropertyForm({ onSubmit, onCancel, selectedCategor
       try {
         setIsLoadingAgents(true);
         const { data } = await agentApi.getAgents();
-        setAgents(data);
         
-        // If in agent panel, set the agent ID from props
-        if (isAgentPanel && agentId) {
-          setForm(prev => ({ ...prev, agent: agentId }));
+        if (Array.isArray(data)) {
+          setAgents(data);
+          
+          // If in agent panel, set the agent ID from props
+          if (isAgentPanel && agentId) {
+            setForm(prev => ({ ...prev, agent: agentId }));
+          }
         } else {
           console.error("Invalid agents data received:", data);
           setAgents([]);
@@ -390,11 +393,13 @@ export default function TabbedPropertyForm({ onSubmit, onCancel, selectedCategor
       } catch (error) {
         console.error("Error fetching agents:", error);
         setAgents([]);
+      } finally {
+        setIsLoadingAgents(false);
       }
     };
 
     fetchAgents();
-  }, [isEditing, initialData]);
+  }, [isEditing, initialData, isAgentPanel, agentId]);
 
   // Fetch developers on component mount
   useEffect(() => {
@@ -783,35 +788,35 @@ const handleRemoveInteriorImage = (index) => {
         ],
         features: formData.features || [],
         amenities: formData.amenities || [],
-        // Ensure all required fields are present
-        propertyType: formData.propertyType || "Apartment",
-        propertySize: formData.propertySize || 0,
-        propertyRooms: formData.propertyRooms || 0,
-        propertyBedrooms: formData.propertyBedrooms || "", // Use empty string as default, not 0
-        propertyBathrooms: formData.propertyBathrooms || 0,
-        propertyKitchen: formData.propertyKitchen || 0,
-        // Ensure payment percentages are included as numbers
-        duringConstructionPercentage: parseInt(formData.duringConstructionPercentage || 50, 10),
-        onCompletionPercentage: parseInt(formData.onCompletionPercentage || 50, 10),
+        // All fields are optional, just provide empty defaults
+        propertyType: formData.propertyType || "",
+        propertySize: formData.propertySize || "",
+        propertyRooms: formData.propertyRooms || "",
+        propertyBedrooms: formData.propertyBedrooms || "",
+        propertyBathrooms: formData.propertyBathrooms || "",
+        propertyKitchen: formData.propertyKitchen || "",
+        // Payment percentages as strings to allow empty values
+        afterBookingPercentage: formData.afterBookingPercentage || "",
+        duringConstructionPercentage: formData.duringConstructionPercentage || "",
+        afterHandoverPercentage: formData.afterHandoverPercentage || "",
       };
     }
 
-    // All fields are now optional - no validation required
-    const requiredFields = [
-      // No required fields - all fields are optional
-    ];
+    // No required fields - all fields are optional
+    const requiredFields = [];
 
-    // Add additional required fields based on category
+    // Add additional required fields based on category if needed in the future
+    // Currently all fields are optional
     if (selectedCategory === "Rent" || selectedCategory === "Commercial for Rent") {
-      requiredFields.push({ field: 'numberOfCheques', label: 'Number of Cheques' });
+      // We could add required fields here if needed
+      // Example: requiredFields.push({ field: 'numberOfCheques', label: 'Number of Cheques' });
     }
-
-  
+    
     // No required fields for Off Plan properties either
     // All fields are optional
     if (selectedCategory === "Off Plan") {
       // No required fields
-    } 
+    }
 
     // No validation needed as all fields are optional
     // Proceed directly to form submission
@@ -922,8 +927,28 @@ const handleRemoveInteriorImage = (index) => {
                         className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition"
                       />
                     </div>
-                    
-
+                  </div>
+                  
+                  {/* Agent Selection */}
+                  <div className="mt-6">
+                    <label className="block text-base font-medium mb-2">Select Agent</label>
+                    {isLoadingAgents ? (
+                      <div className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-500">Loading agents...</div>
+                    ) : (
+                      <select
+                        name="agent"
+                        value={form.agent || ""}
+                        onChange={handleInput}
+                        className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition appearance-none"
+                      >
+                        <option value="">Select an agent</option>
+                        {agents.map((agent) => (
+                          <option key={agent._id} value={agent._id}>
+                            {agent.name}
+                          </option>
+                        ))}
+                      </select>
+                    )}                    
                   </div>
                 </div>
                 {/* Right: Featured Image and Media */}
@@ -1683,6 +1708,30 @@ const handleRemoveInteriorImage = (index) => {
                     />
                   </div>
 
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  <div>
+                    <label className="block text-base font-medium mb-2">Down Payment (%)</label>
+                    <input
+                      name="downPaymentPercentage"
+                      value={form.downPaymentPercentage || ''}
+                      onChange={handleInput}
+                      placeholder="Down Payment (%)"
+                      type="number"
+                      className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-base font-medium mb-2">After Booking (%)</label>
+                    <input
+                      name="afterBookingPercentage"
+                      value={form.afterBookingPercentage || ''}
+                      onChange={handleInput}
+                      placeholder="After Booking (%)"
+                      type="number"
+                      className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition"
+                    />
+                  </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>

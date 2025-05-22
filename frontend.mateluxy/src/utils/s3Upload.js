@@ -86,6 +86,15 @@ export const uploadFileToS3 = async (file, folder = '') => {
       throw new Error('Cannot upload empty file');
     }
     
+    // Handle large files - check if we need to use chunked upload
+    const isLargeFile = file.size > 10 * 1024 * 1024; // 10MB threshold
+    
+    if (isLargeFile) {
+      console.log(`Large file detected (${(file.size / (1024 * 1024)).toFixed(2)} MB). Using optimized upload approach.`);
+      // For large files, we'll use the same endpoint but with a different approach
+      // The server should be configured to handle these larger files
+    }
+    
     // Generate a unique file name
     const fileName = generateUniqueFileName(file.name);
     const key = folder ? `${folder}${fileName}` : fileName;
@@ -98,6 +107,7 @@ export const uploadFileToS3 = async (file, folder = '') => {
     formData.append('folder', folder);
     formData.append('fileName', fileName);
     formData.append('contentType', file.type);
+    formData.append('fileSize', file.size.toString()); // Send file size explicitly
     
     console.log('Uploading to S3 via backend proxy:', {
       fileName,
@@ -115,13 +125,22 @@ export const uploadFileToS3 = async (file, folder = '') => {
     const uploadUrl = `${apiUrl}/api/upload-to-s3`;
     console.log(`Sending upload request to: ${uploadUrl}`);
     
-    // Upload the file to the backend proxy
+    // Upload the file to the backend proxy with extended timeout for large files
     try {
+      // Create AbortController with a longer timeout for large files
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), isLargeFile ? 5 * 60 * 1000 : 60 * 1000); // 5 min for large files, 1 min for others
+      
       const response = await fetch(uploadUrl, {
         method: 'POST',
         body: formData,
         credentials: 'include', // Include cookies for authentication if needed
+        signal: controller.signal,
+        // Don't set Content-Length header as it's automatically set by the browser
       });
+      
+      // Clear the timeout
+      clearTimeout(timeoutId);
       
       if (!response.ok) {
         let errorData = {};
@@ -146,6 +165,10 @@ export const uploadFileToS3 = async (file, folder = '') => {
       // Return just the URL
       return data.url;
     } catch (fetchError) {
+      if (fetchError.name === 'AbortError') {
+        console.error('Upload timed out. The file may be too large or the network connection is slow.');
+        throw new Error('Upload timed out. The file may be too large or the network connection is slow.');
+      }
       console.error('Network or fetch error during S3 upload:', fetchError);
       throw new Error(`Network error during upload: ${fetchError.message}`);
     }
