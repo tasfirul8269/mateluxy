@@ -1782,31 +1782,33 @@ const handleRemoveInteriorImage = (index) => {
                 </div>
                 
                 {/* Agent Selection */}
-                <div className="mb-6">
-                  <label className="block text-base font-medium mb-2">Agent</label>
-                  {isAgentPanel ? (
-                    // When in agent panel, show a disabled field with the agent name
-                    <div className="w-full rounded-lg border border-[#e5e7eb] bg-[#f3f4f6] px-4 py-3 text-gray-700">
-                      {agents.find(a => a._id === agentId)?.fullName || "Your Account"}
-                      <input type="hidden" name="agent" value={form.agent} />
-                    </div>
-                  ) : (
-                    // In admin panel, show the normal dropdown
-                    <select
-                      name="agent"
-                      value={form.agent}
-                      onChange={handleInput}
-                      className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition appearance-none"
-                    >
-                      <option value="">Select an agent</option>
-                      {agents.map(agent => (
-                        <option key={agent._id} value={agent._id}>
-                          {agent.fullName}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                </div>
+                {selectedCategory !== "Off Plan" && (
+                  <div className="mb-6">
+                    <label className="block text-base font-medium mb-2">Agent</label>
+                    {isAgentPanel ? (
+                      // When in agent panel, show a disabled field with the agent name
+                      <div className="w-full rounded-lg border border-[#e5e7eb] bg-[#f3f4f6] px-4 py-3 text-gray-700">
+                        {agents.find(a => a._id === agentId)?.fullName || "Your Account"}
+                        <input type="hidden" name="agent" value={form.agent} />
+                      </div>
+                    ) : (
+                      // In admin panel, show the normal dropdown
+                      <select
+                        name="agent"
+                        value={form.agent}
+                        onChange={handleInput}
+                        className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition appearance-none"
+                      >
+                        <option value="">Select an agent</option>
+                        {agents.map(agent => (
+                          <option key={agent._id} value={agent._id}>
+                            {agent.fullName}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
