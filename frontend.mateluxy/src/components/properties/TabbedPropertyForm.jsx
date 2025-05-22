@@ -141,7 +141,13 @@ export default function TabbedPropertyForm({ onSubmit, onCancel, selectedCategor
   const [agents, setAgents] = useState([]);
   const [isLoadingAgents, setIsLoadingAgents] = useState(true);
   const [developers, setDevelopers] = useState([]);
-  const [isLoadingDevelopers, setIsLoadingDevelopers] = useState(true);
+  const [isLoadingDevelopers, setIsLoadingDevelopers] = useState(false);
+  const [showDeveloperDropdown, setShowDeveloperDropdown] = useState(false);
+
+  // Filter developers based on input
+  const filteredDevelopers = developers.filter(dev => 
+    dev.name.toLowerCase().includes((form.developer || "").toLowerCase())
+  );
 
   // Different tab layouts based on property category
   const categoryTabs = {
@@ -393,8 +399,60 @@ export default function TabbedPropertyForm({ onSubmit, onCancel, selectedCategor
     fetchAgents();
   }, [isEditing, initialData]);
 
-  // Import S3 upload utilities at the top of the file
-  
+  // Fetch developers on component mount
+  useEffect(() => {
+    const fetchDevelopers = async () => {
+      try {
+        setIsLoadingDevelopers(true);
+        const developersData = await developerService.getDevelopers();
+        console.log('Fetched developers:', developersData);
+        
+        if (Array.isArray(developersData)) {
+          setDevelopers(developersData);
+        } else {
+          console.error('Developers data is not an array:', developersData);
+          setDevelopers([]);
+        }
+      } catch (error) {
+        console.error('Error fetching developers:', error);
+        setDevelopers([]);
+      } finally {
+        setIsLoadingDevelopers(false);
+      }
+    };
+
+    fetchDevelopers();
+  }, []);
+
+  // Handle click outside to close developer dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showDeveloperDropdown) {
+        // Check if the click is outside the dropdown area
+        const dropdownElements = document.querySelectorAll('.developer-dropdown-area');
+        let clickedInside = false;
+        
+        dropdownElements.forEach(element => {
+          if (element.contains(event.target)) {
+            clickedInside = true;
+          }
+        });
+        
+        if (!clickedInside) {
+          setShowDeveloperDropdown(false);
+        }
+      }
+    };
+    
+    // Add event listener
+    document.addEventListener('mousedown', handleClickOutside);
+    
+    // Cleanup
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showDeveloperDropdown]);
+
   const handleInput = (e) => {
     const { name, value } = e.target;
     
@@ -1335,8 +1393,9 @@ const handleRemoveInteriorImage = (index) => {
                   </div>
                   <div className="mb-6">
                     <label className="block text-base font-medium mb-2">Developer Name</label>
-                    <div className="relative">
-                      <select
+                    <div className="relative developer-dropdown-area">
+                      <input
+                        type="text"
                         name="developer"
                         value={form.developer || ""}
                         onChange={(e) => {
@@ -1346,35 +1405,59 @@ const handleRemoveInteriorImage = (index) => {
                             ...prev,
                             developer: value
                           }));
-                          
-                          // Find the selected developer from the list
-                          const selectedDeveloper = developers.find(dev => dev.name === value);
-                          
-                          // If a developer is selected, auto-fill the logo URL
-                          if (selectedDeveloper) {
-                            setForm(prev => ({
-                              ...prev,
-                              developerImage: selectedDeveloper.logo
-                            }));
-                          }
                         }}
-                        className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition appearance-none"
-                      >
-                        <option value="">-- Select a developer --</option>
-                        {developers && developers.map((developer, index) => (
-                          <option key={index} value={developer.name}>
-                            {developer.name}
-                          </option>
-                        ))}
-                      </select>
-                      {isLoadingDevelopers && (
-                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                          <svg className="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
+                        onFocus={() => setShowDeveloperDropdown(true)}
+                        placeholder="Type or select a developer"
+                        className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition"
+                      />
+                      
+                      {/* Developer dropdown */}
+                      {showDeveloperDropdown && (
+                        <div className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base overflow-auto focus:outline-none sm:text-sm">
+                          {isLoadingDevelopers ? (
+                            <div className="flex items-center justify-center p-4">
+                              <svg className="animate-spin h-5 w-5 text-gray-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              </svg>
+                              <span>Loading developers...</span>
+                            </div>
+                          ) : (
+                            <>
+                              {filteredDevelopers.length > 0 ? (
+                                filteredDevelopers.map((developer, index) => (
+                                  <div
+                                    key={index}
+                                    className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100"
+                                    onClick={() => {
+                                      setForm(prev => ({
+                                        ...prev,
+                                        developer: developer.name,
+                                        developerImage: developer.logo
+                                      }));
+                                      setShowDeveloperDropdown(false);
+                                    }}
+                                  >
+                                    <div className="flex items-center">
+                                      {developer.logo && (
+                                        <img src={developer.logo} alt={developer.name} className="h-6 w-6 mr-2 object-contain" />
+                                      )}
+                                      <span className="block truncate">{developer.name}</span>
+                                    </div>
+                                  </div>
+                                ))
+                              ) : (
+                                <div className="py-2 px-3 text-gray-500 italic">
+                                  No developers found. Type to add a new one.
+                                </div>
+                              )}
+                            </>
+                          )}
                         </div>
                       )}
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1">
+                      Type to search existing developers or enter a new one
                     </div>
                   </div>
                 </div>
