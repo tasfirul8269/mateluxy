@@ -121,7 +121,15 @@ const HeroBanner = ({ property }) => {
   const location = property?.propertyState || property?.propertyAddress || 'Location not specified';
   const developer = property?.developer || 'Developer not specified';
   const licenseNumber = property?.dldPermitNumber;
-  const brochureFile = property?.brochureFile;
+  // Handle brochure file - ensure it's properly processed
+  console.log('Original brochure file:', property?.brochureFile);
+  // For brochure files, we need to ensure the URL is absolute
+  const brochureFile = property?.brochureFile ? (
+    property.brochureFile.startsWith('http') ? 
+      property.brochureFile : 
+      `${import.meta.env.VITE_API_URL}${property.brochureFile.startsWith('/') ? '' : '/'}${property.brochureFile}`
+  ) : null;
+  console.log('Processed brochure file:', brochureFile);
   const completionDate = property?.completionDate;
   const propertyType = property?.propertyType || 'Property type not specified';
   const features = property?.features || [];
@@ -384,6 +392,14 @@ const HeroBanner = ({ property }) => {
                         className="cursor-pointer bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white py-4 px-8 rounded-xl transition-all text-center flex items-center gap-3 shadow-lg font-medium border border-red-400/30"
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.98 }}
+                        onClick={(e) => {
+                          console.log('Download button clicked, brochure file:', brochureFile);
+                          // If the URL doesn't start with http, prevent default and handle manually
+                          if (!brochureFile.startsWith('http')) {
+                            e.preventDefault();
+                            window.open(brochureFile, '_blank');
+                          }
+                        }}
                       >
                         <Download size={20} />
                         Download Brochure
