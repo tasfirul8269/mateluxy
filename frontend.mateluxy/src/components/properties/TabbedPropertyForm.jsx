@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion"; // Import framer-motion for animations
-// Import agent API
+// Import agent API and developer service
 import { agentApi } from "@/services/agentApi";
+import { developerService } from "@/services/developerService";
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 // Import S3 upload utilities
@@ -138,6 +139,9 @@ const MapPreview = React.memo(({ latitude, longitude, zoomLevel, onMapClick }) =
 export default function TabbedPropertyForm({ onSubmit, onCancel, selectedCategory, initialData = null, isEditing = false, onFormChange = null, isAgentPanel = false, agentId = null }) {
   const [activeTab, setActiveTab] = useState(0);
   const [agents, setAgents] = useState([]);
+  const [isLoadingAgents, setIsLoadingAgents] = useState(true);
+  const [developers, setDevelopers] = useState([]);
+  const [isLoadingDevelopers, setIsLoadingDevelopers] = useState(true);
 
   // Different tab layouts based on property category
   const categoryTabs = {
@@ -369,19 +373,13 @@ export default function TabbedPropertyForm({ onSubmit, onCancel, selectedCategor
   useEffect(() => {
     const fetchAgents = async () => {
       try {
-        const data = await agentApi.getAgents();
-        if (data && Array.isArray(data)) {
-          setAgents(data);
-          console.log("Available agents:", data);
-          
-          // When editing, make sure we keep the existing agent selection
-          if (isEditing && initialData && initialData.agent) {
-            console.log("Property has agent:", initialData.agent);
-            // Don't override agent if already set in initial data
-          } else if (data.length > 0) {
-            // Only set default agent if not in edit mode
-            setForm(prev => ({ ...prev, agent: data[0]._id }));
-          }
+        setIsLoadingAgents(true);
+        const { data } = await agentApi.getAgents();
+        setAgents(data);
+        
+        // If in agent panel, set the agent ID from props
+        if (isAgentPanel && agentId) {
+          setForm(prev => ({ ...prev, agent: agentId }));
         } else {
           console.error("Invalid agents data received:", data);
           setAgents([]);
@@ -1337,13 +1335,47 @@ const handleRemoveInteriorImage = (index) => {
                   </div>
                   <div className="mb-6">
                     <label className="block text-base font-medium mb-2">Developer Name</label>
-                    <input
-                      name="developer"
-                      value={form.developer}
-                      onChange={handleInput}
-                      placeholder="Developer Name"
-                      className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition"
-                    />
+                    <div className="relative">
+                      <select
+                        name="developer"
+                        value={form.developer || ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          // Update the form state
+                          setForm(prev => ({
+                            ...prev,
+                            developer: value
+                          }));
+                          
+                          // Find the selected developer from the list
+                          const selectedDeveloper = developers.find(dev => dev.name === value);
+                          
+                          // If a developer is selected, auto-fill the logo URL
+                          if (selectedDeveloper) {
+                            setForm(prev => ({
+                              ...prev,
+                              developerImage: selectedDeveloper.logo
+                            }));
+                          }
+                        }}
+                        className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition appearance-none"
+                      >
+                        <option value="">-- Select a developer --</option>
+                        {developers && developers.map((developer, index) => (
+                          <option key={index} value={developer.name}>
+                            {developer.name}
+                          </option>
+                        ))}
+                      </select>
+                      {isLoadingDevelopers && (
+                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                          <svg className="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
                 {/* Developer Logo */}
