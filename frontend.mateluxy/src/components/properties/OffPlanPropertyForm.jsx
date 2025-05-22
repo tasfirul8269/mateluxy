@@ -35,6 +35,7 @@ import {
 } from "@/components/AdminPannel/ui/select";
 import { Separator } from "@/components/AdminPannel/ui/separator";
 import { developerService } from "@/services/developerService";
+import { agentApi } from "@/services/agentApi";
 
 // Property types
 const propertyTypes = [
@@ -73,6 +74,7 @@ const offPlanSchema = z.object({
   afterBookingPercentage: z.coerce.number().optional(),
   duringConstructionPercentage: z.coerce.number().optional(),
   afterHandoverPercentage: z.coerce.number().optional(),
+  agent: z.string().optional(),
 });
 
 export function OffPlanPropertyForm({ onSubmit, onCancel }) {
