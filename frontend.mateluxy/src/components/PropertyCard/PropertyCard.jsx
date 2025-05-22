@@ -178,10 +178,15 @@ const PropertyCard = ({ property, loading, error }) => {
             {/* Property Title */}
             <h3 className="font-semibold text-gray-800 text-lg">{property.propertyTitle || `${property.propertyBedrooms} Bedroom ${property.propertyType}`}</h3>
 
-            {/* Property Description - Truncated */}
-            <p className="text-gray-600 text-sm line-clamp-2 h-12 overflow-hidden">
-              {property.propertyDescription}
-            </p>
+            {/* Property Description - Truncated with fade effect */}
+            <div className="relative h-12 overflow-hidden">
+              <p className="text-gray-600 text-sm">
+                {property.propertyDescription && property.propertyDescription.length > 150 
+                  ? `${property.propertyDescription.substring(0, 150)}...` 
+                  : property.propertyDescription}
+              </p>
+              <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-white to-transparent"></div>
+            </div>
 
             {/* Property Type */}
             <div className="flex gap-2 flex-wrap">

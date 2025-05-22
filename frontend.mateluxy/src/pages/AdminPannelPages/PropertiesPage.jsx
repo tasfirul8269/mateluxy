@@ -138,11 +138,11 @@ const PropertiesPage = () => {
 
   const formatPrice = (value) => {
     if (value >= 1000000) {
-      return `$${(value / 1000000).toFixed(1)}M`;
+      return `AED ${(value / 1000000).toFixed(1)}M`;
     } else if (value >= 1000) {
-      return `$${(value / 1000).toFixed(0)}K`;
+      return `AED ${(value / 1000).toFixed(0)}K`;
     }
-    return `$${value}`;
+    return `AED ${value}`;
   };
 
   // Transform property data for PropertyCard component
@@ -306,11 +306,11 @@ const PropertiesPage = () => {
                         <div className="flex-1">
                           <Label htmlFor="minPrice" className="text-xs font-medium text-gray-600 mb-1 block">Minimum Price</Label>
                           <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs">AED</span>
                             <input
                               id="minPrice"
                               type="number"
-                              className="w-full pl-8 pr-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200"
+                              className="w-full pl-12 pr-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200"
                               value={priceRange[0]}
                               onChange={(e) => {
                                 const value = parseInt(e.target.value) || 0;
@@ -327,11 +327,11 @@ const PropertiesPage = () => {
                         <div className="flex-1">
                           <Label htmlFor="maxPrice" className="text-xs font-medium text-gray-600 mb-1 block">Maximum Price</Label>
                           <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs">AED</span>
                             <input
                               id="maxPrice"
                               type="number"
-                              className="w-full pl-8 pr-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200"
+                              className="w-full pl-12 pr-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200"
                               value={priceRange[1]}
                               onChange={(e) => {
                                 const value = parseInt(e.target.value) || Infinity;
