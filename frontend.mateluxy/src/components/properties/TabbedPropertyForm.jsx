@@ -245,9 +245,9 @@ export default function TabbedPropertyForm({ onSubmit, onCancel, selectedCategor
         tags: initialData.tags || [],
         completionDate: initialData.completionDate || "",
         paymentPlan: initialData.paymentPlan || "",
-        afterBookingPercentage: initialData.afterBookingPercentage || 20,
+        downPaymentPercentage: initialData.downPaymentPercentage || initialData.afterBookingPercentage || 20,
         duringConstructionPercentage: initialData.duringConstructionPercentage || 50,
-        afterHandoverPercentage: initialData.afterHandoverPercentage || 30,
+        handoverPercentage: initialData.handoverPercentage || initialData.afterHandoverPercentage || 30,
         exteriorGallery: initialData.media ? initialData.media.slice(0, 5) : [],
         interiorGallery: initialData.media ? initialData.media.slice(5, 10) : [],
 
@@ -303,8 +303,9 @@ export default function TabbedPropertyForm({ onSubmit, onCancel, selectedCategor
         tags: [],
         completionDate: "",
         paymentPlan: "",
+        downPaymentPercentage: 20,
         duringConstructionPercentage: 50,
-        onCompletionPercentage: 50,
+        handoverPercentage: 30,
       };
     }
 
@@ -939,27 +940,7 @@ const handleRemoveInteriorImage = (index) => {
                     </div>
                   </div>
                   
-                  {/* Agent Selection */}
-                  <div className="mt-6">
-                    <label className="block text-base font-medium mb-2">Select Agent</label>
-                    {isLoadingAgents ? (
-                      <div className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-500">Loading agents...</div>
-                    ) : (
-                      <select
-                        name="agent"
-                        value={form.agent || ""}
-                        onChange={handleInput}
-                        className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition appearance-none"
-                      >
-                        <option value="">Select an agent</option>
-                        {agents.map((agent) => (
-                          <option key={agent._id} value={agent._id}>
-                            {agent.name}
-                          </option>
-                        ))}
-                      </select>
-                    )}                    
-                  </div>
+                  {/* Agent field moved to Specific Details tab */}
                 </div>
                 {/* Right: Featured Image and Media */}
                 <div className="w-full md:w-[350px] flex flex-col gap-6">
