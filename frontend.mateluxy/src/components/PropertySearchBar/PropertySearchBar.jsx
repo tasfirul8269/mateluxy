@@ -297,8 +297,8 @@ const PropertySearchBar = () => {
   };
   
   const formatPrice = (price) => {
-    // Format price with commas and dollar sign
-    return `$${Math.round(price).toLocaleString()}`;
+    // Format price with commas and AED currency
+    return `AED ${Math.round(price).toLocaleString()}`;
   };
 
   return (
