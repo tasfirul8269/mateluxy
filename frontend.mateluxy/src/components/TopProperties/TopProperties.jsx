@@ -32,6 +32,7 @@ const TopProperties = () => {
             name: property.propertyTitle,
             location: property.propertyState,
             deliveryDate: property.category === 'Off Plan' ? formatDeliveryDate(property.completionDate) : 'Ready to Move',
+            completionDate: property.completionDate, // Add the original completionDate field
             price: `AED ${formatPrice(property.propertyPrice)}`,
             developer: property.developer || '',
             developerImage: property.developerImage || '',

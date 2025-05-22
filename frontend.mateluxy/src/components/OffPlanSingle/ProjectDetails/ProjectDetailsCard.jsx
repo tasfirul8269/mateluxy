@@ -8,7 +8,7 @@ const ProjectDetailsCard = ({ property }) => {
   const formattedCompletionDate = property?.completionDate 
     ? (property.completionDate.includes('-') 
         ? new Date(property.completionDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-        : property.completionDate) // If it's not a date format (e.g., "Q4 2025"), use as is
+        : property.completionDate) // If it's not a standard date format (e.g., "Q4 2025"), use as is
     : 'Not specified';
     
   // Dynamic details derived from property data with icons

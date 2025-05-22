@@ -40,6 +40,20 @@ const OffPlanCard = ({ property }) => {
         <img src={locationImg} alt={property?.location} />
         <p className="mt-[5px] text-[#999999] font-medium text-[14px]">{property?.location}</p>
       </div>
+      
+      {/* Completion Date - Added for debugging */}
+      {property?.category === 'Off Plan' && (
+        <div className="flex justify-start items-center gap-2 mt-2">
+          <span className="text-red-600 font-medium">Completion:</span>
+          <p className="text-[#999999] font-medium text-[14px]">
+            {property?.completionDate 
+              ? (property.completionDate.includes('-') 
+                  ? new Date(property.completionDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+                  : property.completionDate) // If it's not a standard date format (e.g., "Q4 2025"), use as is
+              : 'TBA'}
+          </p>
+        </div>
+      )}
 
       {/* features container */}
       <div className={`${location.pathname === "/off-plan-properties" ? "hidden" : "flex"}  justify-start gap-[30px] items-center my-4`}>

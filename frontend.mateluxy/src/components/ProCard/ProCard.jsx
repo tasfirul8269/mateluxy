@@ -83,11 +83,11 @@ const ProCard = ({ property }) => {
             {property?.category}
           </span>
           <span className="ml-5 bg-red-600 text-white px-3 py-1 rounded-full text-xs font-medium">
-            {property?.deliveryDate ? new Date(property.deliveryDate).toLocaleDateString('en-US', { 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            }) : 'TBA'}
+            {property?.completionDate 
+              ? (property.completionDate.includes('-') 
+                  ? new Date(property.completionDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+                  : property.completionDate) // If it's not a standard date format (e.g., "Q4 2025"), use as is
+              : (property?.deliveryDate && property.deliveryDate !== 'Invalid Date' ? property.deliveryDate : 'TBA')}
           </span>
           </div>
           
