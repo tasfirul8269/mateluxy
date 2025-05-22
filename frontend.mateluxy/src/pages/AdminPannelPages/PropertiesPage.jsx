@@ -302,30 +302,46 @@ const PropertiesPage = () => {
                     </div>
                     
                     <div className="px-1 pt-4 pb-6">
-                      <Slider
-                        defaultValue={[minPrice, maxPrice]}
-                        value={priceRange}
-                        min={minPrice}
-                        max={maxPrice}
-                        step={Math.max(1000, Math.floor((maxPrice - minPrice) / 100))} // Dynamic step size
-                        onValueChange={(value) => setPriceRange(value)}
-                        className="mb-6"
-                      />
-                      
-                      <div className="flex justify-between text-xs text-gray-500 px-1 relative">
-                        <div className="absolute left-0 w-full flex justify-between -top-4">
-                          {Array.from({ length: 5 }, (_, i) => {
-                            const range = maxPrice - minPrice;
-                            return Math.floor(minPrice + (range * i / 4));
-                          }).map((value, index) => (
-                            <div key={index} className="h-1.5 w-0.5 bg-gray-200"></div>
-                          ))}
+                      <div className="flex items-center gap-4 mb-6">
+                        <div className="flex-1">
+                          <Label htmlFor="minPrice" className="text-xs font-medium text-gray-600 mb-1 block">Minimum Price</Label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                            <input
+                              id="minPrice"
+                              type="number"
+                              className="w-full pl-8 pr-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200"
+                              value={priceRange[0]}
+                              onChange={(e) => {
+                                const value = parseInt(e.target.value) || 0;
+                                setPriceRange([value, priceRange[1]]);
+                              }}
+                              min="0"
+                              placeholder="0"
+                            />
+                          </div>
                         </div>
-                        <span className="text-center">{formatPrice(minPrice)}</span>
-                        <span className="text-center">{formatPrice(minPrice + (maxPrice - minPrice)/4)}</span>
-                        <span className="text-center">{formatPrice(minPrice + (maxPrice - minPrice)/2)}</span>
-                        <span className="text-center">{formatPrice(minPrice + 3*(maxPrice - minPrice)/4)}</span>
-                        <span className="text-center">{formatPrice(maxPrice)}</span>
+                        <div className="flex items-center justify-center">
+                          <span className="text-gray-400">to</span>
+                        </div>
+                        <div className="flex-1">
+                          <Label htmlFor="maxPrice" className="text-xs font-medium text-gray-600 mb-1 block">Maximum Price</Label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                            <input
+                              id="maxPrice"
+                              type="number"
+                              className="w-full pl-8 pr-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200"
+                              value={priceRange[1]}
+                              onChange={(e) => {
+                                const value = parseInt(e.target.value) || Infinity;
+                                setPriceRange([priceRange[0], value]);
+                              }}
+                              min="0"
+                              placeholder="∞"
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                     

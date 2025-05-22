@@ -92,18 +92,18 @@ const PropertyCard = ({ property, loading, error }) => {
   }
 
   return (
-    <div className="container mx-auto p-0 bg-white rounded-xl animate__animated animate__fadeIn grid md:grid-cols-2 gap-4 border border-spacing-0.5 border-gray-200 my-6 shadow-sm hover:shadow-md transition-all duration-300 hover:border-red-100 overflow-hidden">
+    <div className="container mx-auto p-0 bg-white rounded-xl animate__animated animate__fadeIn grid md:grid-cols-2 gap-4 border border-spacing-0.5 border-gray-200 my-6 shadow-sm hover:shadow-md transition-all duration-300 hover:border-red-100 overflow-hidden h-[650px]">
       {/* Image container with overlay */}
-      <div className="relative group">
+      <div className="relative group h-full">
         <Link
           to={`/property-details/${property._id}`}
-          className="flex gap-1 animate__animated animate__fadeInUp rounded-md w-full h-full min-h-[300px]"
+          className="flex gap-1 animate__animated animate__fadeInUp rounded-md w-full h-full"
         >
           {/* Main Media */}
           {property.propertyFeaturedImage?.match(/\.(mp4|mov|avi)$/i) ? (
             <video
               src={property.propertyFeaturedImage}
-              className="w-2/3 h-full object-cover grow rounded-l-xl"
+              className="w-2/3 h-full object-cover grow rounded-l-xl max-h-[650px]"
               controls
               muted
               loop
@@ -112,7 +112,7 @@ const PropertyCard = ({ property, loading, error }) => {
             <img
               src={property.propertyFeaturedImage}
               alt={property.propertyTitle}
-              className="w-2/3 h-full object-cover grow-2 rounded-l-xl"
+              className="w-2/3 h-full object-cover grow-2 rounded-l-xl max-h-[650px]"
             />
           )}
 
@@ -157,7 +157,7 @@ const PropertyCard = ({ property, loading, error }) => {
       </div>
 
       {/* Property details container */}
-      <div className="flex flex-col items-start justify-start animate__animated animate__fadeInUp h-full overflow-y-auto p-4">
+      <div className="flex flex-col items-start justify-start animate__animated animate__fadeInUp h-full overflow-y-auto p-4 max-h-[650px]">
         {/* Price and Location */}
         <Link to={`/property-details/${property._id}`} className="w-full">
           <div className="space-y-3">
@@ -179,7 +179,7 @@ const PropertyCard = ({ property, loading, error }) => {
             <h3 className="font-semibold text-gray-800 text-lg">{property.propertyTitle || `${property.propertyBedrooms} Bedroom ${property.propertyType}`}</h3>
 
             {/* Property Description - Truncated */}
-            <p className="text-gray-600 text-sm line-clamp-2 max-h-12 overflow-hidden">
+            <p className="text-gray-600 text-sm line-clamp-2 h-12 overflow-hidden">
               {property.propertyDescription}
             </p>
 
