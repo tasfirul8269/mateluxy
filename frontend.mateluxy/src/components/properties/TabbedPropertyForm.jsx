@@ -45,6 +45,65 @@ const DEFAULT_COORDINATES = {
   zoom: 12
 };
 
+// DragDropUpload component for reusable file upload with drag and drop
+const DragDropUpload = ({ 
+  id, 
+  accept, 
+  multiple = false, 
+  onUpload, 
+  disabled = false, 
+  children,
+  height = "h-48"
+}) => {
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      // Create a new event with the files
+      const event = { target: { files: multiple ? files : [files[0]] } };
+      onUpload(event);
+    }
+  };
+
+  return (
+    <label 
+      className={`flex flex-col items-center justify-center ${height} border-2 border-dashed rounded-xl cursor-pointer transition ${isDragging ? 'border-[#ff4d4f] bg-[#fff8f8]' : 'border-[#e5e7eb] hover:border-[#ff4d4f]'}`}
+      onClick={() => document.getElementById(id).click()}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
+      {children}
+      <input
+        id={id}
+        type="file"
+        accept={accept}
+        className="hidden"
+        onChange={onUpload}
+        disabled={disabled}
+        multiple={multiple}
+      />
+    </label>
+  );
+};
+
 // Move MapPreview component outside of the main component
 const MapPreview = React.memo(({ latitude, longitude, zoomLevel, onMapClick }) => {
   const mapContainer = useRef(null);
@@ -539,6 +598,32 @@ const handleRemoveImage = () => {
   setUploadError("");
 };
 
+// Drag and drop handlers for featured image
+const handleDragOver = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  e.currentTarget.classList.add('border-[#ff4d4f]', 'bg-[#fff8f8]');
+};
+
+const handleDragLeave = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  e.currentTarget.classList.remove('border-[#ff4d4f]', 'bg-[#fff8f8]');
+};
+
+const handleDrop = (e, uploadHandler, inputId) => {
+  e.preventDefault();
+  e.stopPropagation();
+  e.currentTarget.classList.remove('border-[#ff4d4f]', 'bg-[#fff8f8]');
+  
+  const files = e.dataTransfer.files;
+  if (files.length > 0) {
+    // Create a new event with the files
+    const event = { target: { files } };
+    uploadHandler(event);
+  }
+};
+
 // DLD QR code upload
 const handleQrUpload = async (e) => {
   const file = e.target.files[0];
@@ -967,9 +1052,33 @@ const handleRemoveInteriorImage = (index) => {
                         </div>
                       </div>
                     ) : (
-                      <label className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-[#e5e7eb] rounded-xl cursor-pointer hover:border-[#ff4d4f] transition" onClick={() => document.getElementById('featured-image-input').click()}>
+                      <label 
+                        className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-[#e5e7eb] rounded-xl cursor-pointer hover:border-[#ff4d4f] transition" 
+                        onClick={() => document.getElementById('featured-image-input').click()}
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          e.currentTarget.classList.add('border-[#ff4d4f]', 'bg-[#fff8f8]');
+                        }}
+                        onDragLeave={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          e.currentTarget.classList.remove('border-[#ff4d4f]', 'bg-[#fff8f8]');
+                        }}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          e.currentTarget.classList.remove('border-[#ff4d4f]', 'bg-[#fff8f8]');
+                          const files = e.dataTransfer.files;
+                          if (files.length > 0) {
+                            const event = { target: { files: [files[0]] } };
+                            handleImageUpload(event);
+                          }
+                        }}>
+                      
                         <span className="text-3xl text-gray-300 mb-2">+</span>
                         <span className="text-gray-400">Add Featured Image</span>
+                        <span className="text-xs text-gray-400 mt-2">Drag & drop or click to upload</span>
                       </label>
                     )}
                     <input
@@ -985,13 +1094,34 @@ const handleRemoveInteriorImage = (index) => {
                   </div>
                   <div className="bg-white rounded-2xl p-6 shadow border border-[#f3f3f3]">
                     <div className="text-lg font-semibold mb-3">Choose Media</div>
-                    <button
-                      type="button"
-                      className="w-full px-4 py-2 rounded-lg bg-[#ffeaea] text-[#ff4d4f] font-medium hover:bg-[#ffdada] transition"
+                    <div
+                      className="w-full h-32 border-2 border-dashed border-[#e5e7eb] rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-[#ff4d4f] transition mb-3"
                       onClick={() => document.getElementById('media-upload-input').click()}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.currentTarget.classList.add('border-[#ff4d4f]', 'bg-[#fff8f8]');
+                      }}
+                      onDragLeave={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.currentTarget.classList.remove('border-[#ff4d4f]', 'bg-[#fff8f8]');
+                      }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.currentTarget.classList.remove('border-[#ff4d4f]', 'bg-[#fff8f8]');
+                        const files = e.dataTransfer.files;
+                        if (files.length > 0) {
+                          const event = { target: { files } };
+                          handleMediaUpload(event);
+                        }
+                      }}
                     >
-                      + Add Images/Videos
-                    </button>
+                      <span className="text-2xl text-gray-300 mb-1">+</span>
+                      <span className="text-gray-500 font-medium">Add Images/Videos</span>
+                      <span className="text-xs text-gray-400 mt-1">Drag & drop or click to upload</span>
+                    </div>
                     <input
                       id="media-upload-input"
                       type="file"
@@ -1599,9 +1729,33 @@ const handleRemoveInteriorImage = (index) => {
                         </div>
                       </div>
                     ) : (
-                      <label className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-[#e5e7eb] rounded-xl cursor-pointer hover:border-[#ff4d4f] transition" onClick={() => document.getElementById('featured-image-input').click()}>
+                      <label 
+                        className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-[#e5e7eb] rounded-xl cursor-pointer hover:border-[#ff4d4f] transition" 
+                        onClick={() => document.getElementById('featured-image-input').click()}
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          e.currentTarget.classList.add('border-[#ff4d4f]', 'bg-[#fff8f8]');
+                        }}
+                        onDragLeave={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          e.currentTarget.classList.remove('border-[#ff4d4f]', 'bg-[#fff8f8]');
+                        }}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          e.currentTarget.classList.remove('border-[#ff4d4f]', 'bg-[#fff8f8]');
+                          const files = e.dataTransfer.files;
+                          if (files.length > 0) {
+                            const event = { target: { files: [files[0]] } };
+                            handleImageUpload(event);
+                          }
+                        }}>
+                      
                         <span className="text-3xl text-gray-300 mb-2">+</span>
                         <span className="text-gray-400">Add Featured Image</span>
+                        <span className="text-xs text-gray-400 mt-2">Drag & drop or click to upload</span>
                       </label>
                     )}
                     <input
