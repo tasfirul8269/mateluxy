@@ -1719,7 +1719,7 @@ const handleRemoveInteriorImage = (index) => {
                   </div>
 
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                   <div>
                     <label className="block text-base font-medium mb-2">Down Payment (%)</label>
                     <input
@@ -1730,22 +1730,10 @@ const handleRemoveInteriorImage = (index) => {
                       type="number"
                       className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition"
                     />
+                    <div className="text-xs text-gray-500 mt-1">Initial payment upon booking</div>
                   </div>
                   <div>
-                    <label className="block text-base font-medium mb-2">Handover (%)</label>
-                    <input
-                      name="handoverPercentage"
-                      value={form.handoverPercentage || ''}
-                      onChange={handleInput}
-                      placeholder="Handover (%)"
-                      type="number"
-                      className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition"
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-base font-medium mb-2">During construction (%)</label>
+                    <label className="block text-base font-medium mb-2">During Construction (%)</label>
                     <input
                       name="duringConstructionPercentage"
                       value={form.duringConstructionPercentage || ''}
@@ -1754,17 +1742,19 @@ const handleRemoveInteriorImage = (index) => {
                       type="number"
                       className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition"
                     />
+                    <div className="text-xs text-gray-500 mt-1">Payments during the construction phase</div>
                   </div>
                   <div>
-                    <label className="block text-base font-medium mb-2">On completion (%)</label>
+                    <label className="block text-base font-medium mb-2">Post Handover (%)</label>
                     <input
-                      name="onCompletionPercentage"
-                      value={form.onCompletionPercentage || ''}
+                      name="handoverPercentage"
+                      value={form.handoverPercentage || ''}
                       onChange={handleInput}
-                      placeholder="On completion (%)"
+                      placeholder="Post Handover (%)"
                       type="number"
                       className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition"
                     />
+                    <div className="text-xs text-gray-500 mt-1">Payments after property handover</div>
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">

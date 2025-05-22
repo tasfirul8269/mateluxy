@@ -446,7 +446,7 @@ export function OffPlanPropertyForm({ onSubmit, onCancel }) {
                     <FormControl>
                       <Input type="number" placeholder="10" {...field} />
                     </FormControl>
-                    <FormDescription>Percentage due as down payment</FormDescription>
+                    <FormDescription>Percentage due at booking/reservation</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -457,11 +457,11 @@ export function OffPlanPropertyForm({ onSubmit, onCancel }) {
                 name="duringConstructionPercentage"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>On Construction (%)</FormLabel>
+                    <FormLabel>During Construction (%)</FormLabel>
                     <FormControl>
                       <Input type="number" placeholder="55" {...field} />
                     </FormControl>
-                    <FormDescription>Percentage due during construction</FormDescription>
+                    <FormDescription>Percentage paid during construction phase</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -472,11 +472,11 @@ export function OffPlanPropertyForm({ onSubmit, onCancel }) {
                 name="afterHandoverPercentage"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>On Handover (%)</FormLabel>
+                    <FormLabel>Post Handover (%)</FormLabel>
                     <FormControl>
                       <Input type="number" placeholder="35" {...field} />
                     </FormControl>
-                    <FormDescription>Percentage due on handover</FormDescription>
+                    <FormDescription>Percentage due after property handover</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
