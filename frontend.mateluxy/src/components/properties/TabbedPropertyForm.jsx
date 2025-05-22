@@ -144,10 +144,7 @@ export default function TabbedPropertyForm({ onSubmit, onCancel, selectedCategor
   const [isLoadingDevelopers, setIsLoadingDevelopers] = useState(false);
   const [showDeveloperDropdown, setShowDeveloperDropdown] = useState(false);
 
-  // Filter developers based on input
-  const filteredDevelopers = developers.filter(dev => 
-    dev.name.toLowerCase().includes((form.developer || "").toLowerCase())
-  );
+  // We'll define filteredDevelopers inside the component after form is initialized
 
   // Different tab layouts based on property category
   const categoryTabs = {
@@ -1424,8 +1421,12 @@ const handleRemoveInteriorImage = (index) => {
                             </div>
                           ) : (
                             <>
-                              {filteredDevelopers.length > 0 ? (
-                                filteredDevelopers.map((developer, index) => (
+                              {developers.filter(dev => 
+                                dev.name.toLowerCase().includes((form.developer || "").toLowerCase())
+                              ).length > 0 ? (
+                                developers.filter(dev => 
+                                  dev.name.toLowerCase().includes((form.developer || "").toLowerCase())
+                                ).map((developer, index) => (
                                   <div
                                     key={index}
                                     className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100"
