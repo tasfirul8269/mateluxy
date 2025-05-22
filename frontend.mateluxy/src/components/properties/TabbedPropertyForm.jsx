@@ -1348,13 +1348,36 @@ const handleRemoveInteriorImage = (index) => {
               <div className="bg-white rounded-2xl p-6 shadow border border-[#f3f3f3] flex flex-col items-center justify-center h-auto">
 
                 <div className="text-lg font-semibold mb-3">DLD QR Code</div>
-                <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-[#e5e7eb] rounded-xl cursor-pointer hover:border-[#ff4d4f] transition">
+                <label 
+                  className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-[#e5e7eb] rounded-xl cursor-pointer hover:border-[#ff4d4f] transition"
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.currentTarget.classList.add('border-[#ff4d4f]', 'bg-[#fff8f8]');
+                  }}
+                  onDragLeave={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.currentTarget.classList.remove('border-[#ff4d4f]', 'bg-[#fff8f8]');
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.currentTarget.classList.remove('border-[#ff4d4f]', 'bg-[#fff8f8]');
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                      const event = { target: { files: [files[0]] } };
+                      handleQrUpload(event);
+                    }
+                  }}
+                >
                   {form.dldQrCode ? (
                     <img src={form.dldQrCode} alt="DLD QR Code" className="h-32 object-contain" />
                   ) : (
                     <>
                       <span className="text-3xl text-gray-300 mb-2">+</span>
                       <span className="text-gray-400">DLD QR Code</span>
+                      <span className="text-xs text-gray-400 mt-2">Drag & drop or click to upload</span>
                     </>
                   )}
                   <input
