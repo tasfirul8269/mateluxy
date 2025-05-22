@@ -89,9 +89,9 @@ app.use('/api/property-requests', propertyRequestRouter);
 console.log('Registering news routes at /api/news');
 app.use('/api/news', newsRouter);
 
-// S3 Upload routes
-console.log('Registering S3 upload routes at /api/upload-to-s3');
-app.use('/api/upload-to-s3', s3UploadRouter);
+// S3 Upload routes - includes both regular upload and presigned URL endpoints
+console.log('Registering S3 upload routes');
+app.use('/api', s3UploadRouter);
 
 // S3 Proxy routes for serving images
 console.log('Registering S3 proxy routes at /api/s3-proxy');
