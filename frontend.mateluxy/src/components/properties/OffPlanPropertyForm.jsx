@@ -53,7 +53,7 @@ const launchTypes = [
 // Off Plan property schema aligned with the specified fields
 const offPlanSchema = z.object({
   launchType: z.string().min(1, "Launch type is required"),
-  developerName: z.string().min(1, "Developer name is required"),
+  developer: z.string().min(1, "Developer name is required"),
   developerImage: z.string().min(1, "Developer image is required"),
   propertyTitle: z.string().min(5, "Property title must be at least 5 characters"),
   propertyType: z.string().min(1, "Property type is required"),
@@ -105,7 +105,7 @@ export function OffPlanPropertyForm({ onSubmit, onCancel }) {
     resolver: zodResolver(offPlanSchema),
     defaultValues: {
       launchType: "",
-      developerName: "",
+      developer: "",
       developerImage: "",
       propertyTitle: "",
       propertyType: "", 
@@ -187,7 +187,7 @@ export function OffPlanPropertyForm({ onSubmit, onCancel }) {
             
             <FormField
               control={form.control}
-              name="developerName"
+              name="developer"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Developer Name</FormLabel>
@@ -236,7 +236,7 @@ export function OffPlanPropertyForm({ onSubmit, onCancel }) {
                                 key={developer.name}
                                 value={developer.name}
                                 onSelect={() => {
-                                  form.setValue('developerName', developer.name);
+                                  form.setValue('developer', developer.name);
                                   form.setValue('developerImage', developer.logo);
                                   setDeveloperOpen(false);
                                 }}
