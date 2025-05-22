@@ -175,7 +175,7 @@ const uploadLargeFile = async (file, folder, fileName, apiUrl) => {
   
   try {
     // First, check if the backend has the presigned URL endpoint
-    const presignedUrlEndpoint = `${apiUrl}/api/get-presigned-url`;
+    const presignedUrlEndpoint = `${apiUrl}/api/upload-to-s3/get-presigned-url`;
     console.log(`Requesting presigned URL from: ${presignedUrlEndpoint}`);
     
     // Create a controller for timeout handling
