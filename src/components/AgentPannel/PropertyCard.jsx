@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { MapPin, Building, Calendar, Bed, Bath, Move, Edit, Trash2, X } from "lucide-react";
+import { formatPrice } from "@/utils/formatPrice";
 import {
   Dialog,
   DialogContent,
@@ -92,13 +93,9 @@ export function PropertyCard({ property, onDelete, onEdit }) {
             <div className="mb-3 text-sm text-left text-gray-500">
               <span className="flex items-center justify-start">
                 <Calendar size={16} className="mr-1.5 flex-shrink-0" />
-                Delivery: {new Date(property.completionDate).toLocaleDateString('en-US', { 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}
+                Delivery: {property.completionDate}
               </span>
-        </div>
+            </div>
           )}
         
         {/* Developer for Off Plan */}
@@ -115,7 +112,7 @@ export function PropertyCard({ property, onDelete, onEdit }) {
           {/* Price display - Left aligned */}
           <div className="flex justify-start mb-4">
             <div className="text-left">
-              <p className="text-blue-600 font-bold text-xl">AED {property.propertyPrice?.toLocaleString() || 0}</p>
+              <p className="text-blue-600 font-bold text-xl">{formatPrice(property.propertyPrice || 0)}</p>
               {property.category === 'Rent' && <p className="text-xs text-gray-500">Per Year</p>}
             </div>
           </div>
@@ -177,7 +174,7 @@ export function PropertyCard({ property, onDelete, onEdit }) {
             {/* Always show price and category */}
             <div className="bg-gray-50 p-3 rounded-lg">
               <p className="text-sm text-gray-500">Price</p>
-              <p className="text-lg font-bold text-blue-600">AED {property.propertyPrice?.toLocaleString() || 0}</p>
+              <p className="text-lg font-bold text-blue-600">{formatPrice(property.propertyPrice || 0)}</p>
             </div>
             <div className="bg-gray-50 p-3 rounded-lg">
               <p className="text-sm text-gray-500">Type</p>

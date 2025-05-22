@@ -238,8 +238,9 @@ export default function TabbedPropertyForm({ onSubmit, onCancel, selectedCategor
         tags: initialData.tags || [],
         completionDate: initialData.completionDate || "",
         paymentPlan: initialData.paymentPlan || "",
+        afterBookingPercentage: initialData.afterBookingPercentage || 20,
         duringConstructionPercentage: initialData.duringConstructionPercentage || 50,
-        onCompletionPercentage: initialData.onCompletionPercentage || 50,
+        afterHandoverPercentage: initialData.afterHandoverPercentage || 30,
         exteriorGallery: initialData.media ? initialData.media.slice(0, 5) : [],
         interiorGallery: initialData.media ? initialData.media.slice(5, 10) : [],
 
@@ -398,7 +399,13 @@ export default function TabbedPropertyForm({ onSubmit, onCancel, selectedCategor
   
   const handleInput = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    
+    // Ensure propertyBedrooms is always treated as a string
+    if (name === 'propertyBedrooms') {
+      setForm((prev) => ({ ...prev, [name]: value.toString() }));
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }));
+    }
   };
   
   // Handler for media gallery upload (Buy/Rent properties)
@@ -727,7 +734,7 @@ const handleRemoveInteriorImage = (index) => {
         propertyType: formData.propertyType || "Apartment",
         propertySize: formData.propertySize || 0,
         propertyRooms: formData.propertyRooms || 0,
-        propertyBedrooms: formData.propertyBedrooms || 0,
+        propertyBedrooms: formData.propertyBedrooms || "", // Use empty string as default, not 0
         propertyBathrooms: formData.propertyBathrooms || 0,
         propertyKitchen: formData.propertyKitchen || 0,
         // Ensure payment percentages are included as numbers
@@ -736,65 +743,25 @@ const handleRemoveInteriorImage = (index) => {
       };
     }
 
-    // Validate all required fields based on database schema
+    // All fields are now optional - no validation required
     const requiredFields = [
-      { field: 'propertyTitle', label: 'Property Title' },
-      { field: 'propertyDescription', label: 'Property Description' },
-      { field: 'propertyAddress', label: 'Property Address' },
-      { field: 'propertyCountry', label: 'Country' },
-      { field: 'propertyState', label: 'State' },
-      { field: 'propertyZip', label: 'ZIP Code' },
-      { field: 'propertyFeaturedImage', label: 'Featured Image' },
-      { field: 'propertyType', label: 'Property Type' },
-      { field: 'propertyPrice', label: 'Price' },
-      { field: 'brokerFee', label: 'Broker Fee' },
-      { field: 'propertySize', label: 'Property Size' },
-      { field: 'propertyRooms', label: 'Rooms' },
-      { field: 'propertyBedrooms', label: 'Bedrooms' },
-      { field: 'propertyBathrooms', label: 'Bathrooms' },
-      { field: 'propertyKitchen', label: 'Kitchen' },
-      { field: 'dldPermitNumber', label: 'DLD Permit Number' },
-      { field: 'agent', label: 'Agent' },
-      { field: 'dldQrCode', label: 'DLD QR Code' },
-      { field: 'latitude', label: 'Latitude' },
-      { field: 'longitude', label: 'Longitude' }
+      // No required fields - all fields are optional
     ];
 
     // Add additional required fields based on category
     if (selectedCategory === "Rent" || selectedCategory === "Commercial for Rent") {
       requiredFields.push({ field: 'numberOfCheques', label: 'Number of Cheques' });
     }
+
   
-    // Add Off Plan specific required fields
+    // No required fields for Off Plan properties either
+    // All fields are optional
     if (selectedCategory === "Off Plan") {
-      requiredFields.push(
-        { field: 'developer', label: 'Developer' },
-        { field: 'developerImage', label: 'Developer Logo' },
-        { field: 'launchType', label: 'Launch Type' },
-        { field: 'shortDescription', label: 'Short Description' },
-        { field: 'exactLocation', label: 'Exact Location' },
-        { field: 'completionDate', label: 'Completion Date' },
-        { field: 'paymentPlan', label: 'Payment Plan' }
-      );
+      // No required fields
     } 
 
-    // Check for empty required fields
-    const missingFields = requiredFields.filter(item => {
-      const value = formData[item.field];
-      // Special check for arrays (like media, exteriorGallery, etc.)
-      if (Array.isArray(value)) {
-        return value.length === 0;
-      }
-      return value === undefined || value === null || value === '' || 
-             (typeof value === 'number' && (isNaN(value) || value <= 0));
-    });
-
-    if (missingFields.length > 0) {
-      const missingFieldsText = missingFields.map(item => item.label).join(', ');
-      alert(`Please fill in all required fields: ${missingFieldsText}`);
-      return;
-    }
-
+    // No validation needed as all fields are optional
+    // Proceed directly to form submission
     // Call the onSubmit callback with the prepared form data
     onSubmit(formData);
   };
@@ -1089,17 +1056,19 @@ const handleRemoveInteriorImage = (index) => {
                     className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition"
                   />
                 </div>
-                <div>
-                  <label className="block text-base font-medium mb-2">Bedrooms</label>
-                  <input
-                    name="propertyBedrooms"
-                    value={form.propertyBedrooms}
-                    onChange={handleInput}
-                    placeholder="Bedrooms"
-                    type="number"
-                    className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition"
-                  />
-                </div>
+                {selectedCategory !== "Off Plan" && (
+                  <div>
+                    <label className="block text-base font-medium mb-2">Bedrooms</label>
+                    <input
+                      name="propertyBedrooms"
+                      value={form.propertyBedrooms}
+                      onChange={handleInput}
+                      placeholder="Bedrooms"
+                      type="number"
+                      className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition"
+                    />
+                  </div>
+                )}
                 <div>
                   <label className="block text-base font-medium mb-2">Kitchens</label>
                   <input
@@ -1501,8 +1470,10 @@ const handleRemoveInteriorImage = (index) => {
                     {uploading && <div className="text-xs text-gray-500 mt-2">Uploading...</div>}
                     {uploadError && <div className="text-xs text-red-500 mt-2">{uploadError}</div>}
                   </div>
-                  {/* Removed DLD Permit and QR Code from here */}
-                  {/* Brochure Section remains unchanged */}
+                 
+                    {/* DLD QR Code display similar to PropertyDetailsCard */}
+                   
+                  {/* Brochure Section */}
                   <div className="bg-white rounded-2xl p-6 shadow border border-[#f3f3f3]">
                     <div className="text-lg font-semibold mb-3">Brochure</div>
                     <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-[#e5e7eb] rounded-xl cursor-pointer hover:border-[#ff4d4f] transition">
@@ -1621,15 +1592,28 @@ const handleRemoveInteriorImage = (index) => {
                     />
                   </div>
                 </div>
-                <div className="mt-6">
-                  <label className="block text-base font-medium mb-2">Completion Date</label>
-                  <input
-                    name="completionDate"
-                    value={form.completionDate}
-                    onChange={handleInput}
-                    type="date"
-                    className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition"
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                  <div>
+                    <label className="block text-base font-medium mb-2">Completion Date</label>
+                    <input
+                      name="completionDate"
+                      value={form.completionDate}
+                      onChange={handleInput}
+                      placeholder="Enter completion date (e.g., Q4 2025, December 2026)"
+                      className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-base font-medium mb-3">Bedrooms</label>
+                    <input
+                      name="propertyBedrooms"
+                      value={form.propertyBedrooms}
+                      onChange={handleInput}
+                      placeholder="Enter bedroom options (e.g., Studio, 0-3, 2 & 3)"
+                      className="w-full rounded-lg border border-[#e4e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition"
+                      type="text" // Explicitly set as text type to ensure it's treated as a string
+                    />
+                  </div>
                 </div>
               </div>
             )}

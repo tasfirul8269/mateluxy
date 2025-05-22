@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { MapPin, Mail, Phone, Download, MessageCircle, Globe, Briefcase, Building, Home, ArrowRight, Star, ChevronRight, Calendar, Users, ChevronDown } from "lucide-react";
 import { convertS3UrlToProxyUrl } from "../../utils/s3UrlConverter";
 import { toast } from "sonner";
+import { formatPrice } from "../../utils/formatPrice";
 
 const AgentProfileCard = () => {
   const [agentData, setAgentData] = useState({});
@@ -175,9 +176,9 @@ const AgentProfileCard = () => {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="text-center lg:text-left text-white max-w-2xl"
             >
-              <div className="inline-block bg-white/10 backdrop-blur-sm px-4 py-1 rounded-full text-white text-xs font-medium tracking-wider mb-4">
-                LUXURY REAL ESTATE PROFESSIONAL
-              </div>
+
+
+
               
               <h1 className="text-4xl md:text-5xl font-bold mb-4">{agentData?.fullName || 'Agent Name'}</h1>
               <p className="text-xl text-red-200 font-medium mb-6">{agentData?.position || 'Real Estate Agent'}</p>
@@ -341,7 +342,7 @@ const AgentProfileCard = () => {
                       <Building className="h-6 w-6 text-red-600" />
                     </div>
                     <div>
-                      <div className="font-bold text-gray-900">{agentData?.department || 'Residential'} Properties</div>
+                      <div className="font-bold  capitalize text-gray-900">{agentData?.department || 'Residential'} Properties</div>
                       <div className="text-sm text-gray-600">Expert guidance in the {agentData?.department?.toLowerCase() || 'residential'} market</div>
                     </div>
                   </div>
@@ -407,7 +408,7 @@ const AgentProfileCard = () => {
                       
                       {/* Price tag */}
                       <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-red-600 px-4 py-2 rounded-lg font-bold shadow-md transform transition-transform duration-300 group-hover:scale-105">
-                        AED {property.propertyPrice.toLocaleString()}
+                        {formatPrice(property.propertyPrice)}
                       </div>
                       
                       {/* Property type badge */}

@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { IoBedOutline } from "react-icons/io5";
 import { LiaBathSolid } from "react-icons/lia";
 import { FaRegCalendarAlt } from "react-icons/fa";
+import { formatPrice } from '../../../utils/formatPrice';
 
 
 const PropertyHeroFixed = ({ property }) => {
@@ -68,10 +69,21 @@ const PropertyHeroFixed = ({ property }) => {
   useEffect(() => {
     setIsLoading(true);
     setImageError(false);
+    
+    // Add a safety timeout to ensure loading state doesn't get stuck
+    const timeoutId = setTimeout(() => {
+      if (isLoading) {
+        console.log('Loading timeout reached, forcing loading state to false');
+        setIsLoading(false);
+      }
+    }, 5000); // 5 second timeout
+    
+    return () => clearTimeout(timeoutId);
   }, [currentIndex]);
   
   // Handle image load error
   const handleImageError = () => {
+    console.log('Image failed to load');
     setImageError(true);
     setIsLoading(false);
   };
@@ -157,7 +169,7 @@ const PropertyHeroFixed = ({ property }) => {
   // Get all property details dynamically
   const propertyName = property?.propertyTitle;
   const description = property?.propertyDescription;
-  const price = property?.propertyPrice ? `AED ${property.propertyPrice.toLocaleString()}` : 'Price on request';
+  const price = property?.propertyPrice ? formatPrice(property.propertyPrice) : 'Price on request';
   const area = property?.propertySize ? `${property.propertySize} sq. ft` : 'Area not specified';
   const bedrooms = property?.propertyBedrooms?.toString() || 'Not specified';
   const bathrooms = property?.propertyBathrooms?.toString() || 'Not specified';
@@ -280,7 +292,10 @@ const PropertyHeroFixed = ({ property }) => {
                     src={images[currentIndex].src} 
                     alt={images[currentIndex].alt} 
                     className="w-full h-full object-cover"
-                    onLoad={() => setIsLoading(false)}
+                    onLoad={() => {
+                      console.log('Image loaded successfully');
+                      setIsLoading(false);
+                    }}
                     onError={handleImageError}
                   />
                   

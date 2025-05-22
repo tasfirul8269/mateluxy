@@ -41,7 +41,9 @@ const PropertiesPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("all");
-  const [priceRange, setPriceRange] = useState([0, 4000000]);
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(1000000); // Initial default, will be updated
+  const [priceRange, setPriceRange] = useState([0, 1000000]);
   const [isFormDialogOpen, setIsFormDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [propertyToEdit, setPropertyToEdit] = useState(null);
@@ -73,6 +75,35 @@ const PropertiesPage = () => {
   
   // Extract all states/locations from properties
   const locations = Array.from(new Set(properties.map((property) => property.propertyState)));
+  
+  // Calculate min and max price from all properties
+  useEffect(() => {
+    if (properties && properties.length > 0) {
+      // Get all valid property prices
+      const validPrices = properties
+        .map(property => property.propertyPrice ? Number(property.propertyPrice) : null)
+        .filter(price => price !== null && !isNaN(price) && price > 0);
+      
+      if (validPrices.length > 0) {
+        // Find the lowest and highest prices
+        const lowestPrice = Math.min(...validPrices);
+        const highestPrice = Math.max(...validPrices);
+        
+        // Set min price (round down to nearest 1000 for cleaner UI)
+        const roundedMinPrice = Math.floor(lowestPrice / 1000) * 1000;
+        setMinPrice(roundedMinPrice);
+        
+        // Set max price (round up to nearest 1000 for cleaner UI)
+        const roundedMaxPrice = Math.ceil(highestPrice / 1000) * 1000;
+        setMaxPrice(roundedMaxPrice);
+        
+        // Update price range to reflect the actual data range
+        setPriceRange([roundedMinPrice, roundedMaxPrice]);
+        
+        console.log(`Price range set to: ${roundedMinPrice} - ${roundedMaxPrice}`);
+      }
+    }
+  }, [properties]);
   
   // Filter properties by category, search query, location and price
   const filteredProperties = properties
@@ -222,7 +253,7 @@ const PropertiesPage = () => {
                   <Filter size={16} className="mr-2 text-blue-500" />
                   <span>Filters</span>
                   <span className="ml-1.5 bg-blue-100 text-blue-600 text-xs font-semibold px-2 py-0.5 rounded-full">
-                    {selectedLocation !== 'all' || priceRange[0] !== 0 || priceRange[1] !== 4000000 ? '2' : '0'}
+                    {selectedLocation !== 'all' || priceRange[0] !== minPrice || priceRange[1] !== maxPrice ? '2' : '0'}
                   </span>
                 </button>
               </PopoverTrigger>
@@ -272,47 +303,80 @@ const PropertiesPage = () => {
                     
                     <div className="px-1 pt-4 pb-6">
                       <Slider
-                        defaultValue={[0, 4000000]}
+                        defaultValue={[minPrice, maxPrice]}
                         value={priceRange}
-                        max={4000000}
-                        step={100000}
+                        min={minPrice}
+                        max={maxPrice}
+                        step={Math.max(1000, Math.floor((maxPrice - minPrice) / 100))} // Dynamic step size
                         onValueChange={(value) => setPriceRange(value)}
                         className="mb-6"
                       />
                       
                       <div className="flex justify-between text-xs text-gray-500 px-1 relative">
                         <div className="absolute left-0 w-full flex justify-between -top-4">
-                          {[0, 1000000, 2000000, 3000000, 4000000].map((value, index) => (
+                          {Array.from({ length: 5 }, (_, i) => {
+                            const range = maxPrice - minPrice;
+                            return Math.floor(minPrice + (range * i / 4));
+                          }).map((value, index) => (
                             <div key={index} className="h-1.5 w-0.5 bg-gray-200"></div>
                           ))}
                         </div>
-                        <span className="text-center">$0</span>
-                        <span className="text-center">$1M</span>
-                        <span className="text-center">$2M</span>
-                        <span className="text-center">$3M</span>
-                        <span className="text-center">$4M+</span>
+                        <span className="text-center">{formatPrice(minPrice)}</span>
+                        <span className="text-center">{formatPrice(minPrice + (maxPrice - minPrice)/4)}</span>
+                        <span className="text-center">{formatPrice(minPrice + (maxPrice - minPrice)/2)}</span>
+                        <span className="text-center">{formatPrice(minPrice + 3*(maxPrice - minPrice)/4)}</span>
+                        <span className="text-center">{formatPrice(maxPrice)}</span>
                       </div>
                     </div>
                     
                     <div className="grid grid-cols-4 gap-2 mt-4">
-                      {[
-                        { label: "< $500K", min: 0, max: 500000 },
-                        { label: "$500K-$1M", min: 500000, max: 1000000 },
-                        { label: "$1M-$2M", min: 1000000, max: 2000000 },
-                        { label: "$2M+", min: 2000000, max: 4000000 }
-                      ].map((preset, i) => (
-                        <button
-                          key={i}
-                          onClick={() => setPriceRange([preset.min, preset.max])}
-                          className={`text-xs py-1.5 px-2 rounded-md transition border 
-                            ${priceRange[0] === preset.min && priceRange[1] === preset.max
-                              ? 'bg-blue-500 text-white border-blue-500'
-                              : 'bg-white text-gray-700 border-gray-200 hover:border-blue-200 hover:bg-blue-50'
+                      {(() => {
+                        // Dynamically generate price range presets based on actual price range
+                        const range = maxPrice - minPrice;
+                        const step = Math.ceil(range / 6); // Divide into 6 ranges
+                        
+                        // Create evenly distributed price ranges
+                        const presets = [];
+                        
+                        // First preset is from min to min+step
+                        presets.push({ 
+                          label: `${formatPrice(minPrice)}-${formatPrice(minPrice + step)}`, 
+                          min: minPrice, 
+                          max: minPrice + step 
+                        });
+                        
+                        // Middle presets
+                        for (let i = 1; i < 5; i++) {
+                          const min = minPrice + (i * step);
+                          const max = minPrice + ((i + 1) * step);
+                          presets.push({ 
+                            label: `${formatPrice(min)}-${formatPrice(max)}`, 
+                            min, 
+                            max 
+                          });
+                        }
+                        
+                        // Last preset is from max-step to max
+                        presets.push({ 
+                          label: `${formatPrice(maxPrice - step)}+`, 
+                          min: maxPrice - step, 
+                          max: maxPrice 
+                        });
+                        
+                        return presets.map((preset, index) => (
+                          <button
+                            key={index}
+                            className={`px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              priceRange[0] === preset.min && priceRange[1] === preset.max
+                                ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                                : 'bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100'
                             }`}
-                        >
-                          {preset.label}
-                        </button>
-                      ))}
+                            onClick={() => setPriceRange([preset.min, preset.max])}
+                          >
+                            {preset.label}
+                          </button>
+                        ))
+                      })()}
                     </div>
                   </div>
                   
@@ -320,7 +384,7 @@ const PropertiesPage = () => {
                     <button 
                       onClick={() => {
                         setSelectedLocation('all');
-                        setPriceRange([0, 4000000]);
+                        setPriceRange([minPrice, maxPrice]);
                       }}
                       className="px-4 py-2 text-sm font-medium rounded-md border border-gray-200 hover:bg-gray-50 transition-colors flex-1"
                     >

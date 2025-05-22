@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { motion } from 'framer-motion';
+import { formatPrice } from '../../utils/formatPrice';
 
 // Import components
 import PropertyHeroFixed from '../../components/PropertyDetails/Hero/PropertyHeroFixed';
@@ -174,7 +175,7 @@ const PropertyDetails = () => {
                         <div className="p-4">
                           <h3 className="font-semibold text-lg text-gray-800 mb-1 line-clamp-1">{relatedProperty.propertyTitle}</h3>
                           <p className="text-gray-600 text-sm mb-2 line-clamp-1">{relatedProperty.propertyState || relatedProperty.propertyAddress}</p>
-                          <p className="text-red-500 font-medium">AED {relatedProperty.propertyPrice?.toLocaleString() || 'Price on request'}</p>
+                          <p className="text-red-500 font-medium">{formatPrice(relatedProperty.propertyPrice) || 'Price on request'}</p>
                         </div>
                       </motion.div>
                     ))}

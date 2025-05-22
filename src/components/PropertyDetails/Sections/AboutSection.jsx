@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { formatPrice } from '../../../utils/formatPrice';
 import { 
   Home, 
   Utensils, 
@@ -147,7 +148,7 @@ const AboutSection = ({ property }) => {
           {/* Price */}
           <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
             <p className="text-gray-500 text-sm mb-1">Price</p>
-            <p className="font-semibold text-gray-800">{property.propertyPrice ? `AED ${property.propertyPrice.toLocaleString()}` : 'Price on request'}</p>
+            <p className="font-semibold text-gray-800">{property.propertyPrice ? formatPrice(property.propertyPrice) : 'Price on request'}</p>
           </div>
           
           {/* Location */}

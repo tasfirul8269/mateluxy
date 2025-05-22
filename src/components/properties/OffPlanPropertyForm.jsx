@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -33,6 +33,11 @@ import {
   SelectValue,
 } from "@/components/AdminPannel/ui/select";
 import { Separator } from "@/components/AdminPannel/ui/separator";
+import { developerService } from "@/services/developerService";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/AdminPannel/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/AdminPannel/ui/popover";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 // Property types
 const propertyTypes = [
@@ -68,9 +73,34 @@ const offPlanSchema = z.object({
   tags: z.array(z.string()).default([]),
   completionDate: z.string().min(1, "Completion date is required"),
   paymentPlan: z.string().min(1, "Payment plan is required"),
+  afterBookingPercentage: z.coerce.number().min(0, "Down payment percentage cannot be negative").max(100, "Down payment percentage cannot exceed 100"),
+  duringConstructionPercentage: z.coerce.number().min(0, "On construction percentage cannot be negative").max(100, "On construction percentage cannot exceed 100"),
+  afterHandoverPercentage: z.coerce.number().min(0, "On handover percentage cannot be negative").max(100, "On handover percentage cannot exceed 100"),
 });
 
 export function OffPlanPropertyForm({ onSubmit, onCancel }) {
+  // State to store available developers
+  const [developers, setDevelopers] = useState([]);
+  const [developerOpen, setDeveloperOpen] = useState(false);
+  const [isLoadingDevelopers, setIsLoadingDevelopers] = useState(true);
+
+  // Fetch developers on component mount
+  useEffect(() => {
+    const fetchDevelopers = async () => {
+      try {
+        setIsLoadingDevelopers(true);
+        const developersData = await developerService.getDevelopers();
+        setDevelopers(developersData);
+      } catch (error) {
+        console.error('Error fetching developers:', error);
+      } finally {
+        setIsLoadingDevelopers(false);
+      }
+    };
+
+    fetchDevelopers();
+  }, []);
+
   const form = useForm({
     resolver: zodResolver(offPlanSchema),
     defaultValues: {
@@ -95,6 +125,9 @@ export function OffPlanPropertyForm({ onSubmit, onCancel }) {
       tags: [],
       completionDate: "",
       paymentPlan: "",
+      afterBookingPercentage: 10,
+      duringConstructionPercentage: 55,
+      afterHandoverPercentage: 35,
     },
   });
 
@@ -156,11 +189,77 @@ export function OffPlanPropertyForm({ onSubmit, onCancel }) {
               control={form.control}
               name="developerName"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col">
                   <FormLabel>Developer Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter developer name" {...field} />
-                  </FormControl>
+                  <Popover open={developerOpen} onOpenChange={setDeveloperOpen}>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={developerOpen}
+                          className={cn(
+                            "w-full justify-between",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value
+                            ? field.value
+                            : "Select or enter developer name"}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <Command>
+                        <CommandInput 
+                          placeholder="Search developer..." 
+                          className="h-9"
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                            // Clear developer image if user is typing a new developer name
+                            if (!developers.some(dev => dev.name.toLowerCase() === value.toLowerCase())) {
+                              form.setValue('developerImage', '');
+                            }
+                          }}
+                        />
+                        <CommandEmpty>No developer found. Type to add new.</CommandEmpty>
+                        <CommandGroup>
+                          {isLoadingDevelopers ? (
+                            <div className="flex items-center justify-center p-4">
+                              <div className="animate-spin h-5 w-5 border-2 border-gray-500 rounded-full border-t-transparent"></div>
+                              <span className="ml-2">Loading developers...</span>
+                            </div>
+                          ) : (
+                            developers.map((developer) => (
+                              <CommandItem
+                                key={developer.name}
+                                value={developer.name}
+                                onSelect={() => {
+                                  form.setValue('developerName', developer.name);
+                                  form.setValue('developerImage', developer.logo);
+                                  setDeveloperOpen(false);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    developer.name === field.value
+                                      ? "opacity-100"
+                                      : "opacity-0"
+                                  )}
+                                />
+                                {developer.name}
+                              </CommandItem>
+                            ))
+                          )}
+                        </CommandGroup>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    Select from existing developers or type to add a new one
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -178,7 +277,21 @@ export function OffPlanPropertyForm({ onSubmit, onCancel }) {
                 <FormControl>
                   <Input placeholder="https://example.com/developer-logo.png" {...field} />
                 </FormControl>
-                <FormDescription>Image URL for the developer's logo</FormDescription>
+                <FormDescription>
+                  {field.value ? (
+                    <div className="flex items-center gap-2">
+                      <span>Image URL for the developer's logo</span>
+                      <img 
+                        src={field.value} 
+                        alt="Developer logo preview" 
+                        className="h-6 w-auto object-contain border border-gray-200 rounded p-0.5"
+                        onError={(e) => e.target.style.display = 'none'}
+                      />
+                    </div>
+                  ) : (
+                    "Image URL for the developer's logo"
+                  )}
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -340,7 +453,7 @@ export function OffPlanPropertyForm({ onSubmit, onCancel }) {
               name="paymentPlan"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Payment Plan</FormLabel>
+                  <FormLabel>Payment Plan Description</FormLabel>
                   <FormControl>
                     <Input placeholder="40/60" {...field} />
                   </FormControl>
@@ -349,6 +462,57 @@ export function OffPlanPropertyForm({ onSubmit, onCancel }) {
                 </FormItem>
               )}
             />
+          </div>
+          
+          {/* Payment Plan Percentages */}
+          <div className="bg-white space-y-3 rounded-lg p-4 border border-gray-100">
+            <h4 className="text-md font-medium text-gray-800">Payment Plan Percentages</h4>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              <FormField
+                control={form.control}
+                name="afterBookingPercentage"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Down Payment (%)</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="10" {...field} />
+                    </FormControl>
+                    <FormDescription>Percentage due as down payment</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="duringConstructionPercentage"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>On Construction (%)</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="55" {...field} />
+                    </FormControl>
+                    <FormDescription>Percentage due during construction</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="afterHandoverPercentage"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>On Handover (%)</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="35" {...field} />
+                    </FormControl>
+                    <FormDescription>Percentage due on handover</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

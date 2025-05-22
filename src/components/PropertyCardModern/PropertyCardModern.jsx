@@ -5,6 +5,7 @@ import { FaMapMarkerAlt, FaPhone, FaWhatsapp, FaHeart, FaRegHeart, FaRulerCombin
 import { LiaBedSolid, LiaBathSolid } from 'react-icons/lia';
 import { MdOutlineKitchen } from 'react-icons/md';
 import { BsArrowRight } from 'react-icons/bs';
+import { formatPrice } from '../../utils/formatPrice';
 
 const PropertyCardModern = ({ property }) => {
   const [isFavorite, setIsFavorite] = useState(false);
@@ -40,8 +41,8 @@ const PropertyCardModern = ({ property }) => {
     }
   };
 
-  // Format price with currency symbol
-  const formatPrice = (price) => {
+  // Format price with currency symbol - using the imported utility
+  const formatPropertyPrice = (price) => {
     if (!price) return 'Price on Request';
     
     // If price is already formatted as a string with currency
@@ -49,8 +50,8 @@ const PropertyCardModern = ({ property }) => {
       return price;
     }
     
-    // Format number with commas
-    return `AED ${Number(price).toLocaleString()}`;
+    // Use the imported formatPrice utility
+    return formatPrice(price);
   };
 
   return (
@@ -120,7 +121,7 @@ const PropertyCardModern = ({ property }) => {
         <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end">
           <div>
             <h3 className="text-white font-bold text-xl drop-shadow-md line-clamp-1">
-              {formatPrice(property?.price)}
+              {formatPropertyPrice(property?.price)}
             </h3>
             <p className="text-white/80 text-xs">
               {property?.category === 'Off Plan' ? 'Starting from' : 

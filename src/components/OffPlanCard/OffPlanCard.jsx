@@ -13,6 +13,7 @@ import kitchen from "../../assets/vector-1.svg";
 import divider from "../../assets/line-2.svg";
 import { LiaBathSolid, LiaBedSolid } from "react-icons/lia";
 import { useLocation } from "react-router-dom";
+import { formatPrice } from "../../utils/formatPrice";
 
 const OffPlanCard = ({ property }) => {
 
@@ -44,7 +45,7 @@ const OffPlanCard = ({ property }) => {
       <div className={`${location.pathname === "/off-plan-properties" ? "hidden" : "flex"}  justify-start gap-[30px] items-center my-4`}>
         <div className="text-[#999999] flex justify-start items-center gap-3">
           <LiaBedSolid className="w-[20px] h-[20px] text-[2xl]" />
-          <p className="font-medium text-[16px]">{property?.beds}</p>
+          <p className="font-medium text-[16px]">{property?.propertyBedrooms || property?.beds || 'Not specified'}</p>
         </div>
 
         <div class="h-3 w-[1.5px] bg-[#e6e6e6] mx-4"></div>
@@ -82,7 +83,7 @@ const OffPlanCard = ({ property }) => {
             Speaks {property?.languages?.slice(0,2).join(", ")}
           </p>
         </div>
-        <h2 className="text-[18px] font-medium">{property?.price}</h2>
+        <h2 className="text-[18px] font-medium">{formatPrice(property?.price)}</h2>
       </div>
 
       <div class="h-[1px] w-80% bg-[#e6e6e6] my-4"></div>

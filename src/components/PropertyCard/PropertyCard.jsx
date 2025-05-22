@@ -6,11 +6,14 @@ import { MdLocationOn } from "react-icons/md";
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import BookingDialog from "../BookingDialog";
+import { formatPrice } from "../../utils/formatPrice";
 
 const PropertyCard = ({ property, loading, error }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [agentData, setAgentData] = useState(null);
   const [agentLoading, setAgentLoading] = useState(false);
+  const [isBookingDialogOpen, setIsBookingDialogOpen] = useState(false);
   const location = useLocation();
   const pathSegments = location.pathname.split('/');
 
@@ -160,7 +163,7 @@ const PropertyCard = ({ property, loading, error }) => {
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <div className="text-2xl font-bold text-red-600">
-                AED {property.propertyPrice?.toLocaleString() || property.propertyPrice}
+                {formatPrice(property.propertyPrice)}
                 <span className="text-xs text-gray-500 font-normal ml-1">{property.category === 'Rent' ? '/month' : ''}</span>
               </div>
             </div>
@@ -260,12 +263,21 @@ const PropertyCard = ({ property, loading, error }) => {
             <span className="font-normal text-sm">WhatsApp</span>
           </button>
 
-          <button className="hidden md:flex cursor-pointer justify-center items-center gap-2 text-white bg-red-600 hover:bg-red-700 px-4 py-2.5 rounded-lg transition-colors duration-200 flex-1 shadow-sm">
+          <button 
+            onClick={(e) => {
+              e.preventDefault();
+              setIsBookingDialogOpen(true);
+            }}
+            className="hidden md:flex cursor-pointer justify-center items-center gap-2 text-white bg-red-600 hover:bg-red-700 px-4 py-2.5 rounded-lg transition-colors duration-200 flex-1 shadow-sm"
+          >
             <FaCalendarAlt className="text-sm" />
             <span className="font-medium text-sm">Book Viewing</span>
           </button>
         </div>
       </div>
+      
+      {/* Booking Dialog */}
+      <BookingDialog isOpen={isBookingDialogOpen} onClose={() => setIsBookingDialogOpen(false)} property={property} />
     </div>
   );
 };

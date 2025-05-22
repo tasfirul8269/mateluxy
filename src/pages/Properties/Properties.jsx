@@ -1,4 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { formatPrice } from '../../utils/formatPrice';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaFilter, FaSearch, FaTimes } from 'react-icons/fa';
@@ -88,7 +91,7 @@ const Properties = () => {
             name: property.propertyTitle,
             location: property.propertyState,
             deliveryDate: property.category === 'Off Plan' ? formatDeliveryDate(property.completionDate) : 'Ready to Move',
-            price: `AED ${formatPrice(property.propertyPrice)}`,
+            price: formatPrice(property.propertyPrice),
             developer: property.developer || '',
             developerImage: property.developerImage || '',
             image: property.propertyFeaturedImage,
@@ -136,9 +139,9 @@ const Properties = () => {
     }
   };
 
-  // Helper function to format price
-  const formatPrice = (price) => {
-    return price ? price.toLocaleString() : 'Price on Request';
+  // Helper function to format price - using the imported utility
+  const formatPropertyPrice = (price) => {
+    return price ? formatPrice(price, true).replace('AED ', '') : 'Price on Request';
   };
 
   // Apply filters to properties

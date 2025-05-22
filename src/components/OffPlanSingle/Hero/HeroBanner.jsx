@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { convertS3UrlToProxyUrl } from '../../../utils/s3UrlConverter';
+import { formatPrice } from '../../../utils/formatPrice';
 
 const HeroBanner = ({ property }) => {
   // Create images array from property data
@@ -113,7 +114,7 @@ const HeroBanner = ({ property }) => {
   // Get all property details dynamically
   const projectName = property?.propertyTitle;
   const description = property?.propertyDescription;
-  const price = property?.propertyPrice ? `AED ${property.propertyPrice.toLocaleString()}` : 'Price on request';
+  const price = property?.propertyPrice ? formatPrice(property.propertyPrice) : 'Price on request';
   const area = property?.propertySize ? `${property.propertySize} sq. ft` : 'Area not specified';
   const bedrooms = property?.propertyBedrooms?.toString() || 'Not specified';
   const location = property?.propertyState || property?.propertyAddress || 'Location not specified';
@@ -129,7 +130,9 @@ const HeroBanner = ({ property }) => {
   
   // Format completion date if available
   const formattedCompletionDate = completionDate 
-    ? new Date(completionDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+    ? (completionDate.includes('-') 
+        ? new Date(completionDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+        : completionDate) // If it's not a standard date format (e.g., "Q4 2025"), use as is
     : 'Not specified';
 
   // Only render if we have at least some property data

@@ -36,7 +36,7 @@ const ensureRequiredPropertyFields = (propertyData) => {
   }
   
   // Ensure numeric fields are numbers
-  ['propertyPrice', 'propertySize', 'propertyRooms', 'propertyBedrooms', 
+  ['propertyPrice', 'propertySize', 'propertyRooms', 
    'propertyKitchen', 'propertyBathrooms', 'latitude', 'longitude', 'brokerFee',
    'duringConstructionPercentage', 'onCompletionPercentage']
     .forEach(field => {
@@ -44,6 +44,15 @@ const ensureRequiredPropertyFields = (propertyData) => {
         completeData[field] = Number(completeData[field]) || 0;
       }
     });
+    
+  // Ensure propertyBedrooms and completionDate are always treated as strings
+  if (completeData.propertyBedrooms !== undefined) {
+    completeData.propertyBedrooms = String(completeData.propertyBedrooms);
+  }
+  
+  if (completeData.completionDate !== undefined) {
+    completeData.completionDate = String(completeData.completionDate);
+  }
   
   return completeData;
 };
