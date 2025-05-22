@@ -16,6 +16,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { convertS3UrlToProxyUrl } from '../../../utils/s3UrlConverter';
 import { formatPrice } from '../../../utils/formatPrice';
+import { Link } from 'react-router-dom';
 
 const HeroBanner = ({ property }) => {
   // Create images array from property data
@@ -348,24 +349,27 @@ const HeroBanner = ({ property }) => {
                   {/* Property Key Info - Enhanced with red accents and blurry background */}
                   <div className="flex flex-wrap gap-x-4 gap-y-3 mb-8">
                     {price && (
-                      <div className="flex items-center gap-2 bg-black/30 backdrop-blur-lg px-5 py-2.5 rounded-xl shadow-lg border border-red-500/30">
+                      <div className="flex flex-col items-center gap-2 bg-black/30 backdrop-blur-lg px-5 py-2.5 rounded-xl shadow-lg border border-red-500/30">
                         <span className="font-semibold text-lg">{price}</span>
+                        <span>Starting Price</span>
                       </div>
                     )}
                     {area && (
-                      <div className="flex items-center gap-2 bg-black/30 backdrop-blur-lg px-5 py-2.5 rounded-xl shadow-lg border border-red-500/30">
+                      <div className="flex flex-col items-center gap-2 bg-black/30 backdrop-blur-lg px-5 py-2.5 rounded-xl shadow-lg border border-red-500/30">
                         <span className="font-semibold">{area}</span>
+                        <span>Area</span>
                       </div>
                     )}
                     {bedrooms && (
-                      <div className="flex items-center gap-2 bg-black/30 backdrop-blur-lg px-5 py-2.5 rounded-xl shadow-lg border border-red-500/30">
+                      <div className="flex flex-col items-center gap-2 bg-black/30 backdrop-blur-lg px-5 py-2.5 rounded-xl shadow-lg border border-red-500/30">
                         <span className="font-semibold">{bedrooms} Bed</span>
+                        <span>Bedrooms</span>
                       </div>
                     )}
                     {completionDate && (
-                      <div className="flex items-center gap-2 bg-black/30 backdrop-blur-lg px-5 py-2.5 rounded-xl shadow-lg border border-red-500/30">
-                        <Calendar size={18} className="text-red-300" />
+                      <div className="flex flex-col items-center gap-2 bg-black/30 backdrop-blur-lg px-5 py-2.5 rounded-xl shadow-lg border border-red-500/30">
                         <span className="font-semibold">{formattedCompletionDate}</span>
+                        <span >Completion Date</span>
                       </div>
                     )}
                   </div>
@@ -385,14 +389,16 @@ const HeroBanner = ({ property }) => {
                         Download Brochure
                       </motion.a>
                     )}
-                    <motion.button 
-                      className="cursor-pointer bg-white/10 hover:bg-white/20 text-white py-4 px-8 rounded-xl transition-all flex items-center gap-3 backdrop-blur-md shadow-lg font-medium border border-white/20"
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      Get a consultation
-                      <ArrowRight size={20} className="text-red-300" />
-                    </motion.button>
+                    <Link to="/our-team">
+                      <motion.button 
+                        className="cursor-pointer bg-white/10 hover:bg-white/20 text-white py-4 px-8 rounded-xl transition-all flex items-center gap-3 backdrop-blur-md shadow-lg font-medium border border-white/20"
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        Get a consultation
+                        <ArrowRight size={20} className="text-red-300" />
+                      </motion.button>
+                    </Link>
                   </div>
                 </motion.div>
               </div>

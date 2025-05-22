@@ -477,40 +477,7 @@ const AgentProfileCard = () => {
                     </div>
                     
                     {/* Property features */}
-                    <div className="p-5 border-t border-gray-100">
-                      <div className="grid grid-cols-3 gap-2 text-gray-700">
-                        <div className="flex flex-col items-center p-2 rounded-lg bg-gray-50 hover:bg-red-50 transition-colors">
-                          <svg className="h-5 w-5 mb-1 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 8h10M9 12h10M9 16h10M5 8h.01M5 12h.01M5 16h.01" />
-                          </svg>
-                          <span className="font-medium">{property.propertyBedrooms} Beds</span>
-                        </div>
-                        
-                        <div className="flex flex-col items-center p-2 rounded-lg bg-gray-50 hover:bg-red-50 transition-colors">
-                          <svg className="h-5 w-5 mb-1 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                          </svg>
-                          <span className="font-medium">{property.propertyBathrooms} Baths</span>
-                        </div>
-                        
-                        <div className="flex flex-col items-center p-2 rounded-lg bg-gray-50 hover:bg-red-50 transition-colors">
-                          <svg className="h-5 w-5 mb-1 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                          </svg>
-                          <span className="font-medium">{property.propertySize} sqft</span>
-                        </div>
-                      </div>
-                      
-                      {/* View details button */}
-                      <div className="mt-4 flex justify-end">
-                        <div className="text-red-600 font-medium text-sm flex items-center group-hover:text-red-700 transition-colors">
-                          View Details
-                          <svg className="h-4 w-4 ml-1 transform transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
+                  
                   </div>
                 </Link>
               </motion.div>
