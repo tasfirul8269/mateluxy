@@ -1646,9 +1646,32 @@ const handleRemoveInteriorImage = (index) => {
                         </div>
                       </div>
                     ) : (
-                      <label className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-[#e5e7eb] rounded-xl cursor-pointer hover:border-[#ff4d4f] transition">
+                      <label 
+                        className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-[#e5e7eb] rounded-xl cursor-pointer hover:border-[#ff4d4f] transition"
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          e.currentTarget.classList.add('border-[#ff4d4f]', 'bg-[#fff8f8]');
+                        }}
+                        onDragLeave={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          e.currentTarget.classList.remove('border-[#ff4d4f]', 'bg-[#fff8f8]');
+                        }}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          e.currentTarget.classList.remove('border-[#ff4d4f]', 'bg-[#fff8f8]');
+                          const files = e.dataTransfer.files;
+                          if (files.length > 0) {
+                            const event = { target: { files: [files[0]] } };
+                            handleDeveloperLogoUpload(event);
+                          }
+                        }}
+                      >
                         <span className="text-3xl text-gray-300 mb-2">+</span>
                         <span className="text-gray-400">Add Developer Logo</span>
+                        <span className="text-xs text-gray-400 mt-2">Drag & drop or click to upload</span>
                         <input
                           id="developer-logo-input"
                           type="file"
@@ -1775,7 +1798,29 @@ const handleRemoveInteriorImage = (index) => {
                   {/* Brochure Section */}
                   <div className="bg-white rounded-2xl p-6 shadow border border-[#f3f3f3]">
                     <div className="text-lg font-semibold mb-3">Brochure</div>
-                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-[#e5e7eb] rounded-xl cursor-pointer hover:border-[#ff4d4f] transition">
+                    <label 
+                      className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-[#e5e7eb] rounded-xl cursor-pointer hover:border-[#ff4d4f] transition"
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.currentTarget.classList.add('border-[#ff4d4f]', 'bg-[#fff8f8]');
+                      }}
+                      onDragLeave={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.currentTarget.classList.remove('border-[#ff4d4f]', 'bg-[#fff8f8]');
+                      }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.currentTarget.classList.remove('border-[#ff4d4f]', 'bg-[#fff8f8]');
+                        const files = e.dataTransfer.files;
+                        if (files.length > 0) {
+                          const event = { target: { files: [files[0]] } };
+                          handleBrochureUpload(event);
+                        }
+                      }}
+                    >
                       {form.brochureFile ? (
                         <div className="flex flex-col items-center">
                           <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500 mb-2">
@@ -1792,6 +1837,7 @@ const handleRemoveInteriorImage = (index) => {
                         <>
                           <span className="text-2xl text-gray-300 mb-1">+</span>
                           <span className="text-sm text-gray-400">Upload PDF Brochure</span>
+                          <span className="text-xs text-gray-400 mt-1">Drag & drop or click to upload</span>
                         </>
                       )}
                       <input
@@ -2114,13 +2160,34 @@ const handleRemoveInteriorImage = (index) => {
                         </div>
                       ))}
                     </div>
-                    <button
-                      type="button"
-                      className="w-full px-4 py-2 rounded-lg bg-[#ffeaea] text-[#ff4d4f] font-medium hover:bg-[#ffdada] transition"
+                    <div
+                      className="w-full h-32 border-2 border-dashed border-[#e5e7eb] rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-[#ff4d4f] transition mb-3"
                       onClick={() => document.getElementById('exterior-gallery-input').click()}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.currentTarget.classList.add('border-[#ff4d4f]', 'bg-[#fff8f8]');
+                      }}
+                      onDragLeave={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.currentTarget.classList.remove('border-[#ff4d4f]', 'bg-[#fff8f8]');
+                      }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.currentTarget.classList.remove('border-[#ff4d4f]', 'bg-[#fff8f8]');
+                        const files = e.dataTransfer.files;
+                        if (files.length > 0) {
+                          const event = { target: { files } };
+                          handleExteriorGalleryUpload(event);
+                        }
+                      }}
                     >
-                      + Add Exterior Images
-                    </button>
+                      <span className="text-2xl text-gray-300 mb-1">+</span>
+                      <span className="text-gray-500 font-medium">Add Exterior Images</span>
+                      <span className="text-xs text-gray-400 mt-1">Drag & drop or click to upload</span>
+                    </div>
                     <input
                       id="exterior-gallery-input"
                       type="file"
@@ -2156,13 +2223,34 @@ const handleRemoveInteriorImage = (index) => {
                         </div>
                       ))}
                     </div>
-                    <button
-                      type="button"
-                      className="w-full px-4 py-2 rounded-lg bg-[#ffeaea] text-[#ff4d4f] font-medium hover:bg-[#ffdada] transition"
+                    <div
+                      className="w-full h-32 border-2 border-dashed border-[#e5e7eb] rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-[#ff4d4f] transition mb-3"
                       onClick={() => document.getElementById('interior-gallery-input').click()}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.currentTarget.classList.add('border-[#ff4d4f]', 'bg-[#fff8f8]');
+                      }}
+                      onDragLeave={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.currentTarget.classList.remove('border-[#ff4d4f]', 'bg-[#fff8f8]');
+                      }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.currentTarget.classList.remove('border-[#ff4d4f]', 'bg-[#fff8f8]');
+                        const files = e.dataTransfer.files;
+                        if (files.length > 0) {
+                          const event = { target: { files } };
+                          handleInteriorGalleryUpload(event);
+                        }
+                      }}
                     >
-                      + Add Interior Images
-                    </button>
+                      <span className="text-2xl text-gray-300 mb-1">+</span>
+                      <span className="text-gray-500 font-medium">Add Interior Images</span>
+                      <span className="text-xs text-gray-400 mt-1">Drag & drop or click to upload</span>
+                    </div>
                     <input
                       id="interior-gallery-input"
                       type="file"
