@@ -86,35 +86,13 @@ export const uploadFileToS3 = async (file, folder = '') => {
       throw new Error('Cannot upload empty file');
     }
     
-    // Handle large files - check if we need to use chunked upload
-    const isLargeFile = file.size > 10 * 1024 * 1024; // 10MB threshold
-    
-    if (isLargeFile) {
-      console.log(`Large file detected (${(file.size / (1024 * 1024)).toFixed(2)} MB). Using optimized upload approach.`);
-      // For large files, we'll use the same endpoint but with a different approach
-      // The server should be configured to handle these larger files
-    }
+    // For large files, use a direct presigned URL approach instead of form data
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB - typical limit for many servers
+    const isLargeFile = file.size > MAX_FILE_SIZE;
     
     // Generate a unique file name
     const fileName = generateUniqueFileName(file.name);
     const key = folder ? `${folder}${fileName}` : fileName;
-    
-    // Create form data for the upload
-    const formData = new FormData();
-    
-    // Add the file and metadata
-    formData.append('file', file);
-    formData.append('folder', folder);
-    formData.append('fileName', fileName);
-    formData.append('contentType', file.type);
-    formData.append('fileSize', file.size.toString()); // Send file size explicitly
-    
-    console.log('Uploading to S3 via backend proxy:', {
-      fileName,
-      folder,
-      contentType: file.type,
-      fileSize: file.size
-    });
     
     // Use the backend API to handle the S3 upload
     const apiUrl = import.meta.env.VITE_API_URL;
@@ -122,56 +100,160 @@ export const uploadFileToS3 = async (file, folder = '') => {
       throw new Error('API URL not configured in environment variables');
     }
     
-    const uploadUrl = `${apiUrl}/api/upload-to-s3`;
-    console.log(`Sending upload request to: ${uploadUrl}`);
-    
-    // Upload the file to the backend proxy with extended timeout for large files
-    try {
-      // Create AbortController with a longer timeout for large files
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), isLargeFile ? 5 * 60 * 1000 : 60 * 1000); // 5 min for large files, 1 min for others
-      
-      const response = await fetch(uploadUrl, {
-        method: 'POST',
-        body: formData,
-        credentials: 'include', // Include cookies for authentication if needed
-        signal: controller.signal,
-        // Don't set Content-Length header as it's automatically set by the browser
-      });
-      
-      // Clear the timeout
-      clearTimeout(timeoutId);
-      
-      if (!response.ok) {
-        let errorData = {};
-        try {
-          // Try to parse error as JSON
-          errorData = await response.json();
-        } catch (parseError) {
-          // If not JSON, get error as text
-          const errorText = await response.text();
-          console.error('S3 upload error response (text):', errorText);
-          throw new Error(`Upload failed: ${response.status} ${response.statusText} - ${errorText.substring(0, 100)}`);
-        }
-        
-        console.error('S3 upload error response (JSON):', errorData);
-        throw new Error(errorData.message || `Upload failed: ${response.status} ${response.statusText}`);
-      }
-      
-      // Parse the response to get the S3 URL
-      const data = await response.json();
-      console.log('File uploaded successfully. S3 path:', data.url);
-      
-      // Return just the URL
-      return data.url;
-    } catch (fetchError) {
-      if (fetchError.name === 'AbortError') {
-        console.error('Upload timed out. The file may be too large or the network connection is slow.');
-        throw new Error('Upload timed out. The file may be too large or the network connection is slow.');
-      }
-      console.error('Network or fetch error during S3 upload:', fetchError);
-      throw new Error(`Network error during upload: ${fetchError.message}`);
+    if (isLargeFile) {
+      console.log(`Large file detected (${(file.size / (1024 * 1024)).toFixed(2)} MB). Using direct upload approach.`);
+      return await uploadLargeFile(file, folder, fileName, apiUrl);
+    } else {
+      // For smaller files, use the regular upload approach
+      return await uploadRegularFile(file, folder, fileName, apiUrl);
     }
+  } catch (error) {
+    console.error('Error uploading file to S3:', error);
+    throw error;
+  }
+};
+
+// Helper function to upload regular-sized files
+const uploadRegularFile = async (file, folder, fileName, apiUrl) => {
+  // Create form data for the upload
+  const formData = new FormData();
+  
+  // Add the file and metadata
+  formData.append('file', file);
+  formData.append('folder', folder);
+  formData.append('fileName', fileName);
+  formData.append('contentType', file.type);
+  
+  console.log('Uploading regular file to S3 via backend proxy:', {
+    fileName,
+    folder,
+    contentType: file.type,
+    fileSize: file.size
+  });
+  
+  const uploadUrl = `${apiUrl}/api/upload-to-s3`;
+  console.log(`Sending upload request to: ${uploadUrl}`);
+  
+  try {
+    // Create AbortController with a timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60 * 1000); // 1 minute timeout
+    
+    const response = await fetch(uploadUrl, {
+      method: 'POST',
+      body: formData,
+      mode: 'cors', // Explicitly set CORS mode
+      credentials: 'include',
+      signal: controller.signal,
+      headers: {
+        // Don't set Content-Type as it's automatically set with the correct boundary by the browser
+        'Accept': 'application/json',
+      }
+    });
+    
+    // Clear the timeout
+    clearTimeout(timeoutId);
+    
+    if (!response.ok) {
+      handleErrorResponse(response);
+    }
+    
+    // Parse the response to get the S3 URL
+    const data = await response.json();
+    console.log('File uploaded successfully. S3 path:', data.url);
+    
+    // Return just the URL
+    return data.url;
+  } catch (fetchError) {
+    handleFetchError(fetchError);
+  }
+};
+
+// Helper function to upload large files using a chunked approach
+const uploadLargeFile = async (file, folder, fileName, apiUrl) => {
+  console.log(`Initiating large file upload for ${fileName}`);
+  
+  try {
+    // First, get a presigned URL for direct upload to S3
+    const presignedUrlEndpoint = `${apiUrl}/api/get-presigned-url`;
+    
+    const presignedUrlResponse = await fetch(presignedUrlEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      mode: 'cors',
+      credentials: 'include',
+      body: JSON.stringify({
+        fileName,
+        folder,
+        contentType: file.type,
+        fileSize: file.size
+      })
+    });
+    
+    if (!presignedUrlResponse.ok) {
+      handleErrorResponse(presignedUrlResponse);
+    }
+    
+    const presignedData = await presignedUrlResponse.json();
+    const { presignedUrl, fileUrl } = presignedData;
+    
+    if (!presignedUrl) {
+      throw new Error('Failed to get presigned URL for upload');
+    }
+    
+    console.log(`Got presigned URL for direct upload. Uploading file directly to S3...`);
+    
+    // Now upload the file directly to S3 using the presigned URL
+    const uploadResponse = await fetch(presignedUrl, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': file.type,
+      },
+      body: file,
+      mode: 'cors' // This is important for cross-origin requests
+    });
+    
+    if (!uploadResponse.ok) {
+      throw new Error(`Direct upload failed: ${uploadResponse.status} ${uploadResponse.statusText}`);
+    }
+    
+    console.log('Large file uploaded successfully to S3');
+    return fileUrl;
+  } catch (error) {
+    console.error('Error during large file upload:', error);
+    throw new Error(`Large file upload failed: ${error.message}`);
+  }
+};
+
+// Helper function to handle error responses
+const handleErrorResponse = async (response) => {
+  let errorData = {};
+  try {
+    // Try to parse error as JSON
+    errorData = await response.json();
+  } catch (parseError) {
+    // If not JSON, get error as text
+    const errorText = await response.text();
+    console.error('S3 upload error response (text):', errorText);
+    throw new Error(`Upload failed: ${response.status} ${response.statusText} - ${errorText.substring(0, 100)}`);
+  }
+  
+  console.error('S3 upload error response (JSON):', errorData);
+  throw new Error(errorData.message || `Upload failed: ${response.status} ${response.statusText}`);
+};
+
+// Helper function to handle fetch errors
+const handleFetchError = (fetchError) => {
+  if (fetchError.name === 'AbortError') {
+    console.error('Upload timed out. The file may be too large or the network connection is slow.');
+    throw new Error('Upload timed out. The file may be too large or the network connection is slow.');
+  }
+  console.error('Network or fetch error during S3 upload:', fetchError);
+  throw new Error(`Network error during upload: ${fetchError.message}`);
+}
   } catch (error) {
     console.error('Error uploading file to S3:', error);
     throw error;

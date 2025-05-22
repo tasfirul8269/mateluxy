@@ -377,17 +377,27 @@ export default function TabbedPropertyForm({ onSubmit, onCancel, selectedCategor
     const fetchAgents = async () => {
       try {
         setIsLoadingAgents(true);
-        const { data } = await agentApi.getAgents();
+        const response = await agentApi.getAgents();
         
-        if (Array.isArray(data)) {
-          setAgents(data);
+        // Check if response has data property and it's an array
+        if (response && response.data && Array.isArray(response.data)) {
+          console.log("Agents fetched successfully:", response.data);
+          setAgents(response.data);
           
           // If in agent panel, set the agent ID from props
           if (isAgentPanel && agentId) {
             setForm(prev => ({ ...prev, agent: agentId }));
           }
+        } else if (Array.isArray(response)) {
+          // Handle case where response is directly an array
+          console.log("Agents fetched successfully (direct array):", response);
+          setAgents(response);
+          
+          if (isAgentPanel && agentId) {
+            setForm(prev => ({ ...prev, agent: agentId }));
+          }
         } else {
-          console.error("Invalid agents data received:", data);
+          console.error("Invalid agents data received:", response);
           setAgents([]);
         }
       } catch (error) {
@@ -1722,12 +1732,12 @@ const handleRemoveInteriorImage = (index) => {
                     />
                   </div>
                   <div>
-                    <label className="block text-base font-medium mb-2">After Booking (%)</label>
+                    <label className="block text-base font-medium mb-2">Handover (%)</label>
                     <input
-                      name="afterBookingPercentage"
-                      value={form.afterBookingPercentage || ''}
+                      name="handoverPercentage"
+                      value={form.handoverPercentage || ''}
                       onChange={handleInput}
-                      placeholder="After Booking (%)"
+                      placeholder="Handover (%)"
                       type="number"
                       className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition"
                     />
