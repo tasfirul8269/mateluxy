@@ -345,51 +345,7 @@ const PropertiesPage = () => {
                       </div>
                     </div>
                     
-                    <div className="grid grid-cols-3 gap-3 mt-4">
-                      {(() => {
-                        // Dynamically generate price range presets based on actual price range
-                        const range = maxPrice - minPrice;
-                        
-                        // Create just 3 evenly distributed price ranges
-                        const presets = [];
-                        
-                        // Low range (0 to 1/3 of max)
-                        presets.push({ 
-                          label: `Low (${formatPrice(0)}-${formatPrice(maxPrice/3)})`, 
-                          min: 0, 
-                          max: Math.ceil(maxPrice/3) 
-                        });
-                        
-                        // Mid range (1/3 to 2/3 of max)
-                        presets.push({ 
-                          label: `Mid (${formatPrice(Math.ceil(maxPrice/3))}-${formatPrice(Math.ceil(2*maxPrice/3))})`, 
-                          min: Math.ceil(maxPrice/3), 
-                          max: Math.ceil(2*maxPrice/3) 
-                        });
-                        
-                        // High range (2/3 to max)
-                        presets.push({ 
-                          label: `High (${formatPrice(Math.ceil(2*maxPrice/3))}+)`, 
-                          min: Math.ceil(2*maxPrice/3), 
-                          max: maxPrice 
-                        });
-                        
-                        
-                        return presets.map((preset, index) => (
-                          <button
-                            key={index}
-                            className={`px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
-                              priceRange[0] === preset.min && priceRange[1] === preset.max
-                                ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                                : 'bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100'
-                            }`}
-                            onClick={() => setPriceRange([preset.min, preset.max])}
-                          >
-                            {preset.label}
-                          </button>
-                        ))
-                      })()}
-                    </div>
+
                   </div>
                   
                   <div className="pt-4 flex justify-between space-x-3 border-t border-gray-100">
