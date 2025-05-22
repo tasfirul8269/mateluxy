@@ -34,10 +34,7 @@ import {
 } from "@/components/AdminPannel/ui/select";
 import { Separator } from "@/components/AdminPannel/ui/separator";
 import { developerService } from "@/services/developerService";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/AdminPannel/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/AdminPannel/ui/popover";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 
 // Property types
 const propertyTypes = [
@@ -81,7 +78,6 @@ const offPlanSchema = z.object({
 export function OffPlanPropertyForm({ onSubmit, onCancel }) {
   // State to store available developers
   const [developers, setDevelopers] = useState([]);
-  const [developerOpen, setDeveloperOpen] = useState(false);
   const [isLoadingDevelopers, setIsLoadingDevelopers] = useState(true);
 
   // Fetch developers on component mount
@@ -91,6 +87,12 @@ export function OffPlanPropertyForm({ onSubmit, onCancel }) {
         setIsLoadingDevelopers(true);
         const developersData = await developerService.getDevelopers();
         setDevelopers(developersData);
+        console.log('Fetched developers:', developersData);
+        
+        // Set default developer if available
+        if (developersData.length > 0) {
+          form.setValue('developer', '');
+        }
       } catch (error) {
         console.error('Error fetching developers:', error);
       } finally {
@@ -189,77 +191,45 @@ export function OffPlanPropertyForm({ onSubmit, onCancel }) {
               control={form.control}
               name="developer"
               render={({ field }) => (
-                <FormItem className="flex flex-col">
+                <FormItem>
                   <FormLabel>Developer Name</FormLabel>
-                  <Popover open={developerOpen} onOpenChange={setDeveloperOpen}>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          aria-expanded={developerOpen}
-                          className={cn(
-                            "w-full justify-between",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value
-                            ? field.value
-                            : "Select or enter developer name"}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-full p-0">
-                      <Command>
-                        <CommandInput 
-                          placeholder="Search developer..." 
-                          className="h-9"
-                          onValueChange={(value) => {
-                            field.onChange(value);
-                            // Clear developer image if user is typing a new developer name
-                            if (!developers.some(dev => dev.name.toLowerCase() === value.toLowerCase())) {
-                              form.setValue('developerImage', '');
-                            }
-                          }}
-                        />
-                        <CommandEmpty>No developer found. Type to add new.</CommandEmpty>
-                        <CommandGroup>
-                          {isLoadingDevelopers ? (
-                            <div className="flex items-center justify-center p-4">
-                              <div className="animate-spin h-5 w-5 border-2 border-gray-500 rounded-full border-t-transparent"></div>
-                              <span className="ml-2">Loading developers...</span>
-                            </div>
-                          ) : (
-                            developers.map((developer) => (
-                              <CommandItem
-                                key={developer.name}
-                                value={developer.name}
-                                onSelect={() => {
-                                  form.setValue('developer', developer.name);
-                                  form.setValue('developerImage', developer.logo);
-                                  setDeveloperOpen(false);
-                                }}
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    developer.name === field.value
-                                      ? "opacity-100"
-                                      : "opacity-0"
-                                  )}
-                                />
-                                {developer.name}
-                              </CommandItem>
-                            ))
-                          )}
-                        </CommandGroup>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    Select from existing developers or type to add a new one
-                  </div>
+                  <Select 
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                      // Auto-fill developer image when selecting from dropdown
+                      const selectedDeveloper = developers.find(dev => dev.name === value);
+                      if (selectedDeveloper) {
+                        form.setValue('developerImage', selectedDeveloper.logo);
+                      } else {
+                        form.setValue('developerImage', '');
+                      }
+                    }} 
+                    value={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select developer or type new name" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="">Select a developer</SelectItem>
+                      {isLoadingDevelopers ? (
+                        <div className="flex items-center justify-center p-4">
+                          <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                          <span>Loading developers...</span>
+                        </div>
+                      ) : (
+                        developers.map((developer) => (
+                          <SelectItem key={developer.name} value={developer.name}>
+                            {developer.name}
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    Select an existing developer or enter a new one
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
