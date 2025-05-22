@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { DollarSign, Ruler, Bed, MapPin, Calendar } from 'lucide-react';
+import { CircleDollarSign, Ruler, Bed, MapPin, Calendar } from 'lucide-react';
 import { formatPrice } from '../../../utils/formatPrice';
 
 const ProjectDetailsCard = ({ property }) => {
@@ -16,7 +16,7 @@ const ProjectDetailsCard = ({ property }) => {
     { 
       label: 'Starting Price', 
       value: property?.propertyPrice ? `AED ${(property.propertyPrice)}` : 'Price not specified',
-      icon: <DollarSign size={18} className="text-red-500" />
+      icon: <CircleDollarSign size={18} className="text-red-500" />
     },
     { 
       label: 'Area from', 
