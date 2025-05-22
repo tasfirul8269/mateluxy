@@ -253,11 +253,6 @@ const handleFetchError = (fetchError) => {
   }
   console.error('Network or fetch error during S3 upload:', fetchError);
   throw new Error(`Network error during upload: ${fetchError.message}`);
-}
-  } catch (error) {
-    console.error('Error uploading file to S3:', error);
-    throw error;
-  }
 };
 
 /**
