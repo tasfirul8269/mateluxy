@@ -345,39 +345,35 @@ const PropertiesPage = () => {
                       </div>
                     </div>
                     
-                    <div className="grid grid-cols-4 gap-2 mt-4">
+                    <div className="grid grid-cols-3 gap-3 mt-4">
                       {(() => {
                         // Dynamically generate price range presets based on actual price range
                         const range = maxPrice - minPrice;
-                        const step = Math.ceil(range / 6); // Divide into 6 ranges
                         
-                        // Create evenly distributed price ranges
+                        // Create just 3 evenly distributed price ranges
                         const presets = [];
                         
-                        // First preset is from min to min+step
+                        // Low range (0 to 1/3 of max)
                         presets.push({ 
-                          label: `${formatPrice(minPrice)}-${formatPrice(minPrice + step)}`, 
-                          min: minPrice, 
-                          max: minPrice + step 
+                          label: `Low (${formatPrice(0)}-${formatPrice(maxPrice/3)})`, 
+                          min: 0, 
+                          max: Math.ceil(maxPrice/3) 
                         });
                         
-                        // Middle presets
-                        for (let i = 1; i < 5; i++) {
-                          const min = minPrice + (i * step);
-                          const max = minPrice + ((i + 1) * step);
-                          presets.push({ 
-                            label: `${formatPrice(min)}-${formatPrice(max)}`, 
-                            min, 
-                            max 
-                          });
-                        }
-                        
-                        // Last preset is from max-step to max
+                        // Mid range (1/3 to 2/3 of max)
                         presets.push({ 
-                          label: `${formatPrice(maxPrice - step)}+`, 
-                          min: maxPrice - step, 
+                          label: `Mid (${formatPrice(Math.ceil(maxPrice/3))}-${formatPrice(Math.ceil(2*maxPrice/3))})`, 
+                          min: Math.ceil(maxPrice/3), 
+                          max: Math.ceil(2*maxPrice/3) 
+                        });
+                        
+                        // High range (2/3 to max)
+                        presets.push({ 
+                          label: `High (${formatPrice(Math.ceil(2*maxPrice/3))}+)`, 
+                          min: Math.ceil(2*maxPrice/3), 
                           max: maxPrice 
                         });
+                        
                         
                         return presets.map((preset, index) => (
                           <button
