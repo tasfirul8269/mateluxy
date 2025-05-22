@@ -169,59 +169,103 @@ const uploadRegularFile = async (file, folder, fileName, apiUrl) => {
   }
 };
 
-// Helper function to upload large files using a chunked approach
+// Helper function to upload large files using a direct S3 upload approach
 const uploadLargeFile = async (file, folder, fileName, apiUrl) => {
-  console.log(`Initiating large file upload for ${fileName}`);
+  console.log(`Initiating large file upload for ${fileName} (${(file.size / (1024 * 1024)).toFixed(2)} MB)`);
   
   try {
-    // First, get a presigned URL for direct upload to S3
+    // First, check if the backend has the presigned URL endpoint
     const presignedUrlEndpoint = `${apiUrl}/api/get-presigned-url`;
+    console.log(`Requesting presigned URL from: ${presignedUrlEndpoint}`);
     
-    const presignedUrlResponse = await fetch(presignedUrlEndpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      mode: 'cors',
-      credentials: 'include',
-      body: JSON.stringify({
-        fileName,
-        folder,
-        contentType: file.type,
-        fileSize: file.size
-      })
-    });
+    // Create a controller for timeout handling
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
     
-    if (!presignedUrlResponse.ok) {
-      handleErrorResponse(presignedUrlResponse);
+    try {
+      const presignedUrlResponse = await fetch(presignedUrlEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        mode: 'cors',
+        credentials: 'include',
+        signal: controller.signal,
+        body: JSON.stringify({
+          fileName,
+          folder,
+          contentType: file.type,
+          fileSize: file.size
+        })
+      });
+      
+      // Clear the timeout
+      clearTimeout(timeoutId);
+      
+      if (!presignedUrlResponse.ok) {
+        // If the server returns an error, handle it properly
+        console.error(`Server returned error: ${presignedUrlResponse.status} ${presignedUrlResponse.statusText}`);
+        
+        // Try to get more details about the error
+        try {
+          const errorData = await presignedUrlResponse.json();
+          console.error('Error details:', errorData);
+          throw new Error(errorData.message || `Failed to get presigned URL: ${presignedUrlResponse.status} ${presignedUrlResponse.statusText}`);
+        } catch (jsonError) {
+          // If we can't parse the error as JSON, use the status text
+          throw new Error(`Failed to get presigned URL: ${presignedUrlResponse.status} ${presignedUrlResponse.statusText}`);
+        }
+      }
+      
+      // Parse the presigned URL response
+      const presignedData = await presignedUrlResponse.json();
+      console.log('Received presigned URL data:', presignedData);
+      
+      // Extract the presigned URL and file URL
+      const { presignedUrl, fileUrl } = presignedData;
+      
+      if (!presignedUrl) {
+        throw new Error('Server did not return a valid presigned URL');
+      }
+      
+      console.log(`Got presigned URL. Uploading file directly to S3...`);
+      
+      // Now upload the file directly to S3 using the presigned URL
+      const uploadController = new AbortController();
+      const uploadTimeoutId = setTimeout(() => uploadController.abort(), 5 * 60 * 1000); // 5 minute timeout for large files
+      
+      const uploadResponse = await fetch(presignedUrl, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': file.type,
+        },
+        body: file,
+        signal: uploadController.signal,
+        mode: 'cors' // This is important for cross-origin requests
+      });
+      
+      // Clear the upload timeout
+      clearTimeout(uploadTimeoutId);
+      
+      if (!uploadResponse.ok) {
+        console.error(`Direct S3 upload failed: ${uploadResponse.status} ${uploadResponse.statusText}`);
+        throw new Error(`Direct S3 upload failed: ${uploadResponse.status} ${uploadResponse.statusText}`);
+      }
+      
+      console.log('Large file uploaded successfully to S3');
+      return fileUrl;
+    } catch (fetchError) {
+      // Clear the timeout to prevent memory leaks
+      clearTimeout(timeoutId);
+      
+      if (fetchError.name === 'AbortError') {
+        console.error('Request timed out while getting presigned URL');
+        throw new Error('Request timed out while getting presigned URL');
+      }
+      
+      throw fetchError;
     }
-    
-    const presignedData = await presignedUrlResponse.json();
-    const { presignedUrl, fileUrl } = presignedData;
-    
-    if (!presignedUrl) {
-      throw new Error('Failed to get presigned URL for upload');
-    }
-    
-    console.log(`Got presigned URL for direct upload. Uploading file directly to S3...`);
-    
-    // Now upload the file directly to S3 using the presigned URL
-    const uploadResponse = await fetch(presignedUrl, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': file.type,
-      },
-      body: file,
-      mode: 'cors' // This is important for cross-origin requests
-    });
-    
-    if (!uploadResponse.ok) {
-      throw new Error(`Direct upload failed: ${uploadResponse.status} ${uploadResponse.statusText}`);
-    }
-    
-    console.log('Large file uploaded successfully to S3');
-    return fileUrl;
   } catch (error) {
     console.error('Error during large file upload:', error);
     throw new Error(`Large file upload failed: ${error.message}`);
@@ -230,19 +274,27 @@ const uploadLargeFile = async (file, folder, fileName, apiUrl) => {
 
 // Helper function to handle error responses
 const handleErrorResponse = async (response) => {
+  // Clone the response before reading it
+  const responseClone = response.clone();
+  
   let errorData = {};
   try {
     // Try to parse error as JSON
-    errorData = await response.json();
+    errorData = await responseClone.json();
+    console.error('S3 upload error response (JSON):', errorData);
+    throw new Error(errorData.message || `Upload failed: ${response.status} ${response.statusText}`);
   } catch (parseError) {
-    // If not JSON, get error as text
-    const errorText = await response.text();
-    console.error('S3 upload error response (text):', errorText);
-    throw new Error(`Upload failed: ${response.status} ${response.statusText} - ${errorText.substring(0, 100)}`);
+    try {
+      // If not JSON, get error as text
+      const errorText = await response.text();
+      console.error('S3 upload error response (text):', errorText);
+      throw new Error(`Upload failed: ${response.status} ${response.statusText} - ${errorText.substring(0, 100)}`);
+    } catch (textError) {
+      // If we can't read the response at all
+      console.error('Failed to read error response:', textError);
+      throw new Error(`Upload failed: ${response.status} ${response.statusText}`);
+    }
   }
-  
-  console.error('S3 upload error response (JSON):', errorData);
-  throw new Error(errorData.message || `Upload failed: ${response.status} ${response.statusText}`);
 };
 
 // Helper function to handle fetch errors
