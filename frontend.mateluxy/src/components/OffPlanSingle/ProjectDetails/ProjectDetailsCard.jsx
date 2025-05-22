@@ -15,7 +15,7 @@ const ProjectDetailsCard = ({ property }) => {
   const details = [
     { 
       label: 'Starting Price', 
-      value: property?.propertyPrice ? formatPrice(property.propertyPrice) : 'Price not specified',
+      value: property?.propertyPrice ? `AED ${(property.propertyPrice)}` : 'Price not specified',
       icon: <DollarSign size={18} className="text-red-500" />
     },
     { 

@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { MapPin, Mail, Phone, Download, MessageCircle, Globe, Briefcase, Building, Home, ArrowRight, Star, ChevronRight, Calendar, Users, ChevronDown } from "lucide-react";
+import { MapPin, Mail, Phone, Download, MessageCircle, Globe, Briefcase, Building, Home, ArrowRight, Star, ChevronRight, Calendar, Users, ChevronDown, Facebook, Instagram, Twitter, Linkedin, Youtube } from "lucide-react";
 import { convertS3UrlToProxyUrl } from "../../utils/s3UrlConverter";
 import { toast } from "sonner";
 import { formatPrice } from "../../utils/formatPrice";
@@ -163,6 +163,8 @@ const AgentProfileCard = () => {
                 />
               </div>
               
+
+              
               {/* Department badge */}
               <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
                 {agentData?.department || 'Sales'}
@@ -183,6 +185,8 @@ const AgentProfileCard = () => {
               <h1 className="text-4xl md:text-5xl font-bold mb-4">{agentData?.fullName || 'Agent Name'}</h1>
               <p className="text-xl text-red-200 font-medium mb-6">{agentData?.position || 'Real Estate Agent'}</p>
               
+
+              
               <div className="flex flex-wrap justify-center lg:justify-start gap-6 mb-8">
                 <div className="flex items-center">
                   <Briefcase className="h-5 w-5 mr-2 text-red-300" />
@@ -193,9 +197,9 @@ const AgentProfileCard = () => {
                   <Globe className="h-5 w-5 mr-2 text-red-300" />
                   <span>{agentData?.languages?.length || 0} Languages</span>
                 </div>
-                
-              
               </div>
+              
+
               
               {/* Contact buttons */}
               <div className="flex flex-wrap justify-center lg:justify-start gap-4">
@@ -254,6 +258,8 @@ const AgentProfileCard = () => {
                     </div>
                   </div>
                   
+
+                  
                   <div className="flex items-start">
                     <div className="bg-red-50 p-2 rounded-lg mr-3 mt-1">
                       <Phone className="h-5 w-5 text-red-600" />
@@ -277,6 +283,48 @@ const AgentProfileCard = () => {
                       </div>
                     </div>
                   </div>
+                  
+                  {/* Social Media Icons */}
+                  {agentData?.socialLinks && agentData.socialLinks.length > 0 && (
+                    <div className="flex items-center justify-start w-full mt-4 mb-5">
+                      <div className="flex flex-row gap-2">
+                        {agentData.socialLinks.map((link, index) => {
+                          // Determine which icon to show based on the URL and its brand color
+                          let Icon = Globe;
+                          let bgColorClass = "bg-blue-500";
+                          
+                          if (link.includes('facebook')) {
+                            Icon = Facebook;
+                            bgColorClass = "bg-[#1877F2]"; // Facebook blue
+                          } else if (link.includes('instagram')) {
+                            Icon = Instagram;
+                            bgColorClass = "bg-[#E4405F]"; // Instagram pink/red
+                          } else if (link.includes('twitter') || link.includes('x.com')) {
+                            Icon = Twitter;
+                            bgColorClass = "bg-[#1DA1F2]"; // Twitter blue
+                          } else if (link.includes('linkedin')) {
+                            Icon = Linkedin;
+                            bgColorClass = "bg-[#0A66C2]"; // LinkedIn blue
+                          } else if (link.includes('youtube')) {
+                            Icon = Youtube;
+                            bgColorClass = "bg-[#FF0000]"; // YouTube red
+                          }
+                          
+                          return (
+                            <a 
+                              key={index} 
+                              href={link} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className={`${bgColorClass} p-2 rounded-full transition-all shadow-sm hover:shadow-md hover:scale-110 duration-200 inline-flex items-center justify-center`}
+                            >
+                              <Icon className="h-5 w-5 text-white" />
+                            </a>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
               

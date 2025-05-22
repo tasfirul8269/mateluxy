@@ -108,16 +108,14 @@ const AboutSection = ({ property }) => {
           <div className="flex items-center gap-3 mt-3 md:mt-0">
             {developerImage ? (
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-lg overflow-hidden">
+                <div className="w-24  rounded-lg overflow-hidden">
                   <img 
                     src={developerImage}
                     alt={`${developer} logo`}
                     className="w-full h-full object-contain"
                   />
                 </div>
-                <div>
-                  <p className="font-medium text-gray-900">{developer}</p>
-                </div>
+               
               </div>
             ) : developer ? (
               <div className="flex items-center gap-3">

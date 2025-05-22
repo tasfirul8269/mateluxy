@@ -25,7 +25,7 @@ const Tabs = () => {
           <button
             key={tab.label}
             onClick={() => handleTabClick(tab)}
-            className={`py-3 mb-6 px-6 font-medium transition-colors ${
+            className={`py-3 mb-2 px-6 font-medium transition-colors ${
               activeTab === tab.label
                 ? 'text-red-500 bg-[#ff252511] ml-[5px] rounded-[15px] '
                 : 'text-gray-500 bg-[#fff] ml-[5px] border border-[#f1f1f1] rounded-[15px] hover:text-gray-700'
