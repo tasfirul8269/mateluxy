@@ -245,15 +245,7 @@ const AboutSection = ({ property }) => {
         </div>
       )}
       
-      {/* License Number at the bottom of About section */}
-      {property?.dldPermitNumber && (
-        <div className="mt-8 pt-6 border-t border-gray-100">
-          <p className="text-gray-500 text-sm flex items-center gap-2">
-            <Shield size={16} className="text-red-500" />
-            License number: <span className="font-medium text-gray-700">{property.dldPermitNumber}</span>
-          </p>
-        </div>
-      )}
+     
     </motion.section>
   );
 };
