@@ -39,12 +39,12 @@ const OffPlanSinglePage = () => {
           };
           setProperty(transformedProperty);
           
-          // Fetch related off-plan properties
+          // Fetch related properties - show Buy properties instead of off-plan
           try {
             const relatedResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/properties`, {
               params: {
                 state: initialPropertyData.propertyState,
-                category: 'Off Plan', // Only fetch off-plan properties
+                category: 'Buy', // Show Buy properties instead of Off Plan
                 limit: 4,
                 exclude: id
               }
@@ -74,12 +74,12 @@ const OffPlanSinglePage = () => {
         };
         setProperty(transformedProperty);
         
-        // Fetch related off-plan properties
+        // Fetch related properties - show Buy properties instead of off-plan
         if (propertyData.propertyState) {
           const relatedResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/properties`, {
             params: {
               state: propertyData.propertyState,
-              category: 'Off Plan', // Only fetch off-plan properties
+              category: 'Buy', // Show Buy properties instead of Off Plan
               limit: 4,
               exclude: id
             }
@@ -176,50 +176,48 @@ const OffPlanSinglePage = () => {
                 <PaymentPlanSection property={property} />
               </div>
               
-              {/* Related Properties Section - Only show if there are off-plan properties */}
-              {relatedProperties.length > 0 && relatedProperties.some(prop => prop.category === 'Off Plan') && (
+              {/* Related Properties Section - Only show if there are related properties */}
+              {relatedProperties.length > 0 && (
                 <section className="bg-white rounded-[30px] border border-[#e6e6e6] overflow-hidden mb-8 p-8">
-                  <h2 className="text-3xl font-bold text-gray-800 mb-6">Similar Off-Plan Properties</h2>
+                  <h2 className="text-3xl font-bold text-gray-800 mb-6">Similar Properties</h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    {relatedProperties
-                      .filter(prop => prop.category === 'Off Plan')
-                      .map((relatedProperty, index) => {
-                        // Create the full URL including origin to ensure it works properly
-                        const fullUrl = `${window.location.origin}/off-plan-single/${relatedProperty._id}`;
-                        
-                        return (
-                          <motion.div 
-                            key={relatedProperty._id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 * index, duration: 0.4 }}
-                            className="bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 hover:shadow-md transition-all"
+                    {relatedProperties.map((relatedProperty, index) => {
+                      // Create the full URL including origin to ensure it works properly
+                      const fullUrl = `${window.location.origin}/property-details/${relatedProperty._id}`;
+                      
+                      return (
+                        <motion.div 
+                          key={relatedProperty._id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.1 * index, duration: 0.4 }}
+                          className="bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 hover:shadow-md transition-all"
+                        >
+                          <div 
+                            className="cursor-pointer"
+                            onClick={() => {
+                              const newWindow = window.open('', '_blank');
+                              if (newWindow) {
+                                newWindow.location.href = `/property-details/${relatedProperty._id}`;
+                              }
+                            }}
                           >
-                            <div 
-                              className="cursor-pointer"
-                              onClick={() => {
-                                const newWindow = window.open('', '_blank');
-                                if (newWindow) {
-                                  newWindow.location.href = `/off-plan-single/${relatedProperty._id}`;
-                                }
-                              }}
-                            >
-                              <div className="h-48 overflow-hidden">
-                                <img 
-                                  src={relatedProperty.propertyFeaturedImage} 
-                                  alt={relatedProperty.propertyTitle} 
-                                  className="w-full h-full object-cover transition-transform hover:scale-105 duration-500"
-                                />
-                              </div>
-                              <div className="p-4">
-                                <h3 className="font-semibold text-lg text-gray-800 mb-1 line-clamp-1">{relatedProperty.propertyTitle}</h3>
-                                <p className="text-gray-600 text-sm mb-2 line-clamp-1">{relatedProperty.propertyState || relatedProperty.propertyAddress}</p>
-                                <p className="text-blue-500 font-medium">{formatPrice(relatedProperty.propertyPrice) || 'Price on request'}</p>
-                              </div>
+                            <div className="h-48 overflow-hidden">
+                              <img 
+                                src={relatedProperty.propertyFeaturedImage} 
+                                alt={relatedProperty.propertyTitle} 
+                                className="w-full h-full object-cover transition-transform hover:scale-105 duration-500"
+                              />
                             </div>
-                          </motion.div>
-                        );
-                      })}
+                            <div className="p-4">
+                              <h3 className="font-semibold text-lg text-gray-800 mb-1 line-clamp-1">{relatedProperty.propertyTitle}</h3>
+                              <p className="text-gray-600 text-sm mb-2 line-clamp-1">{relatedProperty.propertyState || relatedProperty.propertyAddress}</p>
+                              <p className="text-blue-500 font-medium">{formatPrice(relatedProperty.propertyPrice) || 'Price on request'}</p>
+                            </div>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
                   </div>
                 </section>
               )}

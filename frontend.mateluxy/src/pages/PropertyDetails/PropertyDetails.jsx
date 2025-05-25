@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { formatPrice } from '../../utils/formatPrice';
@@ -21,6 +21,7 @@ const PropertyDetails = () => {
   const [error, setError] = useState(null);
   
   const { id } = useParams();
+  const navigate = useNavigate();
   
   // Fetch property data
   useEffect(() => {
@@ -47,13 +48,14 @@ const PropertyDetails = () => {
           }
         }
         
-        // Fetch related properties
+        // Fetch related properties - only fetch non-off-plan properties
         if (propertyData.propertyState) {
           const relatedResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/properties`, {
             params: {
               state: propertyData.propertyState,
               limit: 4,
-              exclude: id
+              exclude: id,
+              category: propertyData.category === 'Off Plan' ? 'Buy' : propertyData.category // If current property is off-plan, show Buy properties, otherwise show same category
             }
           });
           setRelatedProperties(relatedResponse.data);
@@ -163,7 +165,7 @@ const PropertyDetails = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 * index, duration: 0.4 }}
                         className="bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 hover:shadow-md transition-all cursor-pointer"
-                        onClick={() => window.location.href = `/properties/${relatedProperty._id}`}
+                        onClick={() => navigate(`/property-details/${relatedProperty._id}`)}
                       >
                         <div className="h-48 overflow-hidden">
                           <img 

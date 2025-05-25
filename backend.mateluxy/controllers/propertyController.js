@@ -3,7 +3,7 @@ import Property from '../models/Property.js';
 // Get all properties - with filtering options
 export async function getAllProperties(req, res) {
   try {
-    const { agent, includeAgent = 'true' } = req.query;
+    const { agent, includeAgent = 'true', category, state, exclude, limit } = req.query;
     
     // Build filter based on query parameters
     const filter = {};
@@ -13,17 +13,40 @@ export async function getAllProperties(req, res) {
       console.log(`Filtering properties by agent: ${agent}`);
       filter.agent = agent;
     }
+
+    // If category is provided, filter by category
+    if (category) {
+      console.log(`Filtering properties by category: ${category}`);
+      filter.category = category;
+    }
+
+    // If state is provided, filter by state
+    if (state) {
+      console.log(`Filtering properties by state: ${state}`);
+      filter.propertyState = state;
+    }
+
+    // If exclude is provided, exclude that property
+    if (exclude) {
+      console.log(`Excluding property: ${exclude}`);
+      filter._id = { $ne: exclude };
+    }
     
     console.log("Property filter:", filter);
     
     // Create query
     let query = Property.find(filter);
     
+    // Apply limit if provided
+    if (limit) {
+      query = query.limit(parseInt(limit));
+    }
+    
     // Populate agent data if requested
     if (includeAgent === 'true') {
       query = query.populate({
         path: 'agent',
-        select: 'fullName profileImage languages position whatsapp contactNumber', // Added contact fields
+        select: 'fullName profileImage languages position whatsapp contactNumber',
         model: 'Agent'
       });
     }
