@@ -6,6 +6,7 @@ import { formatPrice } from '../../utils/formatPrice';
 import * as DropdownMenu from "../AdminPannel/ui/dropdown-menu";
 import { Slider } from "../AdminPannel/ui/slider";
 import DIRHAM from "@/assets/uae-dirham.png"; // Assuming you have a dirham icon
+import { Dialog } from '@headlessui/react';
 
 const PropertySearchBar = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -19,6 +20,7 @@ const PropertySearchBar = () => {
   });
   const [minMaxPrices, setMinMaxPrices] = useState({ min: 100, max: 5000000 });
   const [amenitiesOptions, setAmenitiesOptions] = useState([]);
+  const [filterOpen, setFilterOpen] = useState(false);
   
   const location = useLocation();
   const navigate = useNavigate();
@@ -367,8 +369,8 @@ const PropertySearchBar = () => {
             />
           </div>
           
-          {/* Property Type Field */}
-          <div className="relative flex-1 min-w-[200px] w-full">
+          {/* Property Type Field (desktop only) */}
+          <div className="relative flex-1 min-w-[200px] w-full hidden md:block">
             <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
               <FiHome className="text-red-500" />
             </div>
@@ -392,8 +394,8 @@ const PropertySearchBar = () => {
             </div>
           </div>
           
-          {/* Price Dropdown Menu */}
-          <div className="relative flex-1 min-w-[200px] w-full">
+          {/* Price Dropdown Menu (desktop only) */}
+          <div className="relative flex-1 min-w-[200px] w-full hidden md:block">
             <DropdownMenu.DropdownMenu>
               <DropdownMenu.DropdownMenuTrigger asChild>
                 <button className="w-full flex items-center justify-between pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all">
@@ -486,95 +488,164 @@ const PropertySearchBar = () => {
                 </button>
               </DropdownMenu.DropdownMenuTrigger>
               
-              <DropdownMenu.DropdownMenuContent className="w-72 p-4 max-h-[80vh] overflow-y-auto" sideOffset={5} align="end">
-                <div className="sticky top-0 bg-white pb-2 z-10">
-                  <div className="flex justify-between items-center mb-3">
-                    <button
-                      onClick={clearFilters}
-                      className="px-3 py-1.5 border border-gray-200 text-gray-700 text-xs rounded-lg hover:bg-gray-100 transition-colors"
-                    >
-                      Reset
-                    </button>
-                    <button
-                      onClick={handleSearch}
-                      className="px-3 py-1.5 bg-red-600 text-white text-xs rounded-lg hover:bg-red-700 transition-colors"
-                    >
-                      Apply
-                    </button>
-                  </div>
-                  <DropdownMenu.DropdownMenuLabel>Bedrooms</DropdownMenu.DropdownMenuLabel>
-                  <DropdownMenu.DropdownMenuSeparator />
-                </div>
-                
-                <div className="flex flex-wrap gap-2 my-2">
-                  {bedOptions.map((bed) => (
-                    <button
-                      key={bed}
-                      onClick={() => handleInputChange({ target: { name: 'beds', value: bed === 'Any' ? '' : bed } })}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium ${
-                        (bed === 'Any' && !searchParams.beds) || searchParams.beds === bed
-                          ? "bg-red-100 text-red-600 border border-red-200"
-                          : "bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200"
-                      }`}
-                    >
-                      {bed}
-                    </button>
-                  ))}
-                </div>
-                
-                <div className="sticky top-0 bg-white pt-3 pb-2 z-10">
-                  <DropdownMenu.DropdownMenuLabel>Bathrooms</DropdownMenu.DropdownMenuLabel>
-                  <DropdownMenu.DropdownMenuSeparator />
-                </div>
-                
-                <div className="flex flex-wrap gap-2 my-2">
-                  {bathOptions.map((bath) => (
-                    <button
-                      key={bath}
-                      onClick={() => handleInputChange({ target: { name: 'baths', value: bath === 'Any' ? '' : bath } })}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium ${
-                        (bath === 'Any' && !searchParams.baths) || searchParams.baths === bath
-                          ? "bg-red-100 text-red-600 border border-red-200"
-                          : "bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200"
-                      }`}
-                    >
-                      {bath}
-                    </button>
-                  ))}
-                </div>
-                
-                {amenitiesOptions.length > 0 && (
-                  <>
-                    <div className="sticky top-0 bg-white pt-3 pb-2 z-10">
-                      <DropdownMenu.DropdownMenuLabel>Amenities</DropdownMenu.DropdownMenuLabel>
-                      <DropdownMenu.DropdownMenuSeparator />
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-2 my-2">
-                      {amenitiesOptions.map((amenity) => (
-                        <button
-                          key={amenity.id}
-                          onClick={() => handleAmenityToggle(amenity.id)}
-                          className={`px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-between ${
-                            searchParams.amenities.includes(amenity.id)
-                              ? "bg-red-100 text-red-600 border border-red-200"
-                              : "bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200"
-                          }`}
-                        >
-                          <span>{amenity.label}</span>
-                          {searchParams.amenities.includes(amenity.id) && (
-                            <svg className="w-4 h-4 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              <DropdownMenu.DropdownMenuContent 
+                className="w-72" 
+                sideOffset={5} 
+                align="end"
+              >
+                <div className="max-h-[80vh] overflow-y-auto">
+                  <div className="p-4">
+                    {/* Mobile-only Property Type and Price fields */}
+                    <div className="block md:hidden space-y-6">
+                      {/* Property Type Select */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Property Type</label>
+                        <div className="relative">
+                          <FiHome className="absolute left-3 top-1/2 -translate-y-1/2 text-red-500" />
+                          <select
+                            name="propertyType"
+                            value={searchParams.propertyType}
+                            onChange={handleInputChange}
+                            className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                          >
+                            <option value="">Property Type</option>
+                            {propertyTypes.map((type) => (
+                              <option key={type} value={type}>
+                                {type}
+                              </option>
+                            ))}
+                          </select>
+                          <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
                             </svg>
-                          )}
-                        </button>
-                      ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Price Range Slider */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
+                        <div className="flex justify-between text-xs text-gray-700 mb-3">
+                          <span>{formatPrice(searchParams.priceRange[0])}</span>
+                          <span>{formatPrice(searchParams.priceRange[1])}</span>
+                        </div>
+                        <Slider
+                          defaultValue={searchParams.priceRange}
+                          min={minMaxPrices.min}
+                          max={minMaxPrices.max}
+                          step={(minMaxPrices.max - minMaxPrices.min) / 100}
+                          color="red"
+                          onValueChange={handlePriceRangeChange}
+                          className="mt-2"
+                        />
+                        {(searchParams.priceRange[0] > minMaxPrices.min || searchParams.priceRange[1] < minMaxPrices.max) && (
+                          <button
+                            onClick={() => {
+                              setSearchParams(prev => ({
+                                ...prev,
+                                priceRange: [minMaxPrices.min, minMaxPrices.max]
+                              }));
+                              const currentURL = new URL(window.location.href);
+                              currentURL.searchParams.delete('minPrice');
+                              currentURL.searchParams.delete('maxPrice');
+                              navigate(currentURL.pathname + currentURL.search, { replace: true });
+                            }}
+                            className="text-gray-500 hover:text-red-600 transition-colors text-xs mt-3"
+                            aria-label="Reset price filter"
+                          >
+                            Reset Price
+                          </button>
+                        )}
+                      </div>
                     </div>
-                  </>
-                )}
-                
-                <div className="sticky bottom-0 bg-white pt-3 mt-2 z-10">
-                  <DropdownMenu.DropdownMenuSeparator />
+
+                    {/* Action Buttons */}
+                    <div className="flex justify-between items-center mt-6 mb-6">
+                      <button
+                        onClick={clearFilters}
+                        className="px-4 py-2 border border-gray-200 text-gray-700 text-sm rounded-lg hover:bg-gray-100 transition-colors"
+                      >
+                        Reset
+                      </button>
+                      <button
+                        onClick={handleSearch}
+                        className="px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition-colors"
+                      >
+                        Apply
+                      </button>
+                    </div>
+
+                    {/* Bedrooms */}
+                    <div className="mb-6 hidden md:block">
+                      <DropdownMenu.DropdownMenuLabel className="mb-2">Bedrooms</DropdownMenu.DropdownMenuLabel>
+                      <DropdownMenu.DropdownMenuSeparator className="mb-3" />
+                      <div className="flex flex-wrap gap-2">
+                        {bedOptions.map((bed) => (
+                          <button
+                            key={bed}
+                            onClick={() => handleInputChange({ target: { name: 'beds', value: bed === 'Any' ? '' : bed } })}
+                            className={`px-3 py-1.5 rounded-full text-xs font-medium ${
+                              (bed === 'Any' && !searchParams.beds) || searchParams.beds === bed
+                                ? "bg-red-100 text-red-600 border border-red-200"
+                                : "bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200"
+                            }`}
+                          >
+                            {bed}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Bathrooms */}
+                    <div className="mb-6 hidden md:block">
+                      <DropdownMenu.DropdownMenuLabel className="mb-2">Bathrooms</DropdownMenu.DropdownMenuLabel>
+                      <DropdownMenu.DropdownMenuSeparator className="mb-3" />
+                      <div className="flex flex-wrap gap-2">
+                        {bathOptions.map((bath) => (
+                          <button
+                            key={bath}
+                            onClick={() => handleInputChange({ target: { name: 'baths', value: bath === 'Any' ? '' : bath } })}
+                            className={`px-3 py-1.5 rounded-full text-xs font-medium ${
+                              (bath === 'Any' && !searchParams.baths) || searchParams.baths === bath
+                                ? "bg-red-100 text-red-600 border border-red-200"
+                                : "bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200"
+                            }`}
+                          >
+                            {bath}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Amenities */}
+                    {amenitiesOptions.length > 0 && (
+                      <div className="mb-6 hidden md:block">
+                        <DropdownMenu.DropdownMenuLabel className="mb-2">Amenities</DropdownMenu.DropdownMenuLabel>
+                        <DropdownMenu.DropdownMenuSeparator className="mb-3" />
+                        <div className="grid grid-cols-2 gap-2">
+                          {amenitiesOptions.map((amenity) => (
+                            <button
+                              key={amenity.id}
+                              onClick={() => handleAmenityToggle(amenity.id)}
+                              className={`px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-between ${
+                                searchParams.amenities.includes(amenity.id)
+                                  ? "bg-red-100 text-red-600 border border-red-200"
+                                  : "bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200"
+                              }`}
+                            >
+                              <span>{amenity.label}</span>
+                              {searchParams.amenities.includes(amenity.id) && (
+                                <svg className="w-4 h-4 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </DropdownMenu.DropdownMenuContent>
             </DropdownMenu.DropdownMenu>

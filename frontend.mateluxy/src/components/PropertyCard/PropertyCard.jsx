@@ -95,49 +95,94 @@ const PropertyCard = ({ property, loading, error }) => {
     <div className="container mx-auto p-0 bg-white rounded-xl animate__animated animate__fadeIn grid md:grid-cols-2 gap-4 border border-spacing-0.5 border-gray-200 my-6 shadow-sm hover:shadow-md transition-all duration-300 hover:border-red-100 overflow-hidden">
       {/* Image container with overlay */}
       <div className="relative group">
-        <Link
-          to={`/property-details/${property._id}`}
-          className="flex gap-1 animate__animated animate__fadeInUp rounded-md w-full h-full"
-        >
-          {/* Main Media */}
-          {property.propertyFeaturedImage?.match(/\.(mp4|mov|avi)$/i) ? (
-            <video
-              src={property.propertyFeaturedImage}
-              className="w-2/3 h-full object-cover grow rounded-l-xl min-h-[300px]"
-              controls
-              muted
-              loop
-            />
-          ) : (
-            <img
-              src={property.propertyFeaturedImage}
-              alt={property.propertyTitle}
-              className="w-2/3 h-full object-cover grow-2 rounded-l-xl min-h-[300px]"
-            />
-          )}
-
-          <div className="flex w-1/3 flex-col gap-1">
-            {property.media?.slice(0, 3).map((media, index) =>
-              media?.match(/\.(mp4|mov|avi)$/i) ? (
-                <video
-                  key={index}
-                  src={media}
-                  className="w-full h-1/3 object-cover rounded-tr-xl last:rounded-br-none"
-                  controls
-                  muted
-                  loop
-                />
-              ) : (
-                <img
-                  key={index}
-                  src={media}
-                  alt=""
-                  className={`w-full h-1/3 object-cover ${index === 0 ? 'rounded-tr-xl' : ''} ${index === 2 ? 'rounded-br-none' : ''}`}
-                />
-              )
+        {/* Mobile: Featured image on top, other images below */}
+        <div className="block md:hidden w-full">
+          <Link to={`/property-details/${property._id}`}> 
+            {property.propertyFeaturedImage?.match(/\.(mp4|mov|avi)$/i) ? (
+              <video
+                src={property.propertyFeaturedImage}
+                className="w-full h-40 object-cover rounded-t-xl"
+                controls
+                muted
+                loop
+              />
+            ) : (
+              <img
+                src={property.propertyFeaturedImage}
+                alt={property.propertyTitle}
+                className="w-full h-40 object-cover rounded-t-xl"
+              />
             )}
-          </div>
-        </Link>
+          </Link>
+          {property.media?.length > 0 && (
+            <div className="flex w-full gap-1 mt-1 px-2">
+              {property.media.slice(0, 3).map((media, index) =>
+                media?.match(/\.(mp4|mov|avi)$/i) ? (
+                  <video
+                    key={index}
+                    src={media}
+                    className="w-1/3 h-16 object-cover rounded-md"
+                    controls
+                    muted
+                    loop
+                  />
+                ) : (
+                  <img
+                    key={index}
+                    src={media}
+                    alt=""
+                    className="w-1/3 h-16 object-cover rounded-md"
+                  />
+                )
+              )}
+            </div>
+          )}
+        </div>
+        {/* Desktop: Restore original layout and sizing */}
+        <div className="hidden md:flex w-full h-full">
+          <Link
+            to={`/property-details/${property._id}`}
+            className="flex gap-1 animate__animated animate__fadeInUp rounded-md w-full h-full"
+          >
+            {/* Main Media */}
+            {property.propertyFeaturedImage?.match(/\.(mp4|mov|avi)$/i) ? (
+              <video
+                src={property.propertyFeaturedImage}
+                className="w-2/3 h-full object-cover grow rounded-l-xl min-h-[300px]"
+                controls
+                muted
+                loop
+              />
+            ) : (
+              <img
+                src={property.propertyFeaturedImage}
+                alt={property.propertyTitle}
+                className="w-2/3 h-full object-cover grow-2 rounded-l-xl min-h-[300px]"
+              />
+            )}
+            <div className="flex w-1/3 flex-col gap-1">
+              {property.media?.slice(0, 3).map((media, index) =>
+                media?.match(/\.(mp4|mov|avi)$/i) ? (
+                  <video
+                    key={index}
+                    src={media}
+                    className="w-full h-1/3 object-cover rounded-tr-xl last:rounded-br-none"
+                    controls
+                    muted
+                    loop
+                  />
+                ) : (
+                  <img
+                    key={index}
+                    src={media}
+                    alt=""
+                    className={`w-full h-1/3 object-cover ${index === 0 ? 'rounded-tr-xl' : ''} ${index === 2 ? 'rounded-br-none' : ''}`}
+                  />
+                )
+              )}
+            </div>
+          </Link>
+        </div>
         
         {/* Favorite button overlay */}
         <button 
@@ -179,7 +224,7 @@ const PropertyCard = ({ property, loading, error }) => {
             <h3 className="font-semibold text-gray-800 text-lg">{property.propertyTitle || `${property.propertyBedrooms} Bedroom ${property.propertyType}`}</h3>
 
             {/* Property Description - Truncated with fade effect */}
-            <div className="relative h-12 overflow-hidden">
+            <div className="relative h-12 overflow-hidden hidden md:block">
               <p className="text-gray-600 text-sm">
                 {property.propertyDescription && property.propertyDescription.length > 150 
                   ? `${property.propertyDescription.substring(0, 150)}...` 
@@ -188,8 +233,8 @@ const PropertyCard = ({ property, loading, error }) => {
               <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-white to-transparent"></div>
             </div>
 
-            {/* Property Type */}
-            <div className="flex gap-2 flex-wrap">
+            {/* Property Type: show on desktop, hide on mobile */}
+            <div className="hidden md:flex gap-2 flex-wrap">
               <span className="px-3 py-1 rounded-md bg-gray-100 text-gray-700 text-xs font-medium">
                 {property.propertyType}
               </span>
@@ -215,39 +260,24 @@ const PropertyCard = ({ property, loading, error }) => {
                 <span>{property.propertySize} <span className="text-sm font-normal">sq.ft</span></span>
               </p>
             </div>
-          </div>
 
-          {/* Agent Information (if available) */}
-          {property.agent && (
-            <div className="flex items-center gap-4 mt-4 bg-gray-50 p-3 rounded-lg border border-gray-100">
-              <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-red-100 shadow-sm">
-                {agentLoading ? (
-                  <span className="text-gray-500 font-medium text-xs">Loading</span>
-                ) : agentData && agentData.profileImage ? (
-                  <img src={agentData.profileImage} alt={agentData.fullName || agentData.name} className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-gray-500 font-medium text-xs">Agent</span>
-                )}
-              </div>
-              <div>
-                <h3 className="text-sm font-bold text-gray-800">
-                  {agentData ? agentData.fullName || agentData.name : "Property Agent"}
-                </h3>
-                <p className="text-xs text-gray-500">
-                  {agentData ? agentData.position || agentData.title || "Real Estate Consultant" : "Loading agent info..."}
-                </p>
-                {agentData && agentData.languages && agentData.languages.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {agentData.languages.map((language, index) => (
-                      <span key={index} className="text-xs bg-white px-2 py-0.5 rounded border border-gray-200 text-gray-600">
-                        {language}
-                      </span>
-                    ))}
+            {/* Agent Info - Hidden on mobile */}
+            <div className="hidden md:flex items-center justify-between mt-4">
+              {agentData && (
+                <div className="flex items-center gap-2">
+                  <img 
+                    src={agentData.profileImage} 
+                    alt={agentData.fullName}
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                  <div>
+                    <p className="text-sm font-medium text-gray-800">{agentData.fullName}</p>
+                    <p className="text-xs text-gray-500">{agentData.position}</p>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </Link>
 
         {/* Action Buttons */}
