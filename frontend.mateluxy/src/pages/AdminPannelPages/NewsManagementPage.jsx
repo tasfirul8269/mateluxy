@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { getAllNews, createNews, updateNews, deleteNews } from '../../services/newsService';
 import { Button } from '@/components/AdminPannel/ui/button';
 import { Input } from '@/components/AdminPannel/ui/input';
@@ -29,10 +29,11 @@ import {
   DropdownMenuTrigger
 } from '@/components/AdminPannel/ui/dropdown-menu';
 import { toast } from '@/components/AdminPannel/ui/sonner';
-import { Edit, MoreVertical, Trash2, Plus, FileText, Calendar, Tag, Copy } from 'lucide-react';
+import { Edit, MoreVertical, Trash2, Plus, FileText, Calendar, Tag, Copy, Upload } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { uploadFileToS3 } from '@/utils/s3Upload';
 // Import ReactQuill dynamically to prevent rendering errors
 // import ReactQuill from 'react-quill';
 // import 'react-quill/dist/quill.snow.css';
@@ -57,6 +58,9 @@ const NewsManagementPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [formLoading, setFormLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [imagePreview, setImagePreview] = useState('');
+  const fileInputRef = useRef(null);
   
   const categories = ['All', 'Real Estate', 'Investment', 'Lifestyle', 'Business', 'Policy', 'Sustainability'];
   
@@ -161,7 +165,8 @@ const NewsManagementPage = () => {
       setIsFormOpen(false);
       fetchNews();
     } catch (error) {
-      toast.error('Error saving news');
+      console.error('Error saving news:', error);
+      toast.error(error.message || 'Error saving news');
     } finally {
       setFormLoading(false);
     }
@@ -205,6 +210,59 @@ const NewsManagementPage = () => {
       .catch(error => {
         toast.error('Failed to duplicate news');
       });
+  };
+  
+  // Handle image upload
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      setUploadingImage(true);
+      
+      // Create a preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+      
+      // Upload to S3
+      const imageUrl = await uploadFileToS3(file, 'news/');
+      setValue('image', imageUrl);
+      
+      toast.success('Image uploaded successfully');
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast.error('Failed to upload image');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  // Handle drag and drop
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    e.currentTarget.classList.add('border-[#ff4d4f]', 'bg-[#fff8f8]');
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    e.currentTarget.classList.remove('border-[#ff4d4f]', 'bg-[#fff8f8]');
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    e.currentTarget.classList.remove('border-[#ff4d4f]', 'bg-[#fff8f8]');
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      const event = { target: { files: [files[0]] } };
+      handleImageUpload(event);
+    }
   };
   
   return (
@@ -272,12 +330,54 @@ const NewsManagementPage = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="image">Image URL *</Label>
-                <Input 
-                  id="image" 
-                  placeholder="Enter image URL" 
-                  {...register('image')} 
+                <Label htmlFor="image">News Thumbnail *</Label>
+                <div 
+                  className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-[#e5e7eb] rounded-xl cursor-pointer hover:border-[#ff4d4f] transition"
+                  onClick={() => fileInputRef.current?.click()}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                >
+                  {imagePreview || watch('image') ? (
+                    <div className="relative w-full h-full group">
+                      <img 
+                        src={imagePreview || watch('image')} 
+                        alt="News thumbnail" 
+                        className="w-full h-full object-cover rounded-xl"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl">
+                        <Button 
+                          type="button" 
+                          variant="secondary"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            fileInputRef.current?.click();
+                          }}
+                        >
+                          <Upload className="mr-2 h-4 w-4" />
+                          Replace Image
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center text-gray-400">
+                      <Upload className="h-8 w-8 mb-2" />
+                      <span>Click or drag image here</span>
+                      <span className="text-xs mt-1">Supports: JPG, PNG, GIF</span>
+                    </div>
+                  )}
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageUpload}
+                  disabled={uploadingImage}
                 />
+                {uploadingImage && (
+                  <p className="text-sm text-gray-500">Uploading image...</p>
+                )}
                 {errors.image && (
                   <p className="text-sm text-red-500">{errors.image.message}</p>
                 )}

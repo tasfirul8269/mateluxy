@@ -21,7 +21,7 @@ const WhatsAppButton = () => {
 
   return (
     <div>{isMobileScreen ? (<a
-        href="https://wa.me/1234567890"
+        href="https://wa.me/971585590085"
         target="_blank"
         rel="noopener noreferrer"
         className="flex items-center gap-0 bg-transparent
@@ -31,7 +31,7 @@ const WhatsAppButton = () => {
         <MessageCircle className="h-5 w-5" />
         <span className="hidden md:inline">WhatsApp</span>
       </a>) : (<a
-        href="https://wa.me/1234567890"
+        href="https://wa.me/971585590085"
         target="_blank"
         rel="noopener noreferrer"
         className="flex items-center gap-2 bg-[#25D366] hover:bg-[#128C7E]

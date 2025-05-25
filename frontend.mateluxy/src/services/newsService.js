@@ -92,7 +92,8 @@ export const createNews = async (newsData) => {
     });
     
     if (!response.ok) {
-      throw new Error(`Error: ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `Error: ${response.status}`);
     }
     
     return await response.json();

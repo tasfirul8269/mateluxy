@@ -9,10 +9,18 @@ import { TbAirConditioning } from 'react-icons/tb';
 import { BiSolidWasher } from 'react-icons/bi';
 import { IoIosArrowForward } from 'react-icons/io';
 
+// Add a hook to detect mobile
+function useIsMobile() {
+  if (typeof window === 'undefined') return false;
+  return window.innerWidth <= 640;
+}
+
 const FeaturesAmenities = () => {
   const navigate = useNavigate();
-  const [activeFilter, setActiveFilter] = useState('all');
+  const isMobile = typeof window !== 'undefined' ? window.innerWidth <= 640 : false;
+  const [activeFilter, setActiveFilter] = useState(isMobile ? 'features' : 'all');
   const [hoveredItem, setHoveredItem] = useState(null);
+  const [showAll, setShowAll] = useState(false);
 
   // Define common features and amenities with icons
   const featuresAmenities = [
@@ -37,6 +45,18 @@ const FeaturesAmenities = () => {
   const filteredItems = activeFilter === 'all' 
     ? featuresAmenities 
     : featuresAmenities.filter(item => item.type === activeFilter);
+
+  // Mobile: show only 4 features and 4 amenities, or 4 of the selected type
+  let displayItems = filteredItems;
+  if (isMobile && !showAll) {
+    if (activeFilter === 'all') {
+      const features = featuresAmenities.filter(item => item.type === 'features').slice(0, 4);
+      const amenities = featuresAmenities.filter(item => item.type === 'amenities').slice(0, 4);
+      displayItems = [...features, ...amenities];
+    } else {
+      displayItems = filteredItems.slice(0, 4);
+    }
+  }
 
   // Handle click to navigate to properties page with filter
   const handleFeatureClick = (feature, type) => {
@@ -79,7 +99,7 @@ const FeaturesAmenities = () => {
         transition={{ duration: 0.5, delay: 0.2 }}
         viewport={{ once: true }}
       >
-        {['all', 'features', 'amenities'].map((filter) => (
+        {(isMobile ? ['features', 'amenities'] : ['all', 'features', 'amenities']).map((filter) => (
           <motion.button
             key={filter}
             className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${activeFilter === filter 
@@ -89,8 +109,8 @@ const FeaturesAmenities = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.98 }}
           >
-            {filter === 'all' ? 'All' : filter.charAt(0).toUpperCase() + filter.slice(1)}
-            {filter === 'all' && <FaFilter className="ml-2 inline-block" />}
+            {filter.charAt(0).toUpperCase() + filter.slice(1)}
+            {filter === 'all' && !isMobile && <FaFilter className="ml-2 inline-block" />}
           </motion.button>
         ))}
       </motion.div>
@@ -105,7 +125,7 @@ const FeaturesAmenities = () => {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
         >
-          {filteredItems.map((item, index) => (
+          {displayItems.map((item, index) => (
             <motion.div
               key={`${activeFilter}-${index}`}
               className="relative bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all overflow-hidden cursor-pointer group"
@@ -156,29 +176,55 @@ const FeaturesAmenities = () => {
       </AnimatePresence>
 
       {/* View all button */}
-      <motion.div 
-        className="flex justify-center mt-8"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
-        viewport={{ once: true }}
-      >
-        <motion.button
-          className="px-8 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-full font-medium shadow-lg shadow-red-200 flex items-center group transition-all"
-          onClick={() => handleViewAll(activeFilter)}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.98 }}
+      {(!showAll && isMobile) ? (
+        <motion.div 
+          className="flex justify-center mt-8"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          viewport={{ once: true }}
         >
-          View All {activeFilter !== 'all' ? activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1) : 'Properties'}
-          <motion.span 
-            className="ml-2"
-            initial={{ x: 0 }}
-            whileHover={{ x: 5 }}
+          <motion.button
+            className="px-8 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-full font-medium shadow-lg shadow-red-200 flex items-center group transition-all"
+            onClick={() => setShowAll(true)}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.98 }}
           >
-            <IoIosArrowForward />
-          </motion.span>
-        </motion.button>
-      </motion.div>
+            Load more features and amenities
+            <motion.span 
+              className="ml-2"
+              initial={{ x: 0 }}
+              whileHover={{ x: 5 }}
+            >
+              <IoIosArrowForward />
+            </motion.span>
+          </motion.button>
+        </motion.div>
+      ) : (
+        <motion.div 
+          className="flex justify-center mt-8"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          viewport={{ once: true }}
+        >
+          <motion.button
+            className="px-8 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-full font-medium shadow-lg shadow-red-200 flex items-center group transition-all"
+            onClick={() => handleViewAll(activeFilter)}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            View All {activeFilter !== 'all' ? activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1) : 'Properties'}
+            <motion.span 
+              className="ml-2"
+              initial={{ x: 0 }}
+              whileHover={{ x: 5 }}
+            >
+              <IoIosArrowForward />
+            </motion.span>
+          </motion.button>
+        </motion.div>
+      )}
     </div>
   );
 };
