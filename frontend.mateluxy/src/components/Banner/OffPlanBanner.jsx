@@ -150,23 +150,23 @@ const OffPlanBanner = () => {
   }
 
   return (
-    <div className="mx-auto mb-11 w-full overflow-hidden relative rounded-[30px] shadow-2xl">
+    <div className="mx-auto mb-11 w-full overflow-hidden relative rounded-[30px] shadow-2xl sm:rounded-[30px] sm:mx-auto sm:w-full rounded-none mx-0">
       {/* Main banner container */}
-      <div className="relative min-h-[650px] md:min-h-[650px]">
+      <div className="relative aspect-[16/9] sm:aspect-auto sm:min-h-[650px] md:min-h-[650px] w-screen left-1/2 right-1/2 -translate-x-1/2 sm:w-full sm:left-0 sm:right-0 sm:translate-x-0">
         {/* Image slider with transition effects */}
         <div className="absolute inset-0 w-full h-full">
           {slides.map((slide, index) => (
-            <div 
+            <div
               key={index}
               className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out ${
                 currentSlide === index ? 'opacity-100' : 'opacity-0'
               }`}
             >
-              <div 
+              <div
                 className="w-full h-full bg-cover bg-center"
                 style={{ backgroundImage: `url(${getImageUrl(slide.image)})` }}
-              ></div>
-              
+              >
+              </div>
               {/* Dark overlay for better text readability */}
               <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/30"></div>
             </div>
@@ -174,44 +174,43 @@ const OffPlanBanner = () => {
         </div>
 
         {/* Content overlay */}
-        <div className="relative z-10 flex flex-col justify-center h-full px-8 md:px-16 py-12">
-          <div className="max-w-xl">
-            {/* Animated subtitle */}
-            <div className="overflow-hidden">
-              <p className="text-white/80 text-sm md:text-base uppercase tracking-widest mb-2 animate-fadeInUp">
-                Exclusive Investment Opportunities
-              </p>
-            </div>
-            
-            {/* Animated title with dynamic content */}
-            <div className="overflow-hidden mb-4">
-              <h1 className="text-4xl md:text-6xl font-bold text-white animate-fadeInUp" style={{animationDelay: '0.2s'}}>
-                {slides[currentSlide]?.title} <br />
-                <span className="text-[#FF2626]">{slides[currentSlide]?.subtitle}</span>
-              </h1>
-            </div>
-            
-            {/* Animated description */}
-            <div className="overflow-hidden mb-8">
-              <p className="text-white/70 text-base md:text-lg max-w-md animate-fadeInUp" style={{animationDelay: '0.4s'}}>
-                {slides[currentSlide]?.description}
-              </p>
-            </div>
-            
-            {/* Animated buttons */}
-            <div className="flex flex-wrap gap-4 animate-fadeInUp" style={{animationDelay: '0.6s'}}>
-              <Link to={slides[currentSlide]?.buttonLink1 || '#'} className="px-6 py-3 text-sm md:text-base font-medium rounded-full border-2 border-white text-white hover:bg-white hover:text-[#FF2626] transition-all duration-300 backdrop-blur-sm">
-                {slides[currentSlide]?.buttonText1}
-              </Link>
-              <Link to={slides[currentSlide]?.buttonLink2 || '/off-plan-properties'} className="px-6 py-3 text-sm md:text-base font-medium rounded-full bg-[#FF2626] text-white hover:bg-[#FF4040] transition-all duration-300">
-                {slides[currentSlide]?.buttonText2}
-              </Link>
+        <>
+          {/* Mobile layout: absolute bottom center */}
+          <div className="sm:hidden absolute bottom-0 left-1/2 w-full flex flex-col items-center justify-end pb-6 px-4 transform -translate-x-1/2 bg-gradient-to-t from-black/70 via-black/10 to-transparent">
+            <h1 className="text-white text-lg font-bold text-center">
+              {slides[currentSlide]?.title}
+            </h1>
+            <p className="text-white text-xs text-center mt-1">
+              {slides[currentSlide]?.subtitle}
+            </p>
+          </div>
+          {/* Desktop layout: vertically centered as before */}
+          <div className="hidden sm:flex flex-col justify-center h-full relative z-10">
+            <div className="max-w-2xl px-8 md:px-16 py-12">
+              <div className="overflow-hidden mb-0 sm:mb-4">
+                <h1 className="hidden sm:block text-3xl md:text-5xl font-bold text-white animate-fadeInUp" style={{ animationDelay: '0.2s' }}>
+                  {slides[currentSlide]?.title}
+                </h1>
+              </div>
+              <span className="text-[#FF2626] sm:inline">{slides[currentSlide]?.subtitle}</span>
+              <div className="overflow-hidden mb-8">
+                <p className="text-white/80 text-base md:text-lg max-w-md animate-fadeInUp" style={{ animationDelay: '0.4s' }}>
+                  {slides[currentSlide]?.description}
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-4 animate-fadeInUp" style={{ animationDelay: '0.6s' }}>
+                <Link to={slides[currentSlide]?.buttonLink1 || '#'} className="px-6 py-3 text-sm md:text-base font-medium rounded-full border-2 border-white text-white hover:bg-white hover:text-[#FF2626] transition-all duration-300 backdrop-blur-sm">
+                  {slides[currentSlide]?.buttonText1}
+                </Link>
+                <Link to={slides[currentSlide]?.buttonLink2 || '/off-plan-properties'} className="px-6 py-3 text-sm md:text-base font-medium rounded-full bg-[#FF2626] text-white hover:bg-[#FF4040] transition-all duration-300">
+                  {slides[currentSlide]?.buttonText2}
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
-        
-        {/* Slide indicators */}
-        <div className="absolute bottom-8 right-8 flex space-x-2 z-20">
+        </>
+        {/* Slide indicators - hide on mobile */}
+        <div className="absolute bottom-4 right-4 sm:bottom-8 sm:right-8 flex space-x-2 z-20 hidden sm:flex">
           {slides.map((_, index) => (
             <button
               key={index}

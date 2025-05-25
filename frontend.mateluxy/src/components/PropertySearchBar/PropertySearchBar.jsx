@@ -562,89 +562,89 @@ const PropertySearchBar = () => {
 
                     {/* Action Buttons */}
                     <div className="flex justify-between items-center mt-6 mb-6">
-                      <button
-                        onClick={clearFilters}
+                    <button
+                      onClick={clearFilters}
                         className="px-4 py-2 border border-gray-200 text-gray-700 text-sm rounded-lg hover:bg-gray-100 transition-colors"
-                      >
-                        Reset
-                      </button>
-                      <button
-                        onClick={handleSearch}
+                    >
+                      Reset
+                    </button>
+                    <button
+                      onClick={handleSearch}
                         className="px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition-colors"
-                      >
-                        Apply
-                      </button>
-                    </div>
-
+                    >
+                      Apply
+                    </button>
+                </div>
+                
                     {/* Bedrooms */}
                     <div className="mb-6 hidden md:block">
                       <DropdownMenu.DropdownMenuLabel className="mb-2">Bedrooms</DropdownMenu.DropdownMenuLabel>
                       <DropdownMenu.DropdownMenuSeparator className="mb-3" />
                       <div className="flex flex-wrap gap-2">
-                        {bedOptions.map((bed) => (
-                          <button
-                            key={bed}
-                            onClick={() => handleInputChange({ target: { name: 'beds', value: bed === 'Any' ? '' : bed } })}
-                            className={`px-3 py-1.5 rounded-full text-xs font-medium ${
-                              (bed === 'Any' && !searchParams.beds) || searchParams.beds === bed
-                                ? "bg-red-100 text-red-600 border border-red-200"
-                                : "bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200"
-                            }`}
-                          >
-                            {bed}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
+                  {bedOptions.map((bed) => (
+                    <button
+                      key={bed}
+                      onClick={() => handleInputChange({ target: { name: 'beds', value: bed === 'Any' ? '' : bed } })}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium ${
+                        (bed === 'Any' && !searchParams.beds) || searchParams.beds === bed
+                          ? "bg-red-100 text-red-600 border border-red-200"
+                          : "bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200"
+                      }`}
+                    >
+                      {bed}
+                    </button>
+                  ))}
+                </div>
+                </div>
+                
                     {/* Bathrooms */}
                     <div className="mb-6 hidden md:block">
                       <DropdownMenu.DropdownMenuLabel className="mb-2">Bathrooms</DropdownMenu.DropdownMenuLabel>
                       <DropdownMenu.DropdownMenuSeparator className="mb-3" />
                       <div className="flex flex-wrap gap-2">
-                        {bathOptions.map((bath) => (
-                          <button
-                            key={bath}
-                            onClick={() => handleInputChange({ target: { name: 'baths', value: bath === 'Any' ? '' : bath } })}
-                            className={`px-3 py-1.5 rounded-full text-xs font-medium ${
-                              (bath === 'Any' && !searchParams.baths) || searchParams.baths === bath
-                                ? "bg-red-100 text-red-600 border border-red-200"
-                                : "bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200"
-                            }`}
-                          >
-                            {bath}
-                          </button>
-                        ))}
-                      </div>
+                  {bathOptions.map((bath) => (
+                    <button
+                      key={bath}
+                      onClick={() => handleInputChange({ target: { name: 'baths', value: bath === 'Any' ? '' : bath } })}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium ${
+                        (bath === 'Any' && !searchParams.baths) || searchParams.baths === bath
+                          ? "bg-red-100 text-red-600 border border-red-200"
+                          : "bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200"
+                      }`}
+                    >
+                      {bath}
+                    </button>
+                  ))}
+                </div>
                     </div>
-
+                    
                     {/* Amenities */}
                     {amenitiesOptions.length > 0 && (
                       <div className="mb-6 hidden md:block">
                         <DropdownMenu.DropdownMenuLabel className="mb-2">Amenities</DropdownMenu.DropdownMenuLabel>
                         <DropdownMenu.DropdownMenuSeparator className="mb-3" />
                         <div className="grid grid-cols-2 gap-2">
-                          {amenitiesOptions.map((amenity) => (
-                            <button
-                              key={amenity.id}
-                              onClick={() => handleAmenityToggle(amenity.id)}
-                              className={`px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-between ${
-                                searchParams.amenities.includes(amenity.id)
-                                  ? "bg-red-100 text-red-600 border border-red-200"
-                                  : "bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200"
-                              }`}
-                            >
-                              <span>{amenity.label}</span>
-                              {searchParams.amenities.includes(amenity.id) && (
-                                <svg className="w-4 h-4 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                                </svg>
-                              )}
-                            </button>
-                          ))}
-                        </div>
+                      {amenitiesOptions.map((amenity) => (
+                        <button
+                          key={amenity.id}
+                          onClick={() => handleAmenityToggle(amenity.id)}
+                          className={`px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-between ${
+                            searchParams.amenities.includes(amenity.id)
+                              ? "bg-red-100 text-red-600 border border-red-200"
+                              : "bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200"
+                          }`}
+                        >
+                          <span>{amenity.label}</span>
+                          {searchParams.amenities.includes(amenity.id) && (
+                            <svg className="w-4 h-4 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                          )}
+                        </button>
+                      ))}
+                    </div>
                       </div>
-                    )}
+                )}
                   </div>
                 </div>
               </DropdownMenu.DropdownMenuContent>
