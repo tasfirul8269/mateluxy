@@ -1,9 +1,18 @@
-import { useState } from 'react';
-import { FaCalendarAlt, FaTimes } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/AdminPannel/ui/dialog";
+import { Button } from "@/components/AdminPannel/ui/button";
+import { Input } from "@/components/AdminPannel/ui/input";
+import { Label } from "@/components/AdminPannel/ui/label";
+import { Textarea } from "@/components/AdminPannel/ui/textarea";
+import { toast } from "@/components/AdminPannel/ui/sonner";
 import axios from 'axios';
+import { FaCalendarAlt, FaTimes } from 'react-icons/fa';
 import { formatPrice } from '../../utils/formatPrice';
+import { useFullScreen } from '../../context/FullScreenContext';
+import { motion } from 'framer-motion';
 
 const BookingDialog = ({ isOpen, onClose, property }) => {
+  const { setFullScreen } = useFullScreen();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -13,12 +22,17 @@ const BookingDialog = ({ isOpen, onClose, property }) => {
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  // Update fullscreen state when dialog opens/closes
+  useEffect(() => {
+    setFullScreen(isOpen);
+  }, [isOpen, setFullScreen]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevData => ({
-      ...prevData,
+    setFormData(prev => ({
+      ...prev,
       [name]: value
     }));
   };
@@ -26,25 +40,21 @@ const BookingDialog = ({ isOpen, onClose, property }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setSubmitStatus(null);
 
     try {
-      // Add property details to the form data
-      const bookingData = {
-        ...formData,
-        propertyId: property?._id,
-        propertyTitle: property?.propertyTitle,
-        propertyAddress: property?.propertyAddress,
-        agentId: property?.agent
-      };
-
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/bookings`, 
-        bookingData
+        `${import.meta.env.VITE_API_URL}/api/bookings`,
+        {
+          ...formData,
+          propertyId: property._id,
+          propertyTitle: property.propertyTitle,
+          propertyAddress: property.propertyAddress,
+          agentId: property.agentId || property.agent?._id
+        },
+        { withCredentials: true }
       );
-      
-      setSubmitStatus({ success: true, message: 'Booking request submitted successfully!' });
-      // Reset form after successful submission
+
+      setSubmitSuccess(true);
       setFormData({
         name: '',
         email: '',
@@ -53,19 +63,16 @@ const BookingDialog = ({ isOpen, onClose, property }) => {
         time: '',
         message: ''
       });
-      
-      // Close dialog after a delay
+
+      // Close dialog after 3 seconds
       setTimeout(() => {
+        setSubmitSuccess(false);
         onClose();
-        setSubmitStatus(null);
       }, 3000);
-      
+
     } catch (error) {
       console.error('Error submitting booking:', error);
-      setSubmitStatus({ 
-        success: false, 
-        message: error.response?.data?.message || 'Failed to submit booking. Please try again.'
-      });
+      toast.error(error.response?.data?.message || 'Failed to submit booking request');
     } finally {
       setIsSubmitting(false);
     }
@@ -74,136 +81,132 @@ const BookingDialog = ({ isOpen, onClose, property }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto animate__animated animate__fadeInUp">
-        <div className="flex justify-between items-center p-4 border-b">
-          <h2 className="text-xl font-semibold text-gray-800 flex items-center">
-            <FaCalendarAlt className="mr-2 text-red-600" />
-            Book Property Viewing
-          </h2>
-          <button 
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[425px] [&>header]:hidden">
+        <DialogHeader>
+          <DialogTitle>Book a Viewing</DialogTitle>
+          <DialogDescription>
+            Fill in your details to schedule a property viewing
+          </DialogDescription>
+        </DialogHeader>
+
+        {submitSuccess ? (
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-6 text-center"
           >
-            <FaTimes />
-          </button>
-        </div>
-        
-        <div className="p-4">
-          {property && (
-            <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-              <h3 className="font-medium text-gray-800">{property.propertyTitle}</h3>
-              <p className="text-sm text-gray-600">{property.propertyAddress}, {property.propertyState}</p>
-              <p className="text-sm font-medium text-red-600 mt-1">
-                {formatPrice(property.propertyPrice)}
-                {property.category === 'Rent' ? '/month' : ''}
-              </p>
+            <div className="bg-green-50 p-4 rounded-2xl text-green-600 flex items-center justify-center gap-3 mb-4">
+              <div className="bg-green-100 p-2 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <span className="text-lg font-medium">Booking request submitted successfully!</span>
             </div>
-          )}
-          
-          {submitStatus && (
-            <div className={`p-3 mb-4 rounded-lg ${submitStatus.success ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
-              {submitStatus.message}
+            <p className="text-gray-600">
+              Your viewing for {property.propertyTitle} has been scheduled for {new Date(formData.date).toLocaleDateString()} at {formData.time}. We will contact you shortly to confirm your appointment.
+            </p>
+          </motion.div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Full Name</Label>
+              <Input
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="Enter your full name"
+                required
+              />
             </div>
-          )}
-          
-          <form onSubmit={handleSubmit}>
-            <div className="space-y-3">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
+
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone Number</Label>
+              <Input
+                id="phone"
+                name="phone"
+                type="tel"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="Enter your phone number"
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="date">Preferred Date</Label>
+                <Input
+                  id="date"
+                  name="date"
+                  type="date"
+                  value={formData.date}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  placeholder="Enter your full name"
+                  min={new Date().toISOString().split('T')[0]}
                 />
               </div>
-              
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
+
+              <div className="space-y-2">
+                <Label htmlFor="time">Preferred Time</Label>
+                <Input
+                  id="time"
+                  name="time"
+                  type="time"
+                  value={formData.time}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  placeholder="Enter your email"
                 />
               </div>
-              
-              <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  placeholder="Enter your phone number"
-                />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">Preferred Date</label>
-                  <input
-                    type="date"
-                    id="date"
-                    name="date"
-                    value={formData.date}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-1">Preferred Time</label>
-                  <input
-                    type="time"
-                    id="time"
-                    name="time"
-                    value={formData.time}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Message (Optional)</label>
-                <textarea
-                  id="message"
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  rows="3"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  placeholder="Any specific requirements or questions?"
-                ></textarea>
-              </div>
-              
-              <button
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="message">Additional Message (Optional)</Label>
+              <Textarea
+                id="message"
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
+                placeholder="Any specific requirements or questions?"
+                rows={3}
+              />
+            </div>
+
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onClose}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+              <Button
                 type="submit"
                 disabled={isSubmitting}
-                className={`w-full py-3 px-4 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors duration-200 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
               >
-                {isSubmitting ? 'Submitting...' : 'Submit Booking Request'}
-              </button>
-            </div>
+                {isSubmitting ? 'Submitting...' : 'Book Viewing'}
+              </Button>
+            </DialogFooter>
           </form>
-        </div>
-      </div>
-    </div>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 };
 

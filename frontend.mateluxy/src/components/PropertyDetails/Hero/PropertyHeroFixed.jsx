@@ -58,12 +58,16 @@ const PropertyHeroFixed = ({ property }) => {
 
   const images = getImages();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
+  const COMPONENT_ID = 'property-hero';
+  
+  // Import the FullScreenContext
+  const { setFullScreen, getFullScreenState } = useFullScreen();
+  const isFullscreen = getFullScreenState(COMPONENT_ID);
   
   // Reset loading state when image changes
   useEffect(() => {
@@ -137,33 +141,16 @@ const PropertyHeroFixed = ({ property }) => {
     }
   };
   
-  // Import the FullScreenContext
-  const { setFullScreen } = useFullScreen();
-  
   // Toggle fullscreen gallery
   const toggleFullscreen = () => {
     const newState = !isFullscreen;
-    setIsFullscreen(newState);
-    // Update the global full-screen state
-    setFullScreen(newState);
-    // When opening fullscreen, make sure body doesn't scroll
-    if (newState) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    setFullScreen(newState, COMPONENT_ID);
   };
   
   // Toggle favorite
   const toggleFavorite = (e) => {
-    if (e) e.stopPropagation();
+    e.stopPropagation();
     setIsFavorite(!isFavorite);
-    // Here you would typically save this to user preferences in a real app
-    if (!isFavorite) {
-      alert('Property added to wishlist!');
-    } else {
-      alert('Property removed from wishlist!');
-    }
   };
 
   // Get all property details dynamically

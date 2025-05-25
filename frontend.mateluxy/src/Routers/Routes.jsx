@@ -36,6 +36,7 @@ import NewsDetailPage from "../pages/News/NewsDetailPage";
 import NewsManagementPage from "../pages/AdminPannelPages/NewsManagementPage";
 import ProfilePage from "../pages/AgentPannelPages/ProfilePage";
 import SettingsPage from "../pages/AgentPannelPages/SettingsPage";
+import BookingsPage from "../pages/AdminPannelPages/BookingsPage";
 
 // For debugging
 const DebugMessagesPage = () => {
@@ -162,6 +163,10 @@ const router = createBrowserRouter([
                     {
                         path: "property-requests",
                         element: <PropertyRequestsPage />
+                    },
+                    {
+                        path: "bookings",
+                        element: <BookingsPage />
                     },
                     {
                         path: "news",

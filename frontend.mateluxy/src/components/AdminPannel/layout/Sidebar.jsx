@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Users, Settings, Building, Shield, MessageCircle, ChevronLeft, ChevronRight, MenuIcon, MessageSquare, Image, Calendar, FileText } from "lucide-react";
+import { Home, Users, Settings, Building, Shield, MessageCircle, ChevronLeft, ChevronRight, MenuIcon, MessageSquare, Image, Calendar, FileText, CalendarCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/AdminPannel/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
@@ -27,6 +27,11 @@ const navItems = [
     icon: Calendar,
     label: "Property Requests",
     href: "/admin-pannel/property-requests",
+  },
+  {
+    icon: CalendarCheck,
+    label: "Bookings",
+    href: "/admin-pannel/bookings",
   },
   {
     icon: Image,

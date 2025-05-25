@@ -15,8 +15,11 @@ export const adminSignIn = async (req, res, next) => {
             return next(errorHandler(401, "Invalid credentials"));
         }
         
-        // Create JWT token with admin ID
-        const token = jwt.sign({ id: validAdmin._id }, process.env.JWT_SECRET);
+        // Create JWT token with admin ID and isAdmin flag
+        const token = jwt.sign({ 
+          id: validAdmin._id,
+          isAdmin: true 
+        }, process.env.JWT_SECRET);
 
         // Remove password from response
         const { password: pass, ...rest } = validAdmin._doc;

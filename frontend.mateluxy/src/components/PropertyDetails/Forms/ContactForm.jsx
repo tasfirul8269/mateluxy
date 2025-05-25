@@ -59,7 +59,7 @@ const ContactForm = ({ property }) => {
   
   return (
     <motion.div 
-      className="bg-white rounded-3xl shadow-xl overflow-hidden mb-8 border border-gray-100"
+      className="bg-white rounded-3xl shadow-xl overflow-hidden mb-8 border border-gray-100 mt-20"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}

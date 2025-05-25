@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 
 // Middleware to verify JWT token for authenticated routes
 export const authMiddleware = (req, res, next) => {
-  const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+  const token = req.cookies.access_token || req.headers.authorization?.split(' ')[1];
   
   if (!token) {
     return res.status(401).json({ 
@@ -25,7 +25,7 @@ export const authMiddleware = (req, res, next) => {
 
 // Middleware to verify admin access
 export const adminAuthMiddleware = (req, res, next) => {
-  const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+  const token = req.cookies.access_token || req.headers.authorization?.split(' ')[1];
   
   if (!token) {
     return res.status(401).json({ 

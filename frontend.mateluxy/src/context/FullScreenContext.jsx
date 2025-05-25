@@ -6,27 +6,59 @@ const FullScreenContext = createContext();
 // Provider component
 export const FullScreenProvider = ({ children }) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [localFullScreenStates, setLocalFullScreenStates] = useState({});
 
   // Toggle full-screen state
-  const toggleFullScreen = () => {
-    setIsFullScreen(!isFullScreen);
-    // When opening full-screen, make sure body doesn't scroll
-    if (!isFullScreen) {
-      document.body.style.overflow = 'hidden';
+  const toggleFullScreen = (componentId = null) => {
+    if (componentId) {
+      // Handle local fullscreen state
+      setLocalFullScreenStates(prev => ({
+        ...prev,
+        [componentId]: !prev[componentId]
+      }));
     } else {
-      document.body.style.overflow = '';
+      // Handle global fullscreen state
+      setIsFullScreen(!isFullScreen);
+      // When opening full-screen, make sure body doesn't scroll
+      if (!isFullScreen) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+      }
     }
   };
 
   // Set full-screen state directly
-  const setFullScreen = (state) => {
-    setIsFullScreen(state);
-    // Update body overflow based on state
-    document.body.style.overflow = state ? 'hidden' : '';
+  const setFullScreen = (state, componentId = null) => {
+    if (componentId) {
+      // Handle local fullscreen state
+      setLocalFullScreenStates(prev => ({
+        ...prev,
+        [componentId]: state
+      }));
+    } else {
+      // Handle global fullscreen state
+      setIsFullScreen(state);
+      // Update body overflow based on state
+      document.body.style.overflow = state ? 'hidden' : '';
+    }
+  };
+
+  // Get fullscreen state for a component
+  const getFullScreenState = (componentId = null) => {
+    if (componentId) {
+      return localFullScreenStates[componentId] || false;
+    }
+    return isFullScreen;
   };
 
   return (
-    <FullScreenContext.Provider value={{ isFullScreen, toggleFullScreen, setFullScreen }}>
+    <FullScreenContext.Provider value={{ 
+      isFullScreen, 
+      toggleFullScreen, 
+      setFullScreen,
+      getFullScreenState 
+    }}>
       {children}
     </FullScreenContext.Provider>
   );

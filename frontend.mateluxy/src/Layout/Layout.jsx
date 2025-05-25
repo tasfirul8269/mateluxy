@@ -17,7 +17,7 @@ const LayoutContent = () => {
     
     return (
         <div>
-            {/* Only show header when not in full-screen mode */}
+            {/* Only show header when not in global full-screen mode */}
             {!isFullScreen && <Header />}
             <Outlet />
             {!isFullScreen && <Footer />}

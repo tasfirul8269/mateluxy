@@ -55,11 +55,11 @@ const HeroBanner = ({ property }) => {
 
   const images = getImages();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
+  const COMPONENT_ID = 'hero-banner';
   
   // Reset loading state when image changes
   useEffect(() => {
@@ -96,14 +96,13 @@ const HeroBanner = ({ property }) => {
   };
   
   // Import the FullScreenContext
-  const { setFullScreen } = useFullScreen();
+  const { setFullScreen, getFullScreenState } = useFullScreen();
+  const isFullscreen = getFullScreenState(COMPONENT_ID);
   
   // Toggle fullscreen gallery
   const toggleFullscreen = () => {
     const newState = !isFullscreen;
-    setIsFullscreen(newState);
-    // Update the global full-screen state
-    setFullScreen(newState);
+    setFullScreen(newState, COMPONENT_ID);
   };
   
   // Toggle favorite

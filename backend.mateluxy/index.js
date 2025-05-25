@@ -22,6 +22,7 @@ import propertyRequestRouter from './Routes/propertyRequests.routes.js';
 import newsRouter from './Routes/news.routes.js';
 import s3UploadRouter from './Routes/s3Upload.routes.js';
 import s3ProxyRouter from './Routes/s3Proxy.routes.js';
+import bookingsRouter from './Routes/bookings.routes.js';
 
 dotenv.config();
 
@@ -96,6 +97,8 @@ app.use('/api/upload-to-s3', s3UploadRouter);
 // S3 Proxy routes for serving images
 console.log('Registering S3 proxy routes at /api/s3-proxy');
 app.use('/api/s3-proxy', s3ProxyRouter);
+
+app.use('/api/bookings', bookingsRouter);
 
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;
