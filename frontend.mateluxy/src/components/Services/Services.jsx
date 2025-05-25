@@ -86,9 +86,43 @@ const Services = () => {
           <div className="w-24 h-1 bg-red-600 mx-auto mb-3"></div>
           <p className="text-gray-600 max-w-2xl mx-auto">Discover our comprehensive range of real estate services designed to meet all your property needs in Dubai.</p>
         </motion.div>
-        
+
+        {/* Mobile Card Layout */}
+        <div className="space-y-3 sm:hidden">
+          {servicesData.map((service) => (
+            <a
+              key={service.id}
+              href={service.link}
+              className="flex items-center bg-white rounded-xl border border-gray-200 p-3 shadow-sm"
+            >
+              {/* Icon */}
+              <div className="flex-shrink-0 w-14 h-14 rounded-lg bg-gray-50 flex items-center justify-center mr-3">
+                {service.icon}
+              </div>
+              {/* Text */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center space-x-2">
+                  <span className="font-semibold text-base text-gray-900">{service.title}</span>
+                  {/* Example badge, add logic if needed */}
+                  {service.badge && (
+                    <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{service.badge}</span>
+                  )}
+                </div>
+                <div className="text-gray-500 text-sm">{service.description}</div>
+              </div>
+              {/* Chevron */}
+              <div className="ml-2">
+                <svg width="20" height="20" fill="none" stroke="currentColor" className="text-gray-400">
+                  <path d="M8 5l4 5-4 5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+            </a>
+          ))}
+        </div>
+
+        {/* Desktop Grid Layout */}
         <motion.div 
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-5"
+          className="hidden sm:grid md:grid-cols-2 lg:grid-cols-3 gap-5"
           variants={containerVariants}
           initial="hidden"
           animate="visible"

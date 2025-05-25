@@ -174,16 +174,24 @@ const Banner = () => {
         </div>
 
         {/* Content overlay */}
-        <div className="relative z-10 flex flex-col justify-center h-full px-4 sm:px-8 md:px-16 py-6 sm:py-12">
-          <div className="max-w-xl">
-            {/* Main title - always visible, only show on mobile, hide everything else */}
-            <div className="overflow-hidden mb-0 sm:mb-4">
-              <h1 className="text-xl sm:text-4xl md:text-6xl font-bold text-white animate-fadeInUp" style={{ animationDelay: '0.2s' }}>
-                {slides[currentSlide]?.title}
-              </h1>
-            </div>
-            {/* Hide all other content on mobile */}
-            <div className="hidden sm:block">
+        <>
+          {/* Mobile layout: absolute bottom center */}
+          <div className="sm:hidden absolute bottom-0 left-1/2 w-full flex flex-col items-center justify-end pb-6 px-4 transform -translate-x-1/2 bg-gradient-to-t from-black/70 via-black/10 to-transparent">
+            <h1 className="text-white text-lg font-bold text-center">
+              {slides[currentSlide]?.title}
+            </h1>
+            <p className="text-white text-xs text-center mt-1">
+              {slides[currentSlide]?.subtitle}
+            </p>
+          </div>
+          {/* Desktop layout: vertically centered as before */}
+          <div className="hidden sm:flex flex-col justify-center h-full relative z-10">
+            <div className="max-w-2xl px-8 md:px-16 py-12">
+              <div className="overflow-hidden mb-0 sm:mb-4">
+                <h1 className="hidden sm:block text-3xl md:text-5xl font-bold text-white animate-fadeInUp" style={{ animationDelay: '0.2s' }}>
+                  {slides[currentSlide]?.title}
+                </h1>
+              </div>
               <span className="text-[#FF2626] sm:inline">{slides[currentSlide]?.subtitle}</span>
               <div className="overflow-hidden mb-8">
                 <p className="text-white/80 text-base md:text-lg max-w-md animate-fadeInUp" style={{ animationDelay: '0.4s' }}>
@@ -200,7 +208,7 @@ const Banner = () => {
               </div>
             </div>
           </div>
-        </div>
+        </>
         {/* Slide indicators - hide on mobile */}
         <div className="absolute bottom-4 right-4 sm:bottom-8 sm:right-8 flex space-x-2 z-20 hidden sm:flex">
           {slides.map((_, index) => (

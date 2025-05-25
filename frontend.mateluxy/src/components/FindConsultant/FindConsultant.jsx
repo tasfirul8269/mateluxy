@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FaWhatsapp, FaArrowRight, FaUserTie, FaSpinner } from "react-icons/fa";
+import { FiChevronRight } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import { agentApi } from "../../services/agentApi";
 
@@ -99,9 +100,9 @@ const FindConsultant = () => {
         </svg>
       </div>
 
-      <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6 md:gap-8">
+      <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-2 md:gap-8">
         {/* Agent Images with hover effect */}
-        <div className="relative order-2 md:order-1 flex-shrink-0">
+        <div className="relative order-1 md:order-1 flex-shrink-0 w-full md:w-auto flex justify-center md:justify-start mb-2 md:mb-0">
           {loading ? (
             <div className="flex items-center justify-center h-40 w-40">
               <FaSpinner className="animate-spin text-red-500 text-2xl" />
@@ -173,18 +174,29 @@ const FindConsultant = () => {
           )}
         </div>
 
-        {/* Title and Description */}
-        <div className="text-center md:text-left order-1 md:order-2 flex-1">
-          <motion.h2 
-            className="text-2xl md:text-3xl font-bold text-white mb-2"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            Find Your Perfect Consultant
-          </motion.h2>
+        {/* Title/arrow for mobile, title/description for desktop */}
+        <div className="text-center md:text-left order-2 md:order-2 flex-1">
+          <div className="flex flex-row items-center justify-center md:block">
+            <motion.h2 
+              className="text-lg md:text-3xl font-medium md:font-bold text-white mb-1 inline-block"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              Find Your Perfect Consultant
+            </motion.h2>
+            {/* Mobile right arrow as button */}
+            <a
+              href="/our-team"
+              className="ml-2 inline-flex md:hidden items-center justify-center text-red-400 hover:text-red-600 transition-colors"
+              aria-label="Find Consultant"
+            >
+              <FiChevronRight className="text-2xl" />
+            </a>
+          </div>
+          {/* Description only on desktop */}
           <motion.p 
-            className="text-base text-gray-300 max-w-md"
+            className="hidden md:block text-base text-gray-300 max-w-md"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
@@ -193,10 +205,10 @@ const FindConsultant = () => {
           </motion.p>
         </div>
 
-        {/* Search Button with animation */}
+        {/* Search Button with animation (desktop only) */}
         <motion.a 
           href="/our-team"
-          className="order-3 relative overflow-hidden group"
+          className="order-3 relative overflow-hidden group hidden md:flex"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           whileHover={{ scale: 1.05 }}

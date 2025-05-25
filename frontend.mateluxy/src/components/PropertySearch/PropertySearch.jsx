@@ -62,7 +62,7 @@ const PropertySearch = () => {
   return (
     <div className="flex flex-col md:flex-row justify-between bg-white items-center gap-4">
       {/* Toggle Buttons */}
-      <div className="flex p-1 gap-2">
+      <div className="flex p-1 gap-2 w-full md:w-auto">
         <button 
           className={`flex-1 py-2 px-4 transition-colors ${activeTab === 'rent' ? 'bg-white text-red-600 border-b-2 border-[#FF2626]' : 'text-gray-600 hover:bg-gray-200'}`}
           onClick={() => setActiveTab('rent')}
@@ -78,15 +78,14 @@ const PropertySearch = () => {
       </div>
 
       {/* Search Fields */}
-      <div className="grid md:grid-cols-3 gap-8 md:text-center w-full">
-        {/* Location Field */}
-        <div className="relative">
-          <label className="block text-sm font-[600] text-left text-black mb-1">
-            Locations
-          </label>
-          <div className="relative">
+      <div className="w-full">
+        {/* Mobile: flex row for location, property type, and button */}
+        <div className="flex flex-row gap-2 md:hidden w-full">
+          {/* Location Field */}
+          <div className="flex-1 min-w-0">
+            <label className="block text-xs font-[600] text-left text-black mb-1">Locations</label>
             <motion.div 
-              className="w-full relative rounded-md overflow-hidden group"
+              className="w-full relative rounded-md overflow-hidden group border border-gray-200"
               initial={false}
               animate={{
                 boxShadow: isFocused ? '0 0 0 2px #ef4444' : '0 0 0 1px transparent',
@@ -114,121 +113,250 @@ const PropertySearch = () => {
                 onKeyPress={handleKeyPress}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
-                className="w-full py-2 pl-10 pr-3 border-0 focus:outline-none bg-gray-50 rounded-md"
+                className="w-full py-3 pl-12 pr-3 border-0 focus:outline-none bg-gray-50 rounded-md text-base"
               />
             </motion.div>
           </div>
-        </div>
-
-        {/* Property Type Field */}
-        <div className="relative">
-          <label className="block text-sm text-black text-left font-[600] mb-1">
-            Property type
-          </label>
-          <div className="relative" ref={dropdownRef}>
-            <motion.div 
-              className="w-full relative rounded-md overflow-hidden"
-              initial={false}
-              animate={{
-                boxShadow: isPropertyTypeFocused || isDropdownOpen ? '0 0 0 2px #ef4444' : '0 0 0 1px transparent',
-              }}
-              transition={{ duration: 0.3 }}
-            >
-              <div 
-                onClick={() => {
-                  setIsDropdownOpen(!isDropdownOpen);
-                  setIsPropertyTypeFocused(!isPropertyTypeFocused);
+          {/* Property Type Field */}
+          <div className="flex-1 min-w-0">
+            <label className="block text-xs text-black text-left font-[600] mb-1">Property type</label>
+            <div className="relative" ref={dropdownRef}>
+              <motion.div 
+                className="w-full relative rounded-md overflow-hidden border border-gray-200"
+                initial={false}
+                animate={{
+                  boxShadow: isPropertyTypeFocused || isDropdownOpen ? '0 0 0 2px #ef4444' : '0 0 0 1px transparent',
                 }}
-                onFocus={() => setIsPropertyTypeFocused(true)}
-                onBlur={() => !isDropdownOpen && setIsPropertyTypeFocused(false)}
-                className="w-full py-2 px-3 pr-10 text-gray-700 bg-gray-50 rounded-md cursor-pointer flex justify-between items-center whitespace-nowrap overflow-hidden"
+                transition={{ duration: 0.3 }}
               >
-                <div className="flex items-center">
-                  <div className="mr-2 bg-red-50 p-1.5 rounded-full">
-                    <FaChevronDown className={`text-sm ${isPropertyTypeFocused || isDropdownOpen ? 'text-red-500' : 'text-gray-400'}`} />
+                <div 
+                  onClick={() => {
+                    setIsDropdownOpen(!isDropdownOpen);
+                    setIsPropertyTypeFocused(!isPropertyTypeFocused);
+                  }}
+                  onFocus={() => setIsPropertyTypeFocused(true)}
+                  onBlur={() => !isDropdownOpen && setIsPropertyTypeFocused(false)}
+                  className="w-full py-3 px-4 pr-10 text-gray-700 bg-gray-50 rounded-md cursor-pointer flex justify-between items-center whitespace-nowrap overflow-hidden text-base"
+                >
+                  <div className="flex items-center">
+                    <div className="mr-2 bg-red-50 p-1.5 rounded-full">
+                      <FaChevronDown className={`text-sm ${isPropertyTypeFocused || isDropdownOpen ? 'text-red-500' : 'text-gray-400'}`} />
+                    </div>
+                    <span>{propertyType || "Select property type"}</span>
                   </div>
-                  <span>{propertyType || "Select property type"}</span>
+                  <motion.div
+                    animate={{ rotate: isDropdownOpen ? 180 : 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="absolute right-3"
+                  >
+                  </motion.div>
                 </div>
-                <motion.div
-                  animate={{ rotate: isDropdownOpen ? 180 : 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="absolute right-3"
-                >
-                </motion.div>
-              </div>
-            </motion.div>
-            
-            <AnimatePresence>
-              {isDropdownOpen && (
-                <motion.div 
-                  className="absolute z-10 mt-2 w-full bg-white shadow-lg rounded-md py-1 max-h-60 overflow-auto border border-gray-100"
-                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  {/* Clear selection option */}
-                  {propertyType && (
-                    <motion.div 
-                      className="px-4 py-2 hover:bg-red-50 cursor-pointer text-left text-gray-700 border-b border-gray-100"
-                      onClick={() => {
-                        setPropertyType('');
-                        setIsDropdownOpen(false);
-                        setIsPropertyTypeFocused(false);
-                      }}
-                      initial={{ opacity: 0, x: -5 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.2 }}
-                      whileHover={{ backgroundColor: '#fef2f2' }}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span>Clear selection</span>
-                        <span className="text-red-500 text-sm">✕</span>
-                      </div>
-                    </motion.div>
-                  )}
-                  
-                  {/* Property type options */}
-                  {propertyTypes.map((type, index) => (
-                    <motion.div 
-                      key={type} 
-                      className="px-4 py-2 hover:bg-red-50 cursor-pointer text-left text-gray-700"
-                      onClick={() => {
-                        setPropertyType(type);
-                        setIsDropdownOpen(false);
-                        setIsPropertyTypeFocused(false);
-                      }}
-                      initial={{ opacity: 0, x: -5 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: (propertyType ? index + 1 : index) * 0.03, duration: 0.2 }}
-                      whileHover={{ backgroundColor: '#fef2f2' }}
-                    >
-                      {type}
-                    </motion.div>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
+              </motion.div>
+              <AnimatePresence>
+                {isDropdownOpen && (
+                  <motion.div 
+                    className="absolute z-10 mt-2 w-full bg-white shadow-lg rounded-md py-1 max-h-60 overflow-auto border border-gray-100"
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {/* Clear selection option */}
+                    {propertyType && (
+                      <motion.div 
+                        className="px-4 py-2 hover:bg-red-50 cursor-pointer text-left text-gray-700 border-b border-gray-100"
+                        onClick={() => {
+                          setPropertyType('');
+                          setIsDropdownOpen(false);
+                          setIsPropertyTypeFocused(false);
+                        }}
+                        initial={{ opacity: 0, x: -5 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.2 }}
+                        whileHover={{ backgroundColor: '#fef2f2' }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span>Clear selection</span>
+                          <span className="text-red-500 text-sm">✕</span>
+                        </div>
+                      </motion.div>
+                    )}
+                    {/* Property type options */}
+                    {propertyTypes.map((type, index) => (
+                      <motion.div 
+                        key={type} 
+                        className="px-4 py-2 hover:bg-red-50 cursor-pointer text-left text-gray-700"
+                        onClick={() => {
+                          setPropertyType(type);
+                          setIsDropdownOpen(false);
+                          setIsPropertyTypeFocused(false);
+                        }}
+                        initial={{ opacity: 0, x: -5 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: (propertyType ? index + 1 : index) * 0.03, duration: 0.2 }}
+                        whileHover={{ backgroundColor: '#fef2f2' }}
+                      >
+                        {type}
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+          {/* Search Button */}
+          <div className="flex items-end pb-1">
+            <button
+              type="button"
+              onClick={handleSearch}
+              className="flex items-center justify-center bg-red-600 hover:bg-red-700 text-white rounded-full w-10 h-10 shadow-md transition-colors"
+              aria-label="Search"
+            >
+              <FaSearch className="text-lg" />
+            </button>
           </div>
         </div>
-
-        {/* Search Button */}
-        <div className="flex items-center justify-end">
-          <motion.button 
-            onClick={handleSearch}
-            className="px-6 bg-red-600 w-[200px] cursor-pointer hover:bg-red-700 text-white py-4 rounded-[10px] flex items-center justify-center transition-colors"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <motion.div
-              initial={{ x: 0 }}
-              whileHover={{ x: -3 }}
-              transition={{ type: "spring", stiffness: 700 }}
+        {/* Desktop: grid layout as before */}
+        <div className="hidden md:grid md:grid-cols-3 md:gap-8 md:text-center w-full">
+          {/* Location Field */}
+          <div className="relative">
+            <label className="block text-sm font-[600] text-left text-black mb-1">
+              Locations
+            </label>
+            <div className="relative">
+              <motion.div 
+                className="w-full relative rounded-md overflow-hidden group border border-gray-200"
+                initial={false}
+                animate={{
+                  boxShadow: isFocused ? '0 0 0 2px #ef4444' : '0 0 0 1px transparent',
+                }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="absolute left-0 top-0 bottom-0 w-10 flex items-center justify-center">
+                  <motion.div
+                    animate={{ 
+                      scale: isFocused ? 1.1 : 1, 
+                      color: isFocused ? '#ef4444' : '#9ca3af' 
+                    }}
+                    transition={{ duration: 0.2 }}
+                    className="text-gray-400 bg-red-50 p-1.5 rounded-full"
+                    whileHover={{ scale: 1.1 }}
+                  >
+                    <FaLocationCrosshairs />
+                  </motion.div>
+                </div>
+                <input
+                  type="text"
+                  placeholder="Enter city, address or area"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setIsFocused(false)}
+                  className="w-full py-2 pl-10 pr-3 border-0 focus:outline-none bg-gray-50 rounded-md"
+                />
+              </motion.div>
+            </div>
+          </div>
+          {/* Property Type Field */}
+          <div className="relative">
+            <label className="block text-sm text-black text-left font-[600] mb-1">
+              Property type
+            </label>
+            <div className="relative" ref={dropdownRef}>
+              <motion.div 
+                className="w-full relative rounded-md overflow-hidden border border-gray-200"
+                initial={false}
+                animate={{
+                  boxShadow: isPropertyTypeFocused || isDropdownOpen ? '0 0 0 2px #ef4444' : '0 0 0 1px transparent',
+                }}
+                transition={{ duration: 0.3 }}
+              >
+                <div 
+                  onClick={() => {
+                    setIsDropdownOpen(!isDropdownOpen);
+                    setIsPropertyTypeFocused(!isPropertyTypeFocused);
+                  }}
+                  onFocus={() => setIsPropertyTypeFocused(true)}
+                  onBlur={() => !isDropdownOpen && setIsPropertyTypeFocused(false)}
+                  className="w-full py-2 px-3 pr-10 text-gray-700 bg-gray-50 rounded-md cursor-pointer flex justify-between items-center whitespace-nowrap overflow-hidden"
+                >
+                  <div className="flex items-center">
+                    <div className="mr-2 bg-red-50 p-1.5 rounded-full">
+                      <FaChevronDown className={`text-sm ${isPropertyTypeFocused || isDropdownOpen ? 'text-red-500' : 'text-gray-400'}`} />
+                    </div>
+                    <span>{propertyType || "Select property type"}</span>
+                  </div>
+                  <motion.div
+                    animate={{ rotate: isDropdownOpen ? 180 : 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="absolute right-3"
+                  >
+                  </motion.div>
+                </div>
+              </motion.div>
+              <AnimatePresence>
+                {isDropdownOpen && (
+                  <motion.div 
+                    className="absolute z-10 mt-2 w-full bg-white shadow-lg rounded-md py-1 max-h-60 overflow-auto border border-gray-100"
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {/* Clear selection option */}
+                    {propertyType && (
+                      <motion.div 
+                        className="px-4 py-2 hover:bg-red-50 cursor-pointer text-left text-gray-700 border-b border-gray-100"
+                        onClick={() => {
+                          setPropertyType('');
+                          setIsDropdownOpen(false);
+                          setIsPropertyTypeFocused(false);
+                        }}
+                        initial={{ opacity: 0, x: -5 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.2 }}
+                        whileHover={{ backgroundColor: '#fef2f2' }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span>Clear selection</span>
+                          <span className="text-red-500 text-sm">✕</span>
+                        </div>
+                      </motion.div>
+                    )}
+                    {/* Property type options */}
+                    {propertyTypes.map((type, index) => (
+                      <motion.div 
+                        key={type} 
+                        className="px-4 py-2 hover:bg-red-50 cursor-pointer text-left text-gray-700"
+                        onClick={() => {
+                          setPropertyType(type);
+                          setIsDropdownOpen(false);
+                          setIsPropertyTypeFocused(false);
+                        }}
+                        initial={{ opacity: 0, x: -5 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: (propertyType ? index + 1 : index) * 0.03, duration: 0.2 }}
+                        whileHover={{ backgroundColor: '#fef2f2' }}
+                      >
+                        {type}
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+          {/* Search Button: only desktop */}
+          <div className="flex items-center justify-end mt-2 md:mt-0">
+            <button
+              onClick={handleSearch}
+              className="px-6 bg-red-600 w-[200px] cursor-pointer hover:bg-red-700 text-white py-4 rounded-[10px] flex items-center justify-center transition-colors ml-0 md:ml-4"
             >
-              <FaSearch className="mr-2" />
-            </motion.div>
-            <span>Search</span>
-          </motion.button>
+              <FaSearch className="mr-2 " />
+              Search
+            </button>
+          </div>
         </div>
       </div>
     </div>
