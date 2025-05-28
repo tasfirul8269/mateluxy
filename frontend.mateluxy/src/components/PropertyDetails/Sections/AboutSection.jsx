@@ -114,7 +114,7 @@ const AboutSection = ({ property }) => {
       {/* Property Overview */}
       <div className="mb-8">
         <h3 className="text-xl font-bold text-gray-800 mb-4">Property Overview</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {/* Property Type */}
           <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
             <p className="text-gray-500 text-sm mb-1">Property Type</p>
@@ -151,10 +151,26 @@ const AboutSection = ({ property }) => {
             <p className="font-semibold text-gray-800">{property.propertyPrice ? formatPrice(property.propertyPrice) : 'Price on request'}</p>
           </div>
           
+          {/* Broker Fee */}
+          <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+            <p className="text-gray-500 text-sm mb-1">Broker Fee</p>
+            <p className="font-semibold text-gray-800">{property.brokerFee ? `${property.brokerFee}%` : 'Not specified'}</p>
+          </div>
+          
+          {/* Number of Cheques */}
+          <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+            <p className="text-gray-500 text-sm mb-1">Number of Cheques</p>
+            <p className="font-semibold text-gray-800">{property.numberOfCheques || 'Not specified'}</p>
+          </div>
+          
           {/* Location */}
           <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
             <p className="text-gray-500 text-sm mb-1">Location</p>
-            <p className="font-semibold text-gray-800">{property.propertyState || property.propertyAddress || 'Not specified'}</p>
+            <p className="font-semibold text-gray-800">
+              {property.propertyAddress ? 
+                property.propertyAddress.split(',').pop().trim() : 
+                (property.propertyLocation || 'Not specified')}
+            </p>
           </div>
         </div>
       </div>
@@ -164,11 +180,13 @@ const AboutSection = ({ property }) => {
         <div className="mb-8">
           <h3 className="text-xl font-bold text-gray-800 mb-4">Description</h3>
           <div className="relative">
-            <div className={`prose max-w-none relative ${!showFullDescription && property.propertyDescription && property.propertyDescription.length > 300 ? 'max-h-40 overflow-hidden' : ''}`}>
-              <p className="text-gray-700">
-                {property.propertyDescription}
-              </p>
-              
+            <div className={`relative overflow-hidden ${!showFullDescription ? 'max-h-[150px]' : ''}`}>
+              <div 
+                className="text-gray-600 leading-relaxed whitespace-pre-line" 
+                dangerouslySetInnerHTML={{ 
+                  __html: property.propertyDescription || "No description available for this property."
+                }}
+              ></div>
               {!showFullDescription && property.propertyDescription && property.propertyDescription.length > 300 && (
                 <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
               )}

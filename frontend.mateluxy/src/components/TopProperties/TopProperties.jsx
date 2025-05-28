@@ -34,6 +34,7 @@ const TopProperties = () => {
             deliveryDate: property.category === 'Off Plan' ? formatDeliveryDate(property.completionDate) : 'Ready to Move',
             completionDate: property.completionDate, // Add the original completionDate field
             price: `AED ${formatPrice(property.propertyPrice)}`,
+            priceValue: property.propertyPrice || 0, // Store numeric price for sorting
             developer: property.developer || '',
             developerImage: property.developerImage || '',
             image: property.propertyFeaturedImage,
@@ -54,7 +55,12 @@ const TopProperties = () => {
           };
         });
         
-        setProperties(formattedProperties);
+        // Sort properties by price (high to low) and limit to 10
+        const sortedProperties = formattedProperties
+          .sort((a, b) => b.priceValue - a.priceValue)
+          .slice(0, 10);
+        
+        setProperties(sortedProperties);
         setError(null);
       } catch (err) {
         console.error('Error fetching properties:', err);

@@ -651,14 +651,15 @@ const PropertySearchBar = () => {
             </DropdownMenu.DropdownMenu>
           </div>
           
-          {/* Search Button */}
+          {/* Search Button - Full width on mobile, normal on desktop */}
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleSearch}
-            className="flex-shrink-0 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center shadow-md"
+            className="w-full md:w-auto flex-shrink-0 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center shadow-md mt-4 md:mt-0"
           >
-            <FiSearch className="text-xl" />
+            <FiSearch className="text-xl md:text-xl mr-2" />
+            <span className="font-medium">Search</span>
           </motion.button>
         </div>
       </motion.div>

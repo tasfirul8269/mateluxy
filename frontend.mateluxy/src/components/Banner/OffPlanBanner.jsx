@@ -150,7 +150,7 @@ const OffPlanBanner = () => {
   }
 
   return (
-    <div className="mx-auto mb-11 w-full overflow-hidden relative rounded-[30px] shadow-2xl sm:rounded-[30px] sm:mx-auto sm:w-full rounded-none mx-0">
+    <div className="mx-auto mb-11 w-full overflow-hidden relative rounded-[15px] shadow-2xl sm:rounded-[30px] sm:mx-auto sm:w-full mx-0">
       {/* Main banner container */}
       <div className="relative aspect-[16/9] sm:aspect-auto sm:min-h-[650px] md:min-h-[650px] w-screen left-1/2 right-1/2 -translate-x-1/2 sm:w-full sm:left-0 sm:right-0 sm:translate-x-0">
         {/* Image slider with transition effects */}
@@ -180,9 +180,17 @@ const OffPlanBanner = () => {
             <h1 className="text-white text-lg font-bold text-center">
               {slides[currentSlide]?.title}
             </h1>
-            <p className="text-white text-xs text-center mt-1">
+            <p className="text-white text-xs text-center mt-1 mb-3">
               {slides[currentSlide]?.subtitle}
             </p>
+            <div className="flex flex-wrap justify-center gap-3 w-full mt-2">
+              <Link to={slides[currentSlide]?.buttonLink1 || '#'} className="px-4 py-2 text-xs font-medium rounded-full border border-white text-white hover:bg-white hover:text-[#FF2626] transition-all duration-300 backdrop-blur-sm">
+                {slides[currentSlide]?.buttonText1}
+              </Link>
+              <Link to={slides[currentSlide]?.buttonLink2 || '/off-plan-properties'} className="px-4 py-2 text-xs font-medium rounded-full bg-[#FF2626] text-white hover:bg-[#FF4040] transition-all duration-300">
+                {slides[currentSlide]?.buttonText2}
+              </Link>
+            </div>
           </div>
           {/* Desktop layout: vertically centered as before */}
           <div className="hidden sm:flex flex-col justify-center h-full relative z-10">

@@ -62,11 +62,11 @@ const DeveloperLogoSlider = ({ properties }) => {
 
   return (
     <div className="relative mb-16 mt-12">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center mb-5 sm:mb-8">
         <div>
-          <h2 className="text-3xl font-semibold text-gray-800">Meet the Masters Behind the Projects</h2>
-          <p className="text-sm mt-2 text-gray-600 font-regular">Get to know Dubai's leading developers and what sets their visions apart.</p>
-          <div className="h-1 w-20 bg-[#FF2626] mt-2 rounded-full"></div>
+          <h2 className="text-xl sm:text-3xl font-semibold text-gray-800 leading-tight">Meet the Masters Behind the Projects</h2>
+          <p className="text-xs sm:text-sm mt-1 sm:mt-2 text-gray-600 font-regular">Get to know Dubai's leading developers and what sets their visions apart.</p>
+          <div className="h-1 w-16 sm:w-20 bg-[#FF2626] mt-1 sm:mt-2 rounded-full"></div>
         </div>
       </div>
 

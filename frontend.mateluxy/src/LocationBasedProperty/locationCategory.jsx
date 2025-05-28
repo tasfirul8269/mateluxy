@@ -140,29 +140,47 @@ function LocationCategory() {
         const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/properties`);
         const properties = response.data;
         
-        // Group properties by state and count them
-        const stateGroups = properties.reduce((acc, property) => {
-          const state = property.propertyState;
-          if (!state) return acc; // Skip if no state is defined
+        // Group properties by location and count them
+        const locationGroups = properties.reduce((acc, property) => {
+          // For buy/rent/commercial properties, use the last part of the address
+          // For off-plan properties, use the exact location
+          let location;
           
-          if (!acc[state]) {
-            acc[state] = {
+          if (property.isOffPlan) {
+            // For off-plan properties, use the exact location
+            location = property.exactLocation || property.propertyLocation;
+          } else {
+            // For buy/rent/commercial properties, use the last part of the address
+            if (property.propertyAddress) {
+              const addressParts = property.propertyAddress.split(',');
+              location = addressParts[addressParts.length - 1].trim();
+            } else {
+              // Fallback to property location or state if address is not available
+              location = property.propertyLocation || property.propertyState;
+            }
+          }
+          
+          if (!location) return acc; // Skip if no location is defined
+          
+          if (!acc[location]) {
+            acc[location] = {
               count: 0,
               properties: []
             };
           }
-          acc[state].count++;
-          acc[state].properties.push(property);
+          acc[location].count++;
+          acc[location].properties.push(property);
           return acc;
         }, {});
 
         // Convert to array and sort by count
-        const locationArray = Object.entries(stateGroups)
-          .map(([state, data]) => ({
-            id: state,
-            name: state,
+        const locationArray = Object.entries(locationGroups)
+          .map(([location, data]) => ({
+            id: location,
+            name: location,
             count: data.count,
-            image: locationData[state]?.image || locationData["Dubai"].image,
+            // Try to match with locationData, or use default Dubai image
+            image: locationData[location]?.image || locationData["Dubai"].image,
           }))
           .sort((a, b) => b.count - a.count)
           .slice(0, 4); // Limit to 4 locations
@@ -230,15 +248,49 @@ function LocationCategory() {
         animate="visible"
         className="relative px-2 py-8"
       >
-        {/* Decorative background elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 left-10 w-64 h-64 bg-red-500/5 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-10 w-80 h-80 bg-red-500/5 rounded-full blur-3xl"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-red-500/5 rounded-full blur-3xl"></div>
+        {/* No decorative background elements */}
+
+        {/* Mobile Card Layout */}
+        <div className="space-y-3 sm:hidden">
+          {locations.slice(0, 4).map((location, index) => (
+            <div
+              key={location.id}
+              onClick={() => handleLocationClick(location.name)}
+              className="relative h-24 rounded-xl overflow-hidden shadow-md cursor-pointer hover:shadow-lg transition-shadow duration-300"
+            >
+              {/* Background Image */}
+              <div 
+                className="absolute inset-0 bg-cover bg-center"
+                style={{ backgroundImage: `url(${cardStyles[index % 4].image})` }}
+              />
+              
+              {/* Color Overlay - using the same gradients as desktop */}
+              <div className={`absolute inset-0 bg-gradient-to-t ${cardStyles[index % 4].color}`} />
+              
+              {/* Content */}
+              <div className="relative h-full p-4 flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="bg-white/20 p-2 rounded-lg backdrop-blur-sm mr-3">
+                    <FaMapMarkerAlt className="text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-white font-bold text-base">{location.name}</h3>
+                    <div className="text-white/80 text-sm flex items-center gap-1">
+                      <FaBuilding className="text-xs" />
+                      <span>{location.count} Properties</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-white/20 p-2 rounded-full backdrop-blur-sm">
+                  <FaChevronRight className="text-white" />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
 
-        {/* Dynamic staggered layout - limited to 4 locations */}
-        <div className="relative grid grid-cols-12 gap-4 md:gap-6">
+        {/* Desktop Grid Layout */}
+        <div className="relative hidden sm:grid grid-cols-12 gap-4 md:gap-6">
           {locations.slice(0, 4).map((location, index) => {
             // Create a staggered layout with different sizes and positions
             const layouts = [

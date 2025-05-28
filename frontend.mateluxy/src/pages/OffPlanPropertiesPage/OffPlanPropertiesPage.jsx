@@ -214,29 +214,29 @@ const OffPlanPropertiesPage = () => {
         </div>
       </div>
 
-      <h3 className="text-2xl font-semibold px-4">Best payment plans</h3>
-      <p className="text-lg text-gray-500 font-light px-4 mb-6">
+      <h3 className="text-lg sm:text-2xl font-semibold px-4">Best payment plans</h3>
+      <p className="text-sm sm:text-lg text-gray-500 font-light px-4 mb-4 sm:mb-6">
         Discover properties with the most attractive payment options in Dubai.
       </p>
       <PropertyCardSlider />
 
-      <div className="space-y-4 pt-10 px-4">
-        <h3 className="text-2xl font-semibold">Off Plan Developers</h3>
-        <p className="text-lg text-gray-500 font-light">
+      <div className="space-y-3 sm:space-y-4 pt-8 sm:pt-10 px-4">
+        <h3 className="text-lg sm:text-2xl font-semibold">Off Plan Developers</h3>
+        <p className="text-sm sm:text-lg text-gray-500 font-light">
           Learn more about Dubai's world famous developers and what makes them unique.
         </p>
         <AgentSlider />
         <PopularCommunities />
       </div>
 
-      <h3 className="text-2xl font-semibold px-4 pt-10">Luxury branded projects</h3>
-      <p className="text-lg text-gray-500 font-light px-4 mb-6">
+      <h3 className="text-lg sm:text-2xl font-semibold px-4 pt-6 sm:pt-10">Luxury branded projects</h3>
+      <p className="text-sm sm:text-lg text-gray-500 font-light px-4 mb-4 sm:mb-6">
         Take luxury to a whole new level with branded residences by leading names.
       </p>
       <PropertyCardSlider />
 
       <div className="px-4">
-        <h3 className="text-4xl font-semibold text-center my-20">
+        <h3 className="text-xl sm:text-4xl font-semibold text-center my-8 sm:my-20 leading-snug">
           Elevate your lifestyle with resort-branded amenities in the heart of the city
         </h3>
       </div>

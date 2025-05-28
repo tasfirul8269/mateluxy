@@ -177,14 +177,14 @@ const PropertyListing = ({ offPlanProjects }) => {
           <SearchBar onSearch={handleSearch} priceRange={priceRange} />
           </div>
         </div>
-      <div className="mt-16 mb-8">
-        <h1 className="text-4xl font-bold text-gray-800">
+      <div className="mt-10 sm:mt-16 mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-4xl font-bold text-gray-800 leading-tight">
           Start your <span className="text-[#FF2626]">Off Plan </span>Property Journey with Mateluxy 
         </h1>
-        <p className="text-gray-600 max-w-[80%] mt-4">
+        <p className="text-sm sm:text-base text-gray-600 max-w-full sm:max-w-[80%] mt-2 sm:mt-4">
         From stunning waterfront developments and iconic luxury towers to vibrant family-friendly communities - Dubai's off-plan market has it all. 
         </p>
-        <h3 className="text-2xl font-bold text-gray-800 mt-2">
+        <h3 className="text-lg sm:text-2xl font-bold text-gray-800 mt-2">
         Let Mateluxy help you find the perfect one.        </h3>
       </div>
      
@@ -205,14 +205,14 @@ const PropertyListing = ({ offPlanProjects }) => {
             <PropertyCard key={property._id} property={property} />
           ))
         ) : (
-          <div className="col-span-3 text-center py-10">
-            <p className="text-gray-500 text-lg">No off-plan properties found matching your criteria.</p>
+          <div className="col-span-3 text-center py-6 sm:py-10">
+            <p className="text-gray-500 text-base sm:text-lg">No off-plan properties found matching your criteria.</p>
             <button 
               onClick={() => {
                 setSelectedCategory('All');
                 setSearchFilters({});
               }}
-              className="mt-4 text-[#FF2626] hover:text-[#FF4040] underline"
+              className="mt-3 sm:mt-4 text-[#FF2626] hover:text-[#FF4040] underline text-sm sm:text-base"
             >
               Clear filters
             </button>
@@ -226,7 +226,7 @@ const PropertyListing = ({ offPlanProjects }) => {
         <div className="text-center">
           <button 
             onClick={handleLoadMore}
-            className="text-[#FF2626] hover:text-[#FF4040] text-lg font-medium"
+            className="text-[#FF2626] hover:text-[#FF4040] text-base sm:text-lg font-medium"
           >
             More projects
           </button>

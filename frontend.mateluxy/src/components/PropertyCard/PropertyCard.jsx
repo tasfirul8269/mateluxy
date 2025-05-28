@@ -209,7 +209,7 @@ const PropertyCard = ({ property, loading, error }) => {
             <div className="flex justify-between items-center">
               <div className="text-2xl font-bold text-red-600">
                 {formatPrice(property.propertyPrice)}
-                <span className="text-xs text-gray-500 font-normal ml-1">{property.category === 'Rent' ? '/month' : ''}</span>
+                <span className="text-xs text-gray-500 font-normal ml-1">{property.category === 'Rent' ? '/year' : ''}</span>
               </div>
             </div>
             
