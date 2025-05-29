@@ -205,6 +205,7 @@ export default function TabbedPropertyForm({ onSubmit, onCancel, selectedCategor
   const [showDeveloperDropdown, setShowDeveloperDropdown] = useState(false);
   const [searchAgentTerm, setSearchAgentTerm] = useState("");
   const [showAgentDropdown, setShowAgentDropdown] = useState(false);
+  const agentDropdownRef = useRef(null);
 
   // We'll define filteredDevelopers inside the component after form is initialized
 
@@ -928,10 +929,10 @@ const handleRemoveInteriorImage = (index) => {
     onSubmit(formData);
   };
 
-  // Add click outside handler
+  // Add click outside handler for agent dropdown
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (!e.target.closest('.agent-dropdown')) {
+      if (agentDropdownRef.current && !agentDropdownRef.current.contains(e.target)) {
         setShowAgentDropdown(false);
       }
     };
@@ -1333,7 +1334,7 @@ const handleRemoveInteriorImage = (index) => {
                     </div>
                   ) : (
                     // In admin panel, show searchable dropdown
-                    <div className="relative">
+                    <div className="relative" ref={agentDropdownRef}>
                       <div className="relative">
                         <input
                           type="text"
@@ -1352,7 +1353,8 @@ const handleRemoveInteriorImage = (index) => {
                         {form.agent && (
                           <button
                             type="button"
-                            onClick={() => {
+                            onClick={(e) => {
+                              e.stopPropagation();
                               setForm(prev => ({ ...prev, agent: "" }));
                               setSearchAgentTerm("");
                             }}
@@ -1368,7 +1370,8 @@ const handleRemoveInteriorImage = (index) => {
                           {filteredAgents.slice(0, 5).map(agent => (
                             <div
                               key={agent._id}
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 setForm(prev => ({ ...prev, agent: agent._id }));
                                 setSearchAgentTerm(agent.fullName);
                                 setShowAgentDropdown(false);
@@ -2060,7 +2063,7 @@ const handleRemoveInteriorImage = (index) => {
                       </div>
                     ) : (
                       // In admin panel, show searchable dropdown
-                      <div className="relative">
+                      <div className="relative" ref={agentDropdownRef}>
                         <div className="relative">
                           <input
                             type="text"
@@ -2079,7 +2082,8 @@ const handleRemoveInteriorImage = (index) => {
                           {form.agent && (
                             <button
                               type="button"
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 setForm(prev => ({ ...prev, agent: "" }));
                                 setSearchAgentTerm("");
                               }}
@@ -2095,7 +2099,8 @@ const handleRemoveInteriorImage = (index) => {
                             {filteredAgents.slice(0, 5).map(agent => (
                               <div
                                 key={agent._id}
-                                onClick={() => {
+                                onClick={(e) => {
+                                  e.stopPropagation();
                                   setForm(prev => ({ ...prev, agent: agent._id }));
                                   setSearchAgentTerm(agent.fullName);
                                   setShowAgentDropdown(false);
