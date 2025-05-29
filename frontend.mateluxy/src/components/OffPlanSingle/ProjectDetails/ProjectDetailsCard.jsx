@@ -104,75 +104,69 @@ const ProjectDetailsCard = ({ property, agent: agentFromProps }) => {
           <span>Property Specialist</span>
         </h4>
         
-        {!agentFromProps ? (
-          <div className="flex items-center justify-center p-4">
-            <div className="w-8 h-8 border-4 border-gray-200 border-t-red-500 rounded-full animate-spin"></div>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-red-100">
-                <img 
-                  src={agentFromProps.profileImage || 'https://placehold.co/400x400/red/white?text=Agent'} 
-                  alt={agentFromProps.fullName || 'Agent'}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.target.src = 'https://placehold.co/400x400/red/white?text=Agent';
-                  }}
-                />
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <h5 className="font-semibold text-gray-800">{agentFromProps.fullName || 'MateLuxy Agent'}</h5>
-                  <a 
-                    href={`tel:${agentFromProps.contactNumber || '+971 50 123 4567'}`}
-                    className="p-2 bg-red-500 hover:bg-red-600 text-white rounded-full transition-colors"
-                  >
-                    <Phone size={16} />
-                  </a>
-                </div>
-                <p className="text-gray-500 text-sm">{agentFromProps.position || 'Real Estate Agent'}</p>
-              </div>
+        <div className="space-y-4">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-red-100">
+              <img 
+                src={agentFromProps?.profileImage || 'https://placehold.co/400x400/red/white?text=Agent'} 
+                alt={agentFromProps?.fullName || 'Agent'}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.target.src = 'https://placehold.co/400x400/red/white?text=Agent';
+                }}
+              />
             </div>
-            
-            {/* Agent Contact Info */}
-            <div className="space-y-2 bg-white p-3 rounded-xl border border-gray-100">
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <Phone size={14} className="text-red-500" />
-                <span>{agentFromProps.contactNumber || '+971 50 123 4567'}</span>
+            <div className="flex-1">
+              <div className="flex items-center justify-between">
+                <h5 className="font-semibold text-gray-800">{agentFromProps?.fullName || 'MateLuxy Agent'}</h5>
+                <a 
+                  href={`tel:${agentFromProps?.contactNumber || '+971 50 123 4567'}`}
+                  className="p-2 bg-red-500 hover:bg-red-600 text-white rounded-full transition-colors"
+                >
+                  <Phone size={16} />
+                </a>
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <Mail size={14} className="text-red-500" />
-                <span>{agentFromProps.email || 'agent@mateluxy.com'}</span>
-              </div>
-            </div>
-            
-            {/* Agent Contact Buttons */}
-            <div className="grid grid-cols-2 gap-3">
-              <a 
-                href={`https://wa.me/${(agentFromProps.whatsapp || agentFromProps.contactNumber || '+971 50 123 4567').replace(/[^0-9]/g, '')}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 p-3 bg-green-500 hover:bg-green-600 text-white rounded-xl transition-colors"
-              >
-                <MessageCircle size={18} />
-                <span className="text-sm">WhatsApp</span>
-              </a>
-              <a 
-                href={`mailto:${agentFromProps.email || 'agent@mateluxy.com'}`}
-                className="flex items-center justify-center gap-2 p-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors"
-              >
-                <Mail size={18} className="text-red-500" />
-                <span className="text-sm">Email</span>
-              </a>
-            </div>
-            
-            {/* Agent Note */}
-            <div className="text-center text-xs text-gray-500 italic">
-              Contact this agent for more information about this property
+              <p className="text-gray-500 text-sm">{agentFromProps?.position || 'Real Estate Agent'}</p>
             </div>
           </div>
-        )}  
+          
+          {/* Agent Contact Info */}
+          <div className="space-y-2 bg-white p-3 rounded-xl border border-gray-100">
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <Phone size={14} className="text-red-500" />
+              <span>{agentFromProps?.contactNumber || '+971 50 123 4567'}</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <Mail size={14} className="text-red-500" />
+              <span>{agentFromProps?.email || 'agent@mateluxy.com'}</span>
+            </div>
+          </div>
+          
+          {/* Agent Contact Buttons */}
+          <div className="grid grid-cols-2 gap-3">
+            <a 
+              href={`https://wa.me/${(agentFromProps?.whatsapp || agentFromProps?.contactNumber || '+971 50 123 4567').replace(/[^0-9]/g, '')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 p-3 bg-green-500 hover:bg-green-600 text-white rounded-xl transition-colors"
+            >
+              <MessageCircle size={18} />
+              <span className="text-sm">WhatsApp</span>
+            </a>
+            <a 
+              href={`mailto:${agentFromProps?.email || 'agent@mateluxy.com'}`}
+              className="flex items-center justify-center gap-2 p-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors"
+            >
+              <Mail size={18} className="text-red-500" />
+              <span className="text-sm">Email</span>
+            </a>
+          </div>
+          
+          {/* Agent Note */}
+          <div className="text-center text-xs text-gray-500 italic">
+            Contact this agent for more information about this property
+          </div>
+        </div>
       </div>
       
       {/* DLD Verification */}

@@ -18,7 +18,14 @@ const OffPlanSinglePage = () => {
   const { id } = useParams();
   const [isLoading, setIsLoading] = useState(true);
   const [property, setProperty] = useState(null);
-  const [agent, setAgent] = useState(null);
+  const [agent, setAgent] = useState({
+    fullName: 'MateLuxy Agent',
+    position: 'Real Estate Agent',
+    contactNumber: '+971 50 123 4567',
+    whatsapp: '+971 50 123 4567',
+    email: 'agent@mateluxy.com',
+    profileImage: 'https://placehold.co/400x400/red/white?text=Agent'
+  });
   const [relatedProperties, setRelatedProperties] = useState([]);
   const [isSaved, setIsSaved] = useState(false);
 
@@ -83,10 +90,14 @@ const OffPlanSinglePage = () => {
             if (agentResponse.data) {
               console.log('Agent data fetched successfully:', agentResponse.data);
               setAgent(agentResponse.data);
+            } else {
+              console.log('No agent data found, using default agent');
             }
           } catch (agentError) {
             console.error('Error fetching agent data:', agentError);
           }
+        } else {
+          console.log('No agent ID found for this property, using default agent');
         }
         
         // Fetch related properties - show Buy properties instead of off-plan
