@@ -5,6 +5,7 @@ import { FaKitchenSet } from 'react-icons/fa6';
 import { LiaBedSolid, LiaBathSolid } from 'react-icons/lia';
 import "animate.css";
 import { useNavigate } from 'react-router-dom';
+import { User } from 'lucide-react';
 
 import locationImg from "../../assets/group-39519-2.svg";
 import bath from "../../assets/ic_bath.svg";
@@ -164,51 +165,66 @@ const ProCard = ({ property }) => {
         ) : (
           // Agent information for other property types
           <div className="flex gap-3 items-center">
-            <div className="relative">
-              <img
-                className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
-                src={property?.agentImage}
-                alt={property?.agentName}
-              />
-              <div className="absolute -bottom-1 -right-1 bg-green-500 w-3 h-3 rounded-full border-2 border-white"></div>
-            </div>
+            {property?.agentImage && property?.agentName ? (
+              <>
+                <div className="relative">
+                  <img
+                    className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
+                    src={property.agentImage}
+                    alt={property.agentName}
+                  />
+                  <div className="absolute -bottom-1 -right-1 bg-green-500 w-3 h-3 rounded-full border-2 border-white"></div>
+                </div>
 
-            {/* agent name and languages container */}
-            <div>
-              <div className="relative">
-                {/* Agent name with custom tooltip */}
-                <h3 
-                  className="text-md font-semibold text-gray-800 whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px] cursor-pointer group"
-                  onMouseEnter={() => setShowTooltip(true)}
-                  onMouseLeave={() => setShowTooltip(false)}
-                >
-                  {property?.agentName}
-                  {/* Custom tooltip */}
-                  <AnimatePresence>
-                    {showTooltip && (
-                      <motion.div 
-                        className="absolute z-50 left-0 -top-10 bg-gray-800 text-white text-xs rounded py-1 px-2 min-w-max"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        {property?.agentName}
-                        <div className="absolute bottom-[-6px] left-3 w-3 h-3 bg-gray-800 transform rotate-45"></div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </h3>
+                {/* agent name and languages container */}
+                <div>
+                  <div className="relative">
+                    {/* Agent name with custom tooltip */}
+                    <h3 
+                      className="text-md font-semibold text-gray-800 whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px] cursor-pointer group"
+                      onMouseEnter={() => setShowTooltip(true)}
+                      onMouseLeave={() => setShowTooltip(false)}
+                    >
+                      {property.agentName}
+                      {/* Custom tooltip */}
+                      <AnimatePresence>
+                        {showTooltip && (
+                          <motion.div 
+                            className="absolute z-50 left-0 -top-10 bg-gray-800 text-white text-xs rounded py-1 px-2 min-w-max"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 10 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            {property.agentName}
+                            <div className="absolute bottom-[-6px] left-3 w-3 h-3 bg-gray-800 transform rotate-45"></div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </h3>
+                  </div>
+                  {property.agentPosition && (
+                    <p className="text-[12px] text-gray-700 font-medium">
+                      {property.agentPosition}
+                    </p>
+                  )}
+                  <p className="text-[12px] text-gray-600">
+                    Speaks {property.languages?.slice(0,2).join(", ")}
+                  </p>
+                </div>
+              </>
+            ) : (
+              <div className="flex gap-3 items-center">
+                <div className="relative">
+                  <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center border-2 border-white shadow-sm">
+                    <User className="w-6 h-6 text-gray-400" />
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-md font-semibold text-gray-500">No agent assigned</h3>
+                </div>
               </div>
-              {property?.agentPosition && (
-                <p className="text-[12px] text-gray-700 font-medium">
-                  {property?.agentPosition}
-                </p>
-              )}
-              <p className="text-[12px] text-gray-600">
-                Speaks {property?.languages?.slice(0,2).join(", ")}
-              </p>
-            </div>
+            )}
           </div>
         )}
         {/* Only show call button for non-off-plan properties */}

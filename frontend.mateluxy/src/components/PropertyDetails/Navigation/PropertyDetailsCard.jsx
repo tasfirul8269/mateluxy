@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Tag, MapPin, Home, Calendar, DollarSign, User, CheckCircle, Shield, Phone, Mail, MessageCircle } from 'lucide-react';
+import { Tag, MapPin, Home, Calendar, DollarSign, User, CheckCircle, Shield, Phone, Mail, MessageCircle, Loader2 } from 'lucide-react';
 import { IoBedOutline } from "react-icons/io5";
 import { LiaBathSolid } from "react-icons/lia";
 import axios from 'axios';
@@ -25,12 +25,12 @@ const PropertyDetailsCard = ({ property, agent: agentFromProps }) => {
   
   // State for agent data
   const [agent, setAgent] = useState({
-    name: 'MateLuxy Agent',
-    position: 'Real Estate Agent',
-    phone: '+971 50 123 4567',
-    whatsapp: '+971 50 123 4567',
-    email: 'agent@mateluxy.com',
-    image: 'https://placehold.co/400x400/red/white?text=Agent'
+    name: 'No agent assigned',
+    position: '',
+    phone: '',
+    whatsapp: '',
+    email: '',
+    image: ''
   });
   const [isLoadingAgent, setIsLoadingAgent] = useState(false);
   
@@ -40,12 +40,12 @@ const PropertyDetailsCard = ({ property, agent: agentFromProps }) => {
     if (agentFromProps) {
       console.log('Using agent data from props:', agentFromProps);
       setAgent({
-        name: agentFromProps.fullName || 'MateLuxy Agent',
-        position: agentFromProps.position || 'Real Estate Agent',
-        phone: agentFromProps.contactNumber || '+971 50 123 4567',
-        whatsapp: agentFromProps.whatsapp || agentFromProps.contactNumber || '+971 50 123 4567',
-        email: agentFromProps.email || 'agent@mateluxy.com',
-        image: agentFromProps.profileImage || 'https://placehold.co/400x400/red/white?text=Agent'
+        name: agentFromProps.fullName || 'No agent assigned',
+        position: agentFromProps.position || '',
+        phone: agentFromProps.contactNumber || '',
+        whatsapp: agentFromProps.whatsapp || agentFromProps.contactNumber || '',
+        email: agentFromProps.email || '',
+        image: agentFromProps.profileImage || ''
       });
       setIsLoadingAgent(false);
       return;
@@ -87,24 +87,24 @@ const PropertyDetailsCard = ({ property, agent: agentFromProps }) => {
             console.log('Agent data from API:', response.data);
             // Map the agent data fields correctly based on the API response
             setAgent({
-              name: response.data.fullName || 'MateLuxy Agent',
-              position: response.data.position || 'Real Estate Agent',
-              phone: response.data.contactNumber || '+971 50 123 4567',
-              whatsapp: response.data.whatsapp || response.data.contactNumber || '+971 50 123 4567',
-              email: response.data.email || 'agent@mateluxy.com',
-              image: response.data.profileImage || 'https://placehold.co/400x400/red/white?text=Agent'
+              name: response.data.fullName || 'No agent assigned',
+              position: response.data.position || '',
+              phone: response.data.contactNumber || '',
+              whatsapp: response.data.whatsapp || response.data.contactNumber || '',
+              email: response.data.email || '',
+              image: response.data.profileImage || ''
             });
           }
         } catch (error) {
           console.error('Error fetching agent details:', error);
           // Use default agent data if fetch fails
           setAgent({
-            name: 'MateLuxy Agent',
-            position: 'Real Estate Agent',
-            phone: '+971 50 123 4567',
-            whatsapp: '+971 50 123 4567',
-            email: 'agent@mateluxy.com',
-            image: 'https://placehold.co/400x400/red/white?text=Agent'
+            name: 'No agent assigned',
+            position: '',
+            phone: '',
+            whatsapp: '',
+            email: '',
+            image: ''
           });
         } finally {
           setIsLoadingAgent(false);
@@ -112,12 +112,12 @@ const PropertyDetailsCard = ({ property, agent: agentFromProps }) => {
       } else {
         console.log('No agent ID found in property data');
         setAgent({
-          name: 'MateLuxy Agent',
-          position: 'Real Estate Agent',
-          phone: '+971 50 123 4567',
-          whatsapp: '+971 50 123 4567',
-          email: 'agent@mateluxy.com',
-          image: 'https://placehold.co/400x400/red/white?text=Agent'
+          name: 'No agent assigned',
+          position: '',
+          phone: '',
+          whatsapp: '',
+          email: '',
+          image: ''
         });
         setIsLoadingAgent(false);
       }
@@ -144,15 +144,26 @@ const PropertyDetailsCard = ({ property, agent: agentFromProps }) => {
         
        
         {/* Agent Info */}
-        <div className="bg-gradient-to-br from-red-50 to-white p-5 rounded-2xl border border-red-100">
+        <div className="bg-gradient-to-br from-red-50 to-white p-5 rounded-2xl border border-red-100 mt-6">
           <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
             <User size={18} className="text-red-500" />
             <span>Property Specialist</span>
           </h4>
           
           {isLoadingAgent ? (
-            <div className="flex items-center justify-center p-4">
-              <div className="w-8 h-8 border-4 border-gray-200 border-t-red-500 rounded-full animate-spin"></div>
+            <div className="flex items-center justify-center p-6">
+              <Loader2 className="w-8 h-8 text-red-500 animate-spin" />
+              <span className="ml-2 text-gray-500">Loading agent information...</span>
+            </div>
+          ) : agent.name === 'No agent assigned' ? (
+            <div className="flex items-center gap-4 p-4 bg-white rounded-xl border border-gray-100">
+              <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
+                <User className="w-8 h-8 text-gray-400" />
+              </div>
+              <div>
+                <h5 className="font-semibold text-gray-500">No agent assigned</h5>
+                <p className="text-sm text-gray-400">This property is currently not assigned to any agent</p>
+              </div>
             </div>
           ) : (
             <div className="space-y-4">
@@ -170,55 +181,38 @@ const PropertyDetailsCard = ({ property, agent: agentFromProps }) => {
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
                     <h5 className="font-semibold text-gray-800">{agent.name}</h5>
-                    <a 
-                      href={`tel:${agent.phone}`}
-                      className="p-2 bg-red-500 hover:bg-red-600 text-white rounded-full transition-colors"
-                    >
-                      <Phone size={16} />
-                    </a>
+                    {agent.phone && (
+                      <a 
+                        href={`tel:${agent.phone}`}
+                        className="p-2 bg-red-500 hover:bg-red-600 text-white rounded-full transition-colors"
+                      >
+                        <Phone size={16} />
+                      </a>
+                    )}
                   </div>
-                  <p className="text-gray-500 text-sm">{agent.position}</p>
+                  {agent.position && <p className="text-gray-500 text-sm">{agent.position}</p>}
                 </div>
               </div>
               
               {/* Agent Contact Info */}
-              <div className="space-y-2 bg-white p-3 rounded-xl border border-gray-100">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Phone size={14} className="text-red-500" />
-                  <span>{agent.phone}</span>
+              {(agent.phone || agent.email) && (
+                <div className="space-y-2 bg-white p-3 rounded-xl border border-gray-100">
+                  {agent.phone && (
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <Phone size={14} className="text-red-500" />
+                      <span>{agent.phone}</span>
+                    </div>
+                  )}
+                  {agent.email && (
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <Mail size={14} className="text-red-500" />
+                      <span>{agent.email}</span>
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Mail size={14} className="text-red-500" />
-                  <span>{agent.email}</span>
-                </div>
-              </div>
-              
-              {/* Agent Contact Buttons */}
-              <div className="grid grid-cols-2 gap-3">
-                <a 
-                  href={`https://wa.me/${agent.whatsapp.replace(/[^0-9]/g, '')}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 p-3 bg-green-500 hover:bg-green-600 text-white rounded-xl transition-colors"
-                >
-                  <MessageCircle size={18} />
-                  <span className="text-sm">WhatsApp</span>
-                </a>
-                <a 
-                  href={`mailto:${agent.email}`}
-                  className="flex items-center justify-center gap-2 p-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors"
-                >
-                  <Mail size={18} className="text-red-500" />
-                  <span className="text-sm">Email</span>
-                </a>
-              </div>
-              
-              {/* Agent Note */}
-              <div className="text-center text-xs text-gray-500 italic">
-                Contact this agent for more information about this property
-              </div>
+              )}
             </div>
-          )}  
+          )}
         </div>
         <div className="space-y-4">
 

@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import BookingDialog from "../BookingDialog";
 import { formatPrice } from "../../utils/formatPrice";
+import { User } from "react-feather";
 
 const PropertyCard = ({ property, loading, error }) => {
   const [isFavorite, setIsFavorite] = useState(false);
@@ -263,7 +264,7 @@ const PropertyCard = ({ property, loading, error }) => {
 
             {/* Agent Info - Hidden on mobile */}
             <div className="hidden md:flex items-center justify-between mt-4">
-              {agentData && (
+              {agentData ? (
                 <div className="flex items-center gap-2">
                   <img 
                     src={agentData.profileImage} 
@@ -273,6 +274,15 @@ const PropertyCard = ({ property, loading, error }) => {
                   <div>
                     <p className="text-sm font-medium text-gray-800">{agentData.fullName}</p>
                     <p className="text-xs text-gray-500">{agentData.position}</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                    <User className="w-4 h-4 text-gray-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-500">No agent assigned</p>
                   </div>
                 </div>
               )}
