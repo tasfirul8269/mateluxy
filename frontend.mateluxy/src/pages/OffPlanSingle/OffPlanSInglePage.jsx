@@ -18,6 +18,7 @@ const OffPlanSinglePage = () => {
   const { id } = useParams();
   const [isLoading, setIsLoading] = useState(true);
   const [property, setProperty] = useState(null);
+  const [agent, setAgent] = useState(null);
   const [relatedProperties, setRelatedProperties] = useState([]);
   const [isSaved, setIsSaved] = useState(false);
 
@@ -73,6 +74,20 @@ const OffPlanSinglePage = () => {
           completionDate: propertyData.completionDate || null,
         };
         setProperty(transformedProperty);
+        
+        // Fetch agent details if property has an agent ID
+        if (propertyData.agent) {
+          try {
+            console.log('Fetching agent with ID:', propertyData.agent);
+            const agentResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/agents/${propertyData.agent}`);
+            if (agentResponse.data) {
+              console.log('Agent data fetched successfully:', agentResponse.data);
+              setAgent(agentResponse.data);
+            }
+          } catch (agentError) {
+            console.error('Error fetching agent data:', agentError);
+          }
+        }
         
         // Fetch related properties - show Buy properties instead of off-plan
         if (propertyData.propertyState) {
@@ -231,7 +246,7 @@ const OffPlanSinglePage = () => {
             >
               <aside className="sticky top-24">
                 <Tabs />
-                <ProjectDetailsCard property={property} />
+                <ProjectDetailsCard property={property} agent={agent} />
                 <ContactForm property={property} />
               </aside>
             </motion.div>
