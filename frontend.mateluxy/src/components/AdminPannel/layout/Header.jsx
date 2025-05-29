@@ -404,18 +404,29 @@ export function Header({ searchPlaceholder, onSearch }) {
     }
   };
 
-  const handleSelectSuggestion = (suggestion) => {
+  const handleSelectSuggestion = (e, suggestion) => {
+    // Prevent any immediate blur events
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
     // Get the suggestion text
     const searchText = suggestion.value || suggestion.name || suggestion.title || '';
     
-    // Update the search value state which is bound to the input
+    // Update the search value state
     setSearchValue(searchText);
+    
+    // Keep focus and suggestions visible until navigation
+    setIsSearchFocused(true);
     
     // Perform the search
     onSearch(searchText);
     
-    // Hide suggestions
-    setShowSuggestions(false);
+    // Hide suggestions after a short delay to ensure the value is updated
+    setTimeout(() => {
+      setShowSuggestions(false);
+    }, 100);
     
     // Navigate based on suggestion type
     const pathname = location.pathname;
@@ -471,8 +482,13 @@ export function Header({ searchPlaceholder, onSearch }) {
 
   useEffect(() => {
     const handleClickOutside = (e) => {
+      // Check if the click is on a suggestion item
+      const isSuggestionClick = e.target.closest('li[data-suggestion]');
+      if (isSuggestionClick) {
+        return; // Don't handle click outside for suggestion clicks
+      }
+
       if (searchInputRef.current && !searchInputRef.current.contains(e.target)) {
-        // Only hide suggestions when clicking outside, don't collapse the search bar
         setShowSuggestions(false);
       }
     };
@@ -767,10 +783,14 @@ export function Header({ searchPlaceholder, onSearch }) {
                   setIsSearchFocused(true);
                   if (searchValue) setShowSuggestions(true);
                 }}
-                onBlur={() => {
-                  // Only collapse the search bar if it's empty
-                  if (!searchValue.trim()) {
-                    setIsSearchFocused(false);
+                onBlur={(e) => {
+                  // Check if the related target is a suggestion
+                  const isSuggestionClick = e.relatedTarget?.closest('li[data-suggestion]');
+                  if (!isSuggestionClick) {
+                    // Only collapse if it's empty and not clicking a suggestion
+                    if (!searchValue.trim()) {
+                      setIsSearchFocused(false);
+                    }
                   }
                 }}
               />
@@ -800,7 +820,29 @@ export function Header({ searchPlaceholder, onSearch }) {
                     {suggestions.map(suggestion => (
                       <li 
                         key={suggestion.id}
-                        onClick={() => handleSelectSuggestion(suggestion)}
+                        data-suggestion="true"
+                        onClick={(e) => {
+                          const searchText = suggestion.value || suggestion.name || suggestion.title || '';
+                          setSearchValue(searchText);
+                          onSearch(searchText);
+                          setShowSuggestions(false);
+                          
+                          // Navigate based on suggestion type
+                          const pathname = location.pathname;
+                          if (pathname.includes("properties")) {
+                            if (suggestion.type === "property") {
+                              navigate(`/admin-pannel/properties/${suggestion.id}`);
+                            } else {
+                              onSearch(searchText);
+                            }
+                          } else if (pathname.includes("agents") && suggestion.type === "name") {
+                            navigate(`/admin-pannel/agents/${suggestion.id}`);
+                          } else if (pathname.includes("admins") && suggestion.type === "name") {
+                            navigate(`/admin-pannel/admins/${suggestion.id}`);
+                          } else {
+                            onSearch(searchText);
+                          }
+                        }}
                         className="px-4 py-2 hover:bg-red-50 cursor-pointer flex items-center justify-between"
                       >
                         <span>{suggestion.value}</span>
