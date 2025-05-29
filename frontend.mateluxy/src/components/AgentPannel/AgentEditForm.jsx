@@ -422,22 +422,11 @@ export function AgentEditForm({ open, onOpenChange, agent, onAgentUpdated }) {
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
-                            <Select
-                              value={field.value}
-                              onValueChange={field.onChange}
-                            >
-                              <SelectTrigger className="bg-gray-50 border-0 shadow-none ring-0 focus:ring-0">
-                                <SelectValue placeholder="Select your department" />
-                              </SelectTrigger>
-                              <SelectContent className="bg-white">
-                                <SelectItem value="sales">Sales</SelectItem>
-                                <SelectItem value="marketing">Marketing</SelectItem>
-                                <SelectItem value="operations">Operations</SelectItem>
-                                <SelectItem value="finance">Finance</SelectItem>
-                                <SelectItem value="hr">Human Resources</SelectItem>
-                                <SelectItem value="it">IT</SelectItem>
-                              </SelectContent>
-                            </Select>
+                            <Input 
+                              placeholder="Enter department name" 
+                              {...field} 
+                              className="bg-gray-50 border-0 shadow-none ring-0 focus:ring-0" 
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
