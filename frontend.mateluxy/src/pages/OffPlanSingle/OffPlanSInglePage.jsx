@@ -79,45 +79,38 @@ const OffPlanSinglePage = () => {
         // Debug property data to check agent field
         console.log('Property data received:', propertyData);
         
-        // Extract agent ID, handling different possible formats
-        let agentId = null;
-        
-        if (typeof propertyData.agent === 'string') {
-          // If agent is directly the ID string
-          agentId = propertyData.agent;
-          console.log('Using agent ID from property.agent (string):', agentId);
-        } else if (propertyData.agent && propertyData.agent._id) {
-          // If agent is an object with _id
-          agentId = propertyData.agent._id;
-          console.log('Using agent ID from property.agent._id:', agentId);
-        } else if (propertyData.agentId) {
-          // If there's a specific agentId field
-          agentId = propertyData.agentId;
-          console.log('Using agent ID from property.agentId:', agentId);
-        }
-        
-        // Fetch agent details if we have an agent ID
-        if (agentId) {
-          setIsLoadingAgent(true);
-          try {
-            console.log('Fetching agent with ID:', agentId);
-            const agentResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/agents/${agentId}`);
-            if (agentResponse.data) {
-              console.log('Agent data fetched successfully:', agentResponse.data);
-              setAgent(agentResponse.data);
-            } else {
-              console.log('No agent data found, setting agent to null');
+        // Check if agent data is already populated in the property
+        if (propertyData.agent) {
+          console.log('Agent data found in property:', propertyData.agent);
+          // If agent is already populated as an object, use it directly
+          if (typeof propertyData.agent === 'object') {
+            setAgent(propertyData.agent);
+            console.log('Using populated agent data:', propertyData.agent);
+          } 
+          // If agent is just an ID, fetch the agent data
+          else if (typeof propertyData.agent === 'string') {
+            setIsLoadingAgent(true);
+            try {
+              console.log('Fetching agent with ID:', propertyData.agent);
+              const agentResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/agents/${propertyData.agent}`);
+              if (agentResponse.data) {
+                console.log('Agent data fetched successfully:', agentResponse.data);
+                setAgent(agentResponse.data);
+              } else {
+                console.log('No agent data found, setting agent to null');
+                setAgent(null);
+              }
+            } catch (agentError) {
+              console.error('Error fetching agent data:', agentError);
               setAgent(null);
+            } finally {
+              setIsLoadingAgent(false);
             }
-          } catch (agentError) {
-            console.error('Error fetching agent data:', agentError);
-            setAgent(null);
-          } finally {
-            setIsLoadingAgent(false);
           }
         } else {
-          console.log('No agent ID found for this property');
+          console.log('No agent associated with this property');
           setAgent(null);
+          setIsLoadingAgent(false);
         }
         
         // Fetch related properties - show Buy properties instead of off-plan

@@ -62,13 +62,33 @@ export async function getAllProperties(req, res) {
   }
 }
 
-// Get a single property - simplified with clear error handling
+// Get a single property with agent data populated
 export async function getPropertyById(req, res) {
   try {
-    const property = await Property.findById(req.params.id);
-    if (!property) return res.status(404).json({ message: 'Property not found' });
+    console.log(`Fetching property with ID: ${req.params.id}`);
+    
+    // Find property by ID and populate agent data
+    const property = await Property.findById(req.params.id).populate({
+      path: 'agent',
+      select: 'fullName profileImage languages position whatsapp contactNumber email',
+      model: 'Agent'
+    });
+    
+    if (!property) {
+      console.log(`Property not found with ID: ${req.params.id}`);
+      return res.status(404).json({ message: 'Property not found' });
+    }
+    
+    console.log(`Property found with ID: ${req.params.id}`);
+    if (property.agent) {
+      console.log(`Agent data included: ${property.agent._id}`);
+    } else {
+      console.log('No agent associated with this property');
+    }
+    
     res.status(200).json(property);
   } catch (error) {
+    console.error(`Error fetching property: ${error.message}`);
     res.status(500).json({ message: error.message });
   }
 }

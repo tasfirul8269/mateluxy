@@ -104,7 +104,6 @@ const ProjectDetailsCard = ({ property, agent: agentFromProps, isLoadingAgent })
           <span>Property Specialist</span>
         </h4>
         
-        {/* Debug agent data */}
         {console.log('Agent data in ProjectDetailsCard:', agentFromProps)}
         
         {isLoadingAgent ? (
