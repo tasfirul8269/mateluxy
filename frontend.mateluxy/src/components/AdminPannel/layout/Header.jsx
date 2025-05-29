@@ -392,15 +392,13 @@ export function Header({ searchPlaceholder, onSearch }) {
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchValue(value);
+    
+    // Show suggestions if there's a value
     setShowSuggestions(value.length > 0);
-  };
-
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    onSearch(searchValue);
-    setShowSuggestions(false);
-    if (searchValue.trim()) {
-      toast.success(`Searching for "${searchValue}"`);
+    
+    // Perform search immediately as user types
+    if (value.trim()) {
+      onSearch(value);
     }
   };
 
@@ -759,8 +757,7 @@ export function Header({ searchPlaceholder, onSearch }) {
       <div className="flex items-center space-x-3 sm:space-x-6">
         {!shouldHideSearch() ? (
           <div className="relative">
-            <form 
-              onSubmit={handleSearchSubmit}
+            <div 
               className={cn(
                 "relative flex items-center transition-all duration-300 bg-gray-100 rounded-full overflow-hidden",
                 isSearchFocused 
@@ -800,13 +797,14 @@ export function Header({ searchPlaceholder, onSearch }) {
                   onClick={() => {
                     setSearchValue('');
                     setShowSuggestions(false);
+                    onSearch(''); // Clear search results when clearing input
                   }}
                   className="absolute right-3 text-gray-400 hover:text-gray-600"
                 >
                   <X size={16} />
                 </button>
               )}
-            </form>
+            </div>
 
             {showSuggestions && (
               <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-md shadow-lg border border-gray-200 overflow-hidden z-50 animate-fade-in">
