@@ -7,6 +7,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 // Import S3 upload utilities
 import { uploadFileToS3, uploadMultipleFilesToS3 } from '../../utils/s3Upload.js';
+import { X } from 'lucide-react';
 
 const COUNTRY_LIST = ["UAE", "Qatar", "Saudi Arabia", "Kuwait", "Bahrain", "Oman"];
 const PROPERTY_TYPE_LIST = [
@@ -202,6 +203,8 @@ export default function TabbedPropertyForm({ onSubmit, onCancel, selectedCategor
   const [developers, setDevelopers] = useState([]);
   const [isLoadingDevelopers, setIsLoadingDevelopers] = useState(false);
   const [showDeveloperDropdown, setShowDeveloperDropdown] = useState(false);
+  const [searchAgentTerm, setSearchAgentTerm] = useState("");
+  const [showAgentDropdown, setShowAgentDropdown] = useState(false);
 
   // We'll define filteredDevelopers inside the component after form is initialized
 
@@ -431,6 +434,11 @@ export default function TabbedPropertyForm({ onSubmit, onCancel, selectedCategor
 
   const [featuresList, setFeaturesList] = useState(DEFAULT_FEATURES_LIST);
   const [amenitiesList, setAmenitiesList] = useState(DEFAULT_AMENITIES_LIST);
+
+  // Add this computed value
+  const filteredAgents = agents.filter(agent => 
+    agent.fullName.toLowerCase().includes(searchAgentTerm.toLowerCase())
+  );
 
   // Fetch agents on component mount
   useEffect(() => {
@@ -920,6 +928,18 @@ const handleRemoveInteriorImage = (index) => {
     onSubmit(formData);
   };
 
+  // Add click outside handler
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest('.agent-dropdown')) {
+        setShowAgentDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col space-y-6">
       {/* Tab Navigation */}
@@ -1312,20 +1332,57 @@ const handleRemoveInteriorImage = (index) => {
                       <input type="hidden" name="agent" value={form.agent} />
                     </div>
                   ) : (
-                    // In admin panel, show the normal dropdown
-                    <select
-                      name="agent"
-                      value={form.agent}
-                      onChange={handleInput}
-                      className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition appearance-none"
-                    >
-                      <option value="">Select an agent</option>
-                      {agents.map(agent => (
-                        <option key={agent._id} value={agent._id}>
-                          {agent.fullName}
-                        </option>
-                      ))}
-                    </select>
+                    // In admin panel, show searchable dropdown
+                    <div className="relative">
+                      <div className="relative">
+                        <input
+                          type="text"
+                          placeholder="Search agent..."
+                          value={searchAgentTerm}
+                          onChange={(e) => {
+                            setSearchAgentTerm(e.target.value);
+                            setShowAgentDropdown(true);
+                          }}
+                          onFocus={() => setShowAgentDropdown(true)}
+                          className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition"
+                        />
+                        {form.agent && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setForm(prev => ({ ...prev, agent: "" }));
+                              setSearchAgentTerm("");
+                            }}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          >
+                            <X size={16} />
+                          </button>
+                        )}
+                      </div>
+                      
+                      {showAgentDropdown && (
+                        <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg border border-gray-200 max-h-60 overflow-auto">
+                          {filteredAgents.slice(0, 5).map(agent => (
+                            <div
+                              key={agent._id}
+                              onClick={() => {
+                                setForm(prev => ({ ...prev, agent: agent._id }));
+                                setSearchAgentTerm(agent.fullName);
+                                setShowAgentDropdown(false);
+                              }}
+                              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                            >
+                              {agent.fullName}
+                            </div>
+                          ))}
+                          {filteredAgents.length === 0 && (
+                            <div className="px-4 py-2 text-gray-500">
+                              No agents found
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
 
@@ -1999,20 +2056,57 @@ const handleRemoveInteriorImage = (index) => {
                         <input type="hidden" name="agent" value={form.agent} />
                       </div>
                     ) : (
-                      // In admin panel, show the normal dropdown
-                      <select
-                        name="agent"
-                        value={form.agent}
-                        onChange={handleInput}
-                        className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition appearance-none"
-                      >
-                        <option value="">Select an agent</option>
-                        {agents.map(agent => (
-                          <option key={agent._id} value={agent._id}>
-                            {agent.fullName}
-                          </option>
-                        ))}
-                      </select>
+                      // In admin panel, show searchable dropdown
+                      <div className="relative">
+                        <div className="relative">
+                          <input
+                            type="text"
+                            placeholder="Search agent..."
+                            value={searchAgentTerm}
+                            onChange={(e) => {
+                              setSearchAgentTerm(e.target.value);
+                              setShowAgentDropdown(true);
+                            }}
+                            onFocus={() => setShowAgentDropdown(true)}
+                            className="w-full rounded-lg border border-[#e5e7eb] bg-[#fafafa] px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/30 focus:border-[#ff4d4f] transition"
+                          />
+                          {form.agent && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setForm(prev => ({ ...prev, agent: "" }));
+                                setSearchAgentTerm("");
+                              }}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            >
+                              <X size={16} />
+                            </button>
+                          )}
+                        </div>
+                        
+                        {showAgentDropdown && (
+                          <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg border border-gray-200 max-h-60 overflow-auto">
+                            {filteredAgents.slice(0, 5).map(agent => (
+                              <div
+                                key={agent._id}
+                                onClick={() => {
+                                  setForm(prev => ({ ...prev, agent: agent._id }));
+                                  setSearchAgentTerm(agent.fullName);
+                                  setShowAgentDropdown(false);
+                                }}
+                                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                              >
+                                {agent.fullName}
+                              </div>
+                            ))}
+                            {filteredAgents.length === 0 && (
+                              <div className="px-4 py-2 text-gray-500">
+                                No agents found
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
                 )}
