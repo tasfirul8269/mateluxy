@@ -41,6 +41,32 @@ const OffPlanSinglePage = () => {
           };
           setProperty(transformedProperty);
           
+          // Fetch agent data if available in initial data
+          if (initialPropertyData.agent) {
+            setIsLoadingAgent(true);
+            try {
+              // If agent is already populated as an object, use it directly
+              if (typeof initialPropertyData.agent === 'object' && initialPropertyData.agent !== null) {
+                console.log('Using populated agent data from initial data:', initialPropertyData.agent);
+                setAgent(initialPropertyData.agent);
+              } 
+              // If agent is just an ID, fetch the agent data
+              else if (typeof initialPropertyData.agent === 'string' && initialPropertyData.agent.trim() !== '') {
+                console.log('Fetching agent with ID from initial data:', initialPropertyData.agent);
+                const agentResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/agents/${initialPropertyData.agent}`);
+                if (agentResponse.data) {
+                  console.log('Agent data fetched successfully from initial data:', agentResponse.data);
+                  setAgent(agentResponse.data);
+                }
+              }
+            } catch (agentError) {
+              console.error('Error fetching agent data from initial data:', agentError);
+              setAgent(null);
+            } finally {
+              setIsLoadingAgent(false);
+            }
+          }
+          
           // Fetch related properties - show Buy properties instead of off-plan
           try {
             const relatedResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/properties`, {
