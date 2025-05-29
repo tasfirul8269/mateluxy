@@ -78,18 +78,19 @@ const OffPlanSinglePage = () => {
         
         // Debug property data to check agent field
         console.log('Property data received:', propertyData);
+        setIsLoadingAgent(true);
         
         // Check if agent data is already populated in the property
         if (propertyData.agent) {
           console.log('Agent data found in property:', propertyData.agent);
           // If agent is already populated as an object, use it directly
-          if (typeof propertyData.agent === 'object') {
-            setAgent(propertyData.agent);
+          if (typeof propertyData.agent === 'object' && propertyData.agent !== null) {
             console.log('Using populated agent data:', propertyData.agent);
+            setAgent(propertyData.agent);
+            setIsLoadingAgent(false);
           } 
           // If agent is just an ID, fetch the agent data
-          else if (typeof propertyData.agent === 'string') {
-            setIsLoadingAgent(true);
+          else if (typeof propertyData.agent === 'string' && propertyData.agent.trim() !== '') {
             try {
               console.log('Fetching agent with ID:', propertyData.agent);
               const agentResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/agents/${propertyData.agent}`);
@@ -106,6 +107,10 @@ const OffPlanSinglePage = () => {
             } finally {
               setIsLoadingAgent(false);
             }
+          } else {
+            console.log('Invalid agent data format:', propertyData.agent);
+            setAgent(null);
+            setIsLoadingAgent(false);
           }
         } else {
           console.log('No agent associated with this property');

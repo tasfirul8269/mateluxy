@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
-import { CircleDollarSign, Ruler, Bed, MapPin, Calendar, User, Phone, Mail, MessageCircle } from 'lucide-react';
+import { CircleDollarSign, Ruler, Bed, MapPin, Calendar, User, Phone, Mail, MessageCircle, Loader2 } from 'lucide-react';
 import { formatPrice } from '../../../utils/formatPrice';
 
 const ProjectDetailsCard = ({ property, agent: agentFromProps, isLoadingAgent }) => {
@@ -108,9 +108,10 @@ const ProjectDetailsCard = ({ property, agent: agentFromProps, isLoadingAgent })
         
         {isLoadingAgent ? (
           <div className="flex items-center justify-center p-6">
-            <div className="w-10 h-10 border-4 border-gray-200 border-t-red-500 rounded-full animate-spin"></div>
+            <Loader2 className="w-8 h-8 text-red-500 animate-spin" />
+            <span className="ml-2 text-gray-500">Loading agent information...</span>
           </div>
-        ) : agentFromProps ? (
+        ) : agentFromProps && (typeof agentFromProps === 'object') ? (
           <div className="space-y-4">
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-red-100">
