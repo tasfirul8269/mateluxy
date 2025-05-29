@@ -405,16 +405,16 @@ export function Header({ searchPlaceholder, onSearch }) {
   };
 
   const handleSelectSuggestion = (suggestion) => {
-    // Update the search input value with the suggestion text
+    // Get the suggestion text
     const searchText = suggestion.value || suggestion.name || suggestion.title || '';
+    
+    // Update the search value state which is bound to the input
     setSearchValue(searchText);
     
-    // Update the input field value directly
-    if (searchInputRef.current) {
-      searchInputRef.current.value = searchText;
-    }
-    
+    // Perform the search
     onSearch(searchText);
+    
+    // Hide suggestions
     setShowSuggestions(false);
     
     // Navigate based on suggestion type
@@ -766,7 +766,11 @@ export function Header({ searchPlaceholder, onSearch }) {
                   setIsSearchFocused(true);
                   if (searchValue) setShowSuggestions(true);
                 }}
-                onBlur={() => setIsSearchFocused(false)}
+                onBlur={() => {
+                  setIsSearchFocused(false);
+                  // Add a small delay before hiding suggestions to allow for clicks
+                  setTimeout(() => setShowSuggestions(false), 200);
+                }}
               />
               {searchValue && (
                 <button
