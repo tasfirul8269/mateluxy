@@ -1338,9 +1338,12 @@ const handleRemoveInteriorImage = (index) => {
                         <input
                           type="text"
                           placeholder="Search agent..."
-                          value={searchAgentTerm}
+                          value={form.agent ? (agents.find(a => a._id === form.agent)?.fullName || searchAgentTerm) : searchAgentTerm}
                           onChange={(e) => {
                             setSearchAgentTerm(e.target.value);
+                            if (!e.target.value) {
+                              setForm(prev => ({ ...prev, agent: "" }));
+                            }
                             setShowAgentDropdown(true);
                           }}
                           onFocus={() => setShowAgentDropdown(true)}
@@ -1370,7 +1373,7 @@ const handleRemoveInteriorImage = (index) => {
                                 setSearchAgentTerm(agent.fullName);
                                 setShowAgentDropdown(false);
                               }}
-                              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                              className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${form.agent === agent._id ? 'bg-gray-100' : ''}`}
                             >
                               {agent.fullName}
                             </div>
@@ -2062,9 +2065,12 @@ const handleRemoveInteriorImage = (index) => {
                           <input
                             type="text"
                             placeholder="Search agent..."
-                            value={searchAgentTerm}
+                            value={form.agent ? (agents.find(a => a._id === form.agent)?.fullName || searchAgentTerm) : searchAgentTerm}
                             onChange={(e) => {
                               setSearchAgentTerm(e.target.value);
+                              if (!e.target.value) {
+                                setForm(prev => ({ ...prev, agent: "" }));
+                              }
                               setShowAgentDropdown(true);
                             }}
                             onFocus={() => setShowAgentDropdown(true)}
@@ -2094,7 +2100,7 @@ const handleRemoveInteriorImage = (index) => {
                                   setSearchAgentTerm(agent.fullName);
                                   setShowAgentDropdown(false);
                                 }}
-                                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${form.agent === agent._id ? 'bg-gray-100' : ''}`}
                               >
                                 {agent.fullName}
                               </div>
