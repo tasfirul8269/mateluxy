@@ -28,6 +28,7 @@ import { convertS3UrlToProxyUrl } from "@/utils/s3UrlConverter.js";
 export function Header({ searchPlaceholder, onSearch }) {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const [inputValue, setInputValue] = useState("");
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -407,7 +408,12 @@ export function Header({ searchPlaceholder, onSearch }) {
     // Update the search input value with the suggestion text
     const searchText = suggestion.value || suggestion.name || suggestion.title || '';
     setSearchValue(searchText);
-    setInputValue(searchText); // Update the input field value
+    
+    // Update the input field value directly
+    if (searchInputRef.current) {
+      searchInputRef.current.value = searchText;
+    }
+    
     onSearch(searchText);
     setShowSuggestions(false);
     
