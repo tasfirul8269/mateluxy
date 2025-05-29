@@ -106,14 +106,12 @@ const Properties = () => {
             kitchens: property.propertyKitchen,
             features: property.features || [],
             amenities: property.amenities || [],
-            languages: hasAgentData && property.agent.languages ? property.agent.languages : ["English", "Arabic"],
-            agentName: hasAgentData ? property.agent.fullName : (property.agent || 'Agent'),
-            agentPosition: hasAgentData ? property.agent.position : '',
-            agentImage: hasAgentData && property.agent.profileImage ? 
-              property.agent.profileImage : 
-              "https://randomuser.me/api/portraits//" + (Math.random() > 0.5 ? 'women/' : 'men/') + Math.floor(Math.random() * 10) + '.jpg',
-            agentWhatsapp: hasAgentData && property.agent.whatsapp ? property.agent.whatsapp : '+971501234567',
-            agentPhone: hasAgentData && property.agent.contactNumber ? property.agent.contactNumber : '+971501234567',
+            languages: hasAgentData && property.agent.languages ? property.agent.languages : [],
+            agentName: hasAgentData ? property.agent.fullName : null,
+            agentPosition: hasAgentData ? property.agent.position : null,
+            agentImage: hasAgentData && property.agent.profileImage ? property.agent.profileImage : null,
+            agentWhatsapp: hasAgentData && property.agent.whatsapp ? property.agent.whatsapp : null,
+            agentPhone: hasAgentData && property.agent.contactNumber ? property.agent.contactNumber : null,
             category: property.category
           };
         });
