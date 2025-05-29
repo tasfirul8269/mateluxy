@@ -403,11 +403,31 @@ export function Header({ searchPlaceholder, onSearch }) {
     }
   };
 
-  const handleSelectSuggestion = (value) => {
-    setSearchValue(value);
-    onSearch(value);
+  const handleSelectSuggestion = (suggestion) => {
+    setSearchValue(suggestion.value);
+    onSearch(suggestion.value);
     setShowSuggestions(false);
-    toast.success(`Searching for "${value}"`);
+    
+    // Navigate based on suggestion type
+    const pathname = location.pathname;
+    
+    if (pathname.includes("properties")) {
+      if (suggestion.type === "property") {
+        navigate(`/admin-pannel/properties/${suggestion.id}`);
+      } else {
+        // For other property-related suggestions, just filter the list
+        onSearch(suggestion.value);
+      }
+    } else if (pathname.includes("agents") && suggestion.type === "name") {
+      navigate(`/admin-pannel/agents/${suggestion.id}`);
+    } else if (pathname.includes("admins") && suggestion.type === "name") {
+      navigate(`/admin-pannel/admins/${suggestion.id}`);
+    } else {
+      // For other cases, just update the search
+      onSearch(suggestion.value);
+    }
+    
+    toast.success(`Searching for "${suggestion.value}"`);
   };
 
   // Handle notification click to show details
@@ -769,7 +789,7 @@ export function Header({ searchPlaceholder, onSearch }) {
                     {suggestions.map(suggestion => (
                       <li 
                         key={suggestion.id}
-                        onClick={() => handleSelectSuggestion(suggestion.value)}
+                        onClick={() => handleSelectSuggestion(suggestion)}
                         className="px-4 py-2 hover:bg-red-50 cursor-pointer flex items-center justify-between"
                       >
                         <span>{suggestion.value}</span>

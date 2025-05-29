@@ -13,19 +13,24 @@ const TeamPage = () => {
   const [filteredMembers, setFilteredMembers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [teamData, setTeamData] = useState([]);
-
-  // These can be hardcoded since they're not in the API
-  const departments = ["All", "Sales", "Marketing", "Management", "Finance", "IT"];
-  const languages = ["All", "English", "Arabic", "French", "German", "Spanish", "Russian", "Chinese", "Korean", "Japanese", "Portuguese"];
+  const [departments, setDepartments] = useState(['All']);
+  const [languages, setLanguages] = useState(['All']);
 
   useEffect(() => {
     const fetchTeamData = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/agents`); // Replace with your actual API endpoint
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/agents`);
         const data = await response.json();
-        console.log(data)
         setTeamData(data);
         setFilteredMembers(data);
+
+        // Extract unique departments
+        const uniqueDepartments = ['All', ...new Set(data.map(agent => agent.department).filter(Boolean))];
+        setDepartments(uniqueDepartments);
+
+        // Extract unique languages
+        const uniqueLanguages = ['All', ...new Set(data.flatMap(agent => agent.languages || []))];
+        setLanguages(uniqueLanguages);
       } catch (error) {
         console.error('Error fetching team data:', error);
       }
@@ -40,9 +45,9 @@ const TeamPage = () => {
     if (searchTerm) {
       filtered = filtered.filter(
         (member) =>
-          member.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          member.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          member.position.toLowerCase().includes(searchTerm.toLowerCase())
+          member.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          member.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          member.position?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 

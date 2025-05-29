@@ -172,9 +172,9 @@ const NewsDetailPage = () => {
                 </div>
                 
                 {/* Description */}
-                <p className="text-lg font-medium text-gray-700 mb-6">
+                <div className="text-lg font-medium text-gray-700 mb-6 whitespace-pre-line">
                   {newsArticle.description}
-                </p>
+                </div>
                 
                 {/* Content */}
                 <div 

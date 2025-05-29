@@ -241,7 +241,7 @@ const AgentProfileCard = () => {
             className="lg:col-span-1"
             ref={contactSectionRef}
           >
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden h-full">
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden sticky top-24 h-fit">
               <div className="p-6 border-b border-gray-100">
                 <h2 className="text-xl font-bold text-gray-900 mb-6">Contact Information</h2>
                 
@@ -359,7 +359,7 @@ const AgentProfileCard = () => {
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">About {agentData?.fullName?.split(' ')[0] || 'Me'}</h2>
                 <div className={`text-gray-600 leading-relaxed space-y-4 ${!expanded ? 'max-h-[150px] overflow-hidden relative' : ''}`}>
                   {agentData?.aboutMe ? (
-                    <p>{agentData.aboutMe}</p>
+                    <div className="whitespace-pre-line">{agentData.aboutMe}</div>
                   ) : (
                     <>
                       <p>As a dedicated real estate professional, I specialize in helping clients navigate the luxury property market with confidence and ease. My approach combines market expertise with personalized service to ensure each client finds their perfect property.</p>

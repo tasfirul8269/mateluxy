@@ -142,34 +142,27 @@ function LocationCategory() {
         
         // Group properties by location and count them
         const locationGroups = properties.reduce((acc, property) => {
-          // For buy/rent/commercial properties, use the last part of the address
-          // For off-plan properties, use the exact location
-          let location;
+          // Get all possible location values
+          const locations = [
+            property.propertyState,
+            property.exactLocation,
+            ...(property.propertyAddress ? property.propertyAddress.split(',').map(part => part.trim()) : [])
+          ].filter(Boolean); // Remove null/undefined values
           
-          if (property.isOffPlan) {
-            // For off-plan properties, use the exact location
-            location = property.exactLocation || property.propertyLocation;
-          } else {
-            // For buy/rent/commercial properties, use the last part of the address
-            if (property.propertyAddress) {
-              const addressParts = property.propertyAddress.split(',');
-              location = addressParts[addressParts.length - 1].trim();
-            } else {
-              // Fallback to property location or state if address is not available
-              location = property.propertyLocation || property.propertyState;
+          // Add property to each location group it belongs to
+          locations.forEach(location => {
+            if (!location) return;
+            
+            if (!acc[location]) {
+              acc[location] = {
+                count: 0,
+                properties: []
+              };
             }
-          }
+            acc[location].count++;
+            acc[location].properties.push(property);
+          });
           
-          if (!location) return acc; // Skip if no location is defined
-          
-          if (!acc[location]) {
-            acc[location] = {
-              count: 0,
-              properties: []
-            };
-          }
-          acc[location].count++;
-          acc[location].properties.push(property);
           return acc;
         }, {});
 

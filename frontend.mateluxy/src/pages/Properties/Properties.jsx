@@ -90,8 +90,12 @@ const Properties = () => {
             id: property._id,
             name: property.propertyTitle,
             location: property.propertyState,
+            propertyAddress: property.propertyAddress,
+            propertyState: property.propertyState,
+            propertyCountry: property.propertyCountry,
+            exactLocation: property.exactLocation,
             deliveryDate: property.category === 'Off Plan' ? formatDeliveryDate(property.completionDate) : 'Ready to Move',
-            completionDate: property.completionDate, // Add the original completionDate field
+            completionDate: property.completionDate,
             price: formatPrice(property.propertyPrice),
             developer: property.developer || '',
             developerImage: property.developerImage || '',
@@ -107,7 +111,7 @@ const Properties = () => {
             agentPosition: hasAgentData ? property.agent.position : '',
             agentImage: hasAgentData && property.agent.profileImage ? 
               property.agent.profileImage : 
-              "https://randomuser.me/api/portraits/" + (Math.random() > 0.5 ? 'women/' : 'men/') + Math.floor(Math.random() * 10) + '.jpg',
+              "https://randomuser.me/api/portraits//" + (Math.random() > 0.5 ? 'women/' : 'men/') + Math.floor(Math.random() * 10) + '.jpg',
             agentWhatsapp: hasAgentData && property.agent.whatsapp ? property.agent.whatsapp : '+971501234567',
             agentPhone: hasAgentData && property.agent.contactNumber ? property.agent.contactNumber : '+971501234567',
             category: property.category
@@ -196,9 +200,17 @@ const Properties = () => {
     
     // Filter by location
     if (filters.location) {
-      filtered = filtered.filter(property => 
-        property.location.toLowerCase().includes(filters.location.toLowerCase())
-      );
+      filtered = filtered.filter(property => {
+        const searchLocation = filters.location.toLowerCase();
+        const addressMatch = property.propertyAddress?.toLowerCase().includes(searchLocation);
+        const stateMatch = property.propertyState?.toLowerCase().includes(searchLocation);
+        const countryMatch = property.propertyCountry?.toLowerCase().includes(searchLocation);
+        const exactLocationMatch = property.exactLocation?.toLowerCase().includes(searchLocation);
+        const locationMatch = property.location?.toLowerCase().includes(searchLocation);
+        
+        // If any of the location fields match, include this property
+        return addressMatch || stateMatch || countryMatch || exactLocationMatch || locationMatch;
+      });
     }
     
     // Filter by features
