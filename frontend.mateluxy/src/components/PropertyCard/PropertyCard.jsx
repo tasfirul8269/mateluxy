@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import BookingDialog from "../BookingDialog";
 import { formatPrice } from "../../utils/formatPrice";
-import { User } from "react-feather";
+import { User } from "lucide-react";
 
 const PropertyCard = ({ property, loading, error }) => {
   const [isFavorite, setIsFavorite] = useState(false);
