@@ -826,22 +826,6 @@ export function Header({ searchPlaceholder, onSearch }) {
                           setSearchValue(searchText);
                           onSearch(searchText);
                           setShowSuggestions(false);
-                          
-                          // Navigate based on suggestion type
-                          const pathname = location.pathname;
-                          if (pathname.includes("properties")) {
-                            if (suggestion.type === "property") {
-                              navigate(`/admin-pannel/properties/${suggestion.id}`);
-                            } else {
-                              onSearch(searchText);
-                            }
-                          } else if (pathname.includes("agents") && suggestion.type === "name") {
-                            navigate(`/admin-pannel/agents/${suggestion.id}`);
-                          } else if (pathname.includes("admins") && suggestion.type === "name") {
-                            navigate(`/admin-pannel/admins/${suggestion.id}`);
-                          } else {
-                            onSearch(searchText);
-                          }
                         }}
                         className="px-4 py-2 hover:bg-red-50 cursor-pointer flex items-center justify-between"
                       >
