@@ -76,12 +76,32 @@ const OffPlanSinglePage = () => {
         };
         setProperty(transformedProperty);
         
-        // Fetch agent details if property has an agent ID
-        if (propertyData.agent) {
+        // Debug property data to check agent field
+        console.log('Property data received:', propertyData);
+        
+        // Extract agent ID, handling different possible formats
+        let agentId = null;
+        
+        if (typeof propertyData.agent === 'string') {
+          // If agent is directly the ID string
+          agentId = propertyData.agent;
+          console.log('Using agent ID from property.agent (string):', agentId);
+        } else if (propertyData.agent && propertyData.agent._id) {
+          // If agent is an object with _id
+          agentId = propertyData.agent._id;
+          console.log('Using agent ID from property.agent._id:', agentId);
+        } else if (propertyData.agentId) {
+          // If there's a specific agentId field
+          agentId = propertyData.agentId;
+          console.log('Using agent ID from property.agentId:', agentId);
+        }
+        
+        // Fetch agent details if we have an agent ID
+        if (agentId) {
           setIsLoadingAgent(true);
           try {
-            console.log('Fetching agent with ID:', propertyData.agent);
-            const agentResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/agents/${propertyData.agent}`);
+            console.log('Fetching agent with ID:', agentId);
+            const agentResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/agents/${agentId}`);
             if (agentResponse.data) {
               console.log('Agent data fetched successfully:', agentResponse.data);
               setAgent(agentResponse.data);
