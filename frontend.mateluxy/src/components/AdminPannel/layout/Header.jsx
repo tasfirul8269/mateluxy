@@ -404,8 +404,11 @@ export function Header({ searchPlaceholder, onSearch }) {
   };
 
   const handleSelectSuggestion = (suggestion) => {
-    setSearchValue(suggestion.value);
-    onSearch(suggestion.value);
+    // Update the search input value with the suggestion text
+    const searchText = suggestion.value || suggestion.name || suggestion.title || '';
+    setSearchValue(searchText);
+    setInputValue(searchText); // Update the input field value
+    onSearch(searchText);
     setShowSuggestions(false);
     
     // Navigate based on suggestion type
@@ -415,19 +418,15 @@ export function Header({ searchPlaceholder, onSearch }) {
       if (suggestion.type === "property") {
         navigate(`/admin-pannel/properties/${suggestion.id}`);
       } else {
-        // For other property-related suggestions, just filter the list
-        onSearch(suggestion.value);
+        onSearch(searchText);
       }
     } else if (pathname.includes("agents") && suggestion.type === "name") {
       navigate(`/admin-pannel/agents/${suggestion.id}`);
     } else if (pathname.includes("admins") && suggestion.type === "name") {
       navigate(`/admin-pannel/admins/${suggestion.id}`);
     } else {
-      // For other cases, just update the search
-      onSearch(suggestion.value);
+      onSearch(searchText);
     }
-    
-    toast.success(`Searching for "${suggestion.value}"`);
   };
 
   // Handle notification click to show details
