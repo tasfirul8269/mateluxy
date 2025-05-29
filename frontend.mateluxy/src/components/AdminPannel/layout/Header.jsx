@@ -472,6 +472,7 @@ export function Header({ searchPlaceholder, onSearch }) {
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (searchInputRef.current && !searchInputRef.current.contains(e.target)) {
+        // Only hide suggestions when clicking outside, don't collapse the search bar
         setShowSuggestions(false);
       }
     };
@@ -767,9 +768,10 @@ export function Header({ searchPlaceholder, onSearch }) {
                   if (searchValue) setShowSuggestions(true);
                 }}
                 onBlur={() => {
-                  setIsSearchFocused(false);
-                  // Add a small delay before hiding suggestions to allow for clicks
-                  setTimeout(() => setShowSuggestions(false), 200);
+                  // Only collapse the search bar if it's empty
+                  if (!searchValue.trim()) {
+                    setIsSearchFocused(false);
+                  }
                 }}
               />
               {searchValue && (
