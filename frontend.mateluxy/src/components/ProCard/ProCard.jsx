@@ -164,7 +164,7 @@ const ProCard = ({ property }) => {
           </div>
         ) : (
           // Agent information for other property types
-          <div className="flex gap-3 items-center w-full">
+          <div className="flex gap-3 items-center">
             {property?.agentImage && property?.agentName ? (
               <>
                 <div className="relative">
@@ -186,50 +186,59 @@ const ProCard = ({ property }) => {
                       onMouseLeave={() => setShowTooltip(false)}
                     >
                       {property.agentName}
+                      {/* Custom tooltip */}
+                      <AnimatePresence>
+                        {showTooltip && (
+                          <motion.div 
+                            className="absolute z-50 left-0 -top-10 bg-gray-800 text-white text-xs rounded py-1 px-2 min-w-max"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 10 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            {property.agentName}
+                            <div className="absolute bottom-[-6px] left-3 w-3 h-3 bg-gray-800 transform rotate-45"></div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </h3>
-                    <AnimatePresence>
-                      {showTooltip && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 5 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: 5 }}
-                          className="absolute z-50 bg-white px-3 py-2 rounded-lg shadow-lg text-sm font-medium text-gray-700 whitespace-nowrap"
-                          style={{ top: '100%', left: '0', marginTop: '5px' }}
-                        >
-                          {property.agentName}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                    <p className="text-[12px] text-gray-500">{property.agentPosition}</p>
                   </div>
+                  {property.agentPosition && (
+                    <p className="text-[12px] text-gray-700 font-medium">
+                      {property.agentPosition}
+                    </p>
+                  )}
+                  <p className="text-[12px] text-gray-600">
+                    Speaks {property.languages?.slice(0,2).join(", ")}
+                  </p>
                 </div>
               </>
             ) : (
-              // No agent assigned state
-              <div className="flex items-center gap-2 w-full">
-                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
-                  <User className="w-6 h-6 text-gray-400" />
+              <div className="flex gap-3 items-center">
+                <div className="relative">
+                  <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center border-2 border-white shadow-sm">
+                    <User className="w-6 h-6 text-gray-400" />
+                  </div>
                 </div>
                 <div>
-                  <p className="text-md font-semibold text-gray-500">No agent assigned</p>
+                  <h3 className="text-md font-semibold text-gray-500">No agent assigned</h3>
                 </div>
               </div>
             )}
           </div>
         )}
+        {/* Only show call button for non-off-plan properties */}
+        {property?.category !== 'Off Plan' && (
+          <motion.a 
+            href={`tel:${property?.agentPhone}`}
+            className="w-[auto] flex justify-center items-center gap-2 text-gray-700 bg-white border border-gray-200 px-[15px] py-[10px] rounded-[10px] shadow-sm hover:shadow-md transition-all"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <FaPhone className="text-[16px] text-gray-600" />
+          </motion.a>
+        )}
       </div>
-
-      {/* Call button - only show if not Off Plan and has agent */}
-      {property?.category !== 'Off Plan' && property?.agentPhone && (
-        <motion.a 
-          href={`tel:${property?.agentPhone}`}
-          className="w-[auto] flex justify-center items-center gap-2 text-gray-700 bg-white border border-gray-200 px-[15px] py-[10px] rounded-[10px] shadow-sm hover:shadow-md transition-all"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <FaPhone className="text-[16px] text-gray-600" />
-        </motion.a>
-      )}
 
       <div className="h-[1px] w-full bg-[#e6e6e6] my-4"></div>
 
@@ -245,19 +254,17 @@ const ProCard = ({ property }) => {
             <p className="text-xs text-gray-500">Price</p>
           )}
         </div>
-        {property?.agentWhatsapp && (
-          <motion.a 
-            href={`https://wa.me/${property?.agentWhatsapp?.replace(/[^0-9]/g, '')}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex justify-center items-center gap-2 text-[#FF2626] bg-[#FFF0F0] hover:bg-[#FFE5E5] px-[20px] py-[10px] rounded-[15px] shadow-sm hover:shadow-md transition-all"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <FaWhatsapp className="text-xl" />
-            <span className="font-medium">WhatsApp</span>
-          </motion.a>
-        )}
+        <motion.a 
+          href={`https://wa.me/${property?.agentWhatsapp?.replace(/[^0-9]/g, '')}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex justify-center items-center gap-2 text-[#FF2626] bg-[#FFF0F0] hover:bg-[#FFE5E5] px-[20px] py-[10px] rounded-[15px] shadow-sm hover:shadow-md transition-all"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <FaWhatsapp className="text-xl" />
+          <span className="font-medium">WhatsApp</span>
+        </motion.a>
       </div>
     </motion.div>
   );

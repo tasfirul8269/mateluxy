@@ -293,30 +293,19 @@ const PropertyCard = ({ property, loading, error }) => {
         {/* Action Buttons */}
         <div className="flex w-full items-center justify-between md:justify-start gap-3 border-t border-gray-200 mt-4 pt-4">
           <button 
-            onClick={() => {
-              if (agentData) {
-                window.location.href = `tel:${agentData.contactNumber}`;
-              }
-            }}
-            disabled={!agentData}
-            className={`cursor-pointer flex justify-center items-center gap-2 text-gray-700 bg-white border border-gray-200 px-4 py-2.5 rounded-lg transition-colors duration-200 flex-1 ${agentData ? 'hover:bg-gray-50' : 'opacity-50 cursor-not-allowed'}`}
+            onClick={() => window.location.href = `tel:${agentData?.contactNumber || '+1234567890'}`}
+            className="cursor-pointer flex justify-center items-center gap-2 text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 px-4 py-2.5 rounded-lg transition-colors duration-200 flex-1"
           >
-            <FaPhone className={`text-sm ${agentData ? 'text-gray-500' : 'text-gray-400'}`} />
-            <span className={`font-normal text-sm ${!agentData ? 'text-gray-400' : ''}`}>Call</span>
+            <FaPhone className="text-sm text-gray-500" />
+            <span className="font-normal text-sm">Call</span>
           </button>
 
           <button
-            onClick={() => {
-              if (agentData) {
-                const number = agentData.whatsapp?.replace(/[^0-9]/g, '') || agentData.contactNumber?.replace(/[^0-9]/g, '');
-                window.location.href = `https://wa.me/${number}`;
-              }
-            }}
-            disabled={!agentData}
-            className={`flex cursor-pointer justify-center items-center gap-2 text-gray-700 bg-white border border-gray-200 px-4 py-2.5 rounded-lg transition-colors duration-200 flex-1 ${agentData ? 'hover:bg-gray-50' : 'opacity-50 cursor-not-allowed'}`}
+            onClick={() => window.location.href = `https://wa.me/${(agentData?.whatsapp || agentData?.contactNumber || '+1234567890').replace(/[^0-9]/g, '')}`}
+            className="flex cursor-pointer justify-center items-center gap-2 text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 px-4 py-2.5 rounded-lg transition-colors duration-200 flex-1"
           >
-            <FaWhatsapp className={agentData ? "text-green-500" : "text-gray-400"} />
-            <span className={`font-normal text-sm ${!agentData ? 'text-gray-400' : ''}`}>WhatsApp</span>
+            <FaWhatsapp className="text-green-500" />
+            <span className="font-normal text-sm">WhatsApp</span>
           </button>
 
           <button 
@@ -324,8 +313,7 @@ const PropertyCard = ({ property, loading, error }) => {
               e.preventDefault();
               setIsBookingDialogOpen(true);
             }}
-            disabled={!agentData}
-            className={`hidden md:flex cursor-pointer justify-center items-center gap-2 text-white px-4 py-2.5 rounded-lg transition-colors duration-200 flex-1 shadow-sm ${agentData ? 'bg-red-600 hover:bg-red-700' : 'bg-gray-400 cursor-not-allowed'}`}
+            className="hidden md:flex cursor-pointer justify-center items-center gap-2 text-white bg-red-600 hover:bg-red-700 px-4 py-2.5 rounded-lg transition-colors duration-200 flex-1 shadow-sm"
           >
             <FaCalendarAlt className="text-sm" />
             <span className="font-medium text-sm">Book Viewing</span>
