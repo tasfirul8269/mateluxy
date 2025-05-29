@@ -18,14 +18,8 @@ const OffPlanSinglePage = () => {
   const { id } = useParams();
   const [isLoading, setIsLoading] = useState(true);
   const [property, setProperty] = useState(null);
-  const [agent, setAgent] = useState({
-    fullName: 'MateLuxy Agent',
-    position: 'Real Estate Agent',
-    contactNumber: '+971 50 123 4567',
-    whatsapp: '+971 50 123 4567',
-    email: 'agent@mateluxy.com',
-    profileImage: 'https://placehold.co/400x400/red/white?text=Agent'
-  });
+  const [agent, setAgent] = useState(null);
+  const [isLoadingAgent, setIsLoadingAgent] = useState(false);
   const [relatedProperties, setRelatedProperties] = useState([]);
   const [isSaved, setIsSaved] = useState(false);
 
@@ -84,6 +78,7 @@ const OffPlanSinglePage = () => {
         
         // Fetch agent details if property has an agent ID
         if (propertyData.agent) {
+          setIsLoadingAgent(true);
           try {
             console.log('Fetching agent with ID:', propertyData.agent);
             const agentResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/agents/${propertyData.agent}`);
@@ -91,13 +86,18 @@ const OffPlanSinglePage = () => {
               console.log('Agent data fetched successfully:', agentResponse.data);
               setAgent(agentResponse.data);
             } else {
-              console.log('No agent data found, using default agent');
+              console.log('No agent data found, setting agent to null');
+              setAgent(null);
             }
           } catch (agentError) {
             console.error('Error fetching agent data:', agentError);
+            setAgent(null);
+          } finally {
+            setIsLoadingAgent(false);
           }
         } else {
-          console.log('No agent ID found for this property, using default agent');
+          console.log('No agent ID found for this property');
+          setAgent(null);
         }
         
         // Fetch related properties - show Buy properties instead of off-plan
@@ -257,7 +257,7 @@ const OffPlanSinglePage = () => {
             >
               <aside className="sticky top-24">
                 <Tabs />
-                <ProjectDetailsCard property={property} agent={agent} />
+                <ProjectDetailsCard property={property} agent={agent} isLoadingAgent={isLoadingAgent} />
                 <ContactForm property={property} />
               </aside>
             </motion.div>
