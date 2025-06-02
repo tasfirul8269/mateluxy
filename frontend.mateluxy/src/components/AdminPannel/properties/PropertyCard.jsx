@@ -114,7 +114,7 @@ export function PropertyCard({ property, onEdit, onDelete }) {
           <div className="flex justify-start mb-4">
             <div className="text-left">
               <p className="text-blue-600 font-bold text-xl">{property.price}</p>
-              {/* <p className="text-xs text-gray-500">{property.type === 'Rent' ? 'Per Month' : 'Price'}</p> */}
+              <p className="text-xs text-gray-500">{property.type === 'Rent' ? '/Per Year' : 'Price'}</p>
             </div>
           </div>
           

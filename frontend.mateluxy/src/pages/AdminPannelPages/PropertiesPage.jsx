@@ -150,7 +150,7 @@ const PropertiesPage = () => {
     id: property._id,
     title: property.propertyTitle,
     address: property.propertyAddress,
-    price: property.category === "Rent" ? `AED ${property.propertyPrice}/month` : `AED ${property.propertyPrice}`,
+    price: property.category === "Rent" ? `AED ${property.propertyPrice}/year` : `AED ${property.propertyPrice}`,
     priceValue: property.propertyPrice,
     type: property.category,
     bedrooms: property.propertyBedrooms,
