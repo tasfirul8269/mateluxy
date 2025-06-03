@@ -201,11 +201,11 @@ const MapView = () => {
         markersRef.current = [];
         infoWindowsRef.current = [];
 
-        // Modern rounded home icon with shadow (blue)
+        // Building icon from assets with blue circular background
         const houseIcon = {
-          url: 'data:image/svg+xml;utf8,<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 6L8 20V40C8 41.1046 8.89543 42 10 42H38C39.1046 42 40 41.1046 40 40V20L24 6Z" fill="%232563eb" stroke="white" stroke-width="2" stroke-linejoin="round" style="filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));"/><path d="M16 42V28H32V42" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 6V16" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>',
-          scaledSize: new google.maps.Size(40, 40),
-          anchor: new google.maps.Point(20, 40)
+          url: '/src/assets/building-svgrepo-com.svg',
+          scaledSize: new google.maps.Size(30, 30),
+          anchor: new google.maps.Point(15, 15)
         };
 
         // Red pointer SVG for clusters
