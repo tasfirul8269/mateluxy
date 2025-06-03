@@ -201,9 +201,9 @@ const MapView = () => {
         markersRef.current = [];
         infoWindowsRef.current = [];
 
-        // Building icon from assets with blue circular background
+        // Building icon from assets
         const houseIcon = {
-          url: '/src/assets/building-svgrepo-com.svg',
+          url: new URL('../../assets/building-svgrepo-com.svg', import.meta.url).href,
           scaledSize: new google.maps.Size(30, 30),
           anchor: new google.maps.Point(15, 15)
         };
