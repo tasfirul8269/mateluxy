@@ -156,12 +156,43 @@ const MapView = () => {
       window.initMapCallback = () => {
         if (!mapContainerRef.current) return;
 
+        // Define map styles to hide POIs and other elements
+        const mapStyles = [
+          {
+            featureType: 'poi',
+            elementType: 'labels',
+            stylers: [{ visibility: 'off' }]
+          },
+          {
+            featureType: 'transit',
+            elementType: 'labels',
+            stylers: [{ visibility: 'off' }]
+          },
+          {
+            featureType: 'poi',
+            elementType: 'geometry',
+            stylers: [{ visibility: 'off' }]
+          },
+          {
+            featureType: 'transit',
+            elementType: 'geometry',
+            stylers: [{ visibility: 'off' }]
+          },
+          {
+            featureType: 'landscape',
+            elementType: 'labels',
+            stylers: [{ visibility: 'off' }]
+          }
+        ];
+
         const map = new google.maps.Map(mapContainerRef.current, {
           center: defaultCenter,
           zoom: 12,
           mapTypeControl: true,
           streetViewControl: true,
           fullscreenControl: true,
+          styles: mapStyles,
+          clickableIcons: false // Disable click on POIs
         });
         mapRef.current = map;
 
@@ -170,11 +201,11 @@ const MapView = () => {
         markersRef.current = [];
         infoWindowsRef.current = [];
 
-        // Custom house SVG icon for individual properties (blue)
+        // Modern rounded home icon with shadow (blue)
         const houseIcon = {
-          url: 'data:image/svg+xml;utf8,<svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="36" height="36" fill="none"/><path d="M18 7L7 17H11V29H25V17H29L18 7Z" fill="%232563eb" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="15" y="21" width="6" height="8" rx="1" fill="white"/></svg>',
-          scaledSize: new google.maps.Size(36, 36),
-          anchor: new google.maps.Point(18, 36)
+          url: 'data:image/svg+xml;utf8,<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 6L8 20V40C8 41.1046 8.89543 42 10 42H38C39.1046 42 40 41.1046 40 40V20L24 6Z" fill="%232563eb" stroke="white" stroke-width="2" stroke-linejoin="round" style="filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));"/><path d="M16 42V28H32V42" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 6V16" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>',
+          scaledSize: new google.maps.Size(40, 40),
+          anchor: new google.maps.Point(20, 40)
         };
 
         // Red pointer SVG for clusters
@@ -402,7 +433,7 @@ const MapView = () => {
               {loading ? 'Loading map...' : error ? `Error: ${error}` : ''}
             </div>
           </div>
-          <div ref={mapContainerRef} className="w-full h-full" style={{ minHeight: '500px', height: '70vh', position: 'relative', zIndex: 1 }}></div>
+          <div ref={mapContainerRef} className="w-full h-full" style={{ minHeight: '500px', height: '100vh', position: 'relative', zIndex: 1 }}></div>
         </div>
       </div>
     </div>
