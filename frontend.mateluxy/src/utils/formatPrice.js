@@ -14,11 +14,11 @@ export const formatPrice = (price, showAED = true) => {
   let formattedPrice;
   
   if (numPrice >= 1000000) {
-    // Format as millions (M)
-    formattedPrice = (numPrice / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+    // Format as millions (M) with 2 decimal places
+    formattedPrice = (numPrice / 1000000).toFixed(2) + 'M';
   } else if (numPrice >= 1000) {
-    // Format as thousands (k)
-    formattedPrice = (numPrice / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+    // Format as thousands (k) with 2 decimal places
+    formattedPrice = (numPrice / 1000).toFixed(2) + 'k';
   } else {
     // Format as regular number
     formattedPrice = numPrice.toString();

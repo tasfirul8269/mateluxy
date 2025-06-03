@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { MapPin, ExternalLink } from 'lucide-react';
-import { getGoogleMapsUrl } from '../../../utils/mapUtils';
+import { MapPin, ExternalLink, Navigation } from 'lucide-react';
+import { getGoogleMapsUrl, getDirectionsUrl } from '../../utils/mapUtils';
 
 const LocationSection = ({ property }) => {
   const mapContainer = useRef(null);
@@ -15,6 +15,9 @@ const LocationSection = ({ property }) => {
     lat: property?.latitude || property?.propertyLatitude || defaultLocation.lat,
     lng: property?.longitude || property?.propertyLongitude || defaultLocation.lng
   };
+
+  // Get location name
+  const locationName = property?.propertyAddress || property?.propertyState || 'Location not specified';
 
   // Initialize map
   useEffect(() => {
@@ -60,7 +63,7 @@ const LocationSection = ({ property }) => {
             content: `
               <div class="p-2">
                 <h3 class="font-semibold">${property?.propertyTitle || 'Property Location'}</h3>
-                <p class="text-sm text-gray-600">${property?.propertyAddress || ''}</p>
+                <p class="text-sm text-gray-600">${locationName}</p>
               </div>
             `
           });
@@ -99,7 +102,7 @@ const LocationSection = ({ property }) => {
         markerRef.current = null;
       }
     };
-  }, [location, property?.propertyTitle, property?.propertyAddress]);
+  }, [location, property?.propertyTitle, locationName]);
 
   return (
     <section className="bg-white rounded-2xl shadow-sm overflow-hidden p-8 mb-8">
@@ -109,12 +112,12 @@ const LocationSection = ({ property }) => {
         <div className="flex items-start gap-2 mb-4">
           <MapPin className="text-red-500 mt-1" size={20} />
           <p className="text-gray-700">
-            {property?.propertyAddress || property?.propertyState || 'Location details not available'}
+            {locationName}
           </p>
         </div>
         
         <a 
-          href={getGoogleMapsUrl(property?.propertyAddress, location)}
+          href={getGoogleMapsUrl(locationName, location)}
           target="_blank" 
           rel="noopener noreferrer"
           className="text-red-500 font-medium hover:text-red-600 transition-colors flex items-center gap-1"
@@ -131,4 +134,4 @@ const LocationSection = ({ property }) => {
   );
 };
 
-export default LocationSection;
+export default LocationSection; 

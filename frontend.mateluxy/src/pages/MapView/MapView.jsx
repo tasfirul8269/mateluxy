@@ -7,8 +7,6 @@ import { formatPrice } from '../../utils/formatPrice';
 // Import the CSS file
 import './mapView.css';
 
-// We'll load Leaflet dynamically after component mounts
-
 const MapView = () => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,11 +14,15 @@ const MapView = () => {
   const [locations, setLocations] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const mapContainerRef = useRef(null);
+  const mapRef = useRef(null);
+  const markersRef = useRef([]);
+  const infoWindowsRef = useRef([]);
+  const clustererRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
   
   // Default center is Dubai
-  const defaultCenter = [25.2048, 55.2708];
+  const defaultCenter = { lat: 25.2048, lng: 55.2708 };
   
   // Get category from URL (buy, rent, commercial-buy, commercial-rent)
   const pathSegments = location.pathname.split('/');
@@ -43,170 +45,67 @@ const MapView = () => {
       category = 'Buy';
   }
 
-  // This is now moved inside the useEffect to avoid dependency issues
-
-  // Cleanup is now handled in the main useEffect
-
-  // Fetch properties and initialize map - only run once on mount
   useEffect(() => {
-    // Set a flag to track if this component is mounted
     let isMounted = true;
     
-    // Define fetchProperties inside the effect to avoid dependency issues
-    const fetchPropertiesInEffect = () => {
-      if (!isMounted) return;
-      
-      setLoading(true);
-      console.log('Fetching properties for category:', category);
-      
-      axios
-        .get(`${import.meta.env.VITE_API_URL}/api/properties`)
-        .then((res) => {
-          if (!isMounted) return;
-          
-          // Filter by category
-          const filteredProperties = res.data.filter(property => property.category === category);
-          
-          // Log the properties to help with debugging
-          console.log(`Found ${filteredProperties.length} ${category} properties`);
-          
-          // Add coordinates to properties
-          const propertiesWithCoords = filteredProperties.map(property => {
-            // If property has coordinates, use them
-            if (property.latitude && property.longitude) {
-              return property;
-            }
-            
-            // If property has GeoJSON coordinates, convert them
-            if (property.location && property.location.coordinates && 
-                Array.isArray(property.location.coordinates) && 
-                property.location.coordinates.length === 2) {
-              return {
-                ...property,
-                latitude: property.location.coordinates[1],
-                longitude: property.location.coordinates[0]
-              };
-            }
-            
-            // Otherwise generate random coordinates around Dubai
-            return {
-              ...property,
-              latitude: defaultCenter[0] + (Math.random() - 0.5) * 0.1,
-              longitude: defaultCenter[1] + (Math.random() - 0.5) * 0.1
-            };
-          });
-          
-          setProperties(propertiesWithCoords);
-          
-          // Extract unique locations
-          const locationSet = new Set();
-          propertiesWithCoords.forEach(property => {
-            if (property.propertyState) {
-              locationSet.add(property.propertyState);
-            }
-          });
-          
-          // Create location objects with coordinates
-          const locationArray = Array.from(locationSet).map(locationName => {
-            const propertiesInLocation = propertiesWithCoords.filter(p => p.propertyState === locationName);
-            const count = propertiesInLocation.length;
-            
-            // Use the first property's coordinates for the location
-            const coordinates = propertiesInLocation.length > 0 ?
-              [propertiesInLocation[0].latitude, propertiesInLocation[0].longitude] :
-              defaultCenter;
-            
-            return { name: locationName, coordinates, count };
-          });
-          
-          setLocations(locationArray);
-          setLoading(false);
-          
-          // Initialize map after properties are loaded with a longer delay
-          if (isMounted) {
-            setTimeout(() => {
-              if (!isMounted) return;
-              
-              if (mapContainerRef.current) {
-                console.log('Map container ref found, initializing map...');
-                initializeMap(propertiesWithCoords);
-              } else {
-                console.error('Map container ref still not found after delay');
-                setError('Could not initialize map: container not found');
-              }
-            }, 1000); // Even longer delay to ensure DOM is fully ready
-          }
-        })
-        .catch((err) => {
-          if (!isMounted) return;
-          console.error('Error fetching properties:', err);
-          setError(err.message);
-          setLoading(false);
-        });
-    };
-    
-    // Check if Leaflet script is already loaded
-    if (window.L) {
-      console.log('Leaflet already loaded, fetching properties...');
-      fetchPropertiesInEffect();
-    } else {
-      // Load Leaflet script if not already loaded
-      const loadScript = () => {
-        // Check if script is already in document
-        const existingScript = document.querySelector('script[src*="leaflet"]');
-        if (existingScript) {
-          console.log('Leaflet script already exists, fetching properties...');
-          fetchPropertiesInEffect();
-          return;
-        }
+    const fetchProperties = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/properties?category=${category}`);
         
-        console.log('Loading Leaflet script...');
-        const script = document.createElement('script');
-        script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-        script.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
-        script.crossOrigin = '';
-        script.onload = () => {
-          if (!isMounted) return;
-          
-          console.log('Leaflet script loaded successfully');
-          // Load CSS
-          const existingLink = document.querySelector('link[href*="leaflet"]');
-          if (!existingLink) {
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-            link.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=';
-            link.crossOrigin = '';
-            document.head.appendChild(link);
+        if (!isMounted) return;
+        
+        // Filter properties with valid coordinates
+        const propertiesWithCoords = response.data.filter(property => 
+          property.latitude && 
+          property.longitude && 
+          !isNaN(parseFloat(property.latitude)) && 
+          !isNaN(parseFloat(property.longitude))
+        );
+        
+        setProperties(propertiesWithCoords);
+        
+        // Extract unique locations
+        const locationSet = new Set();
+        propertiesWithCoords.forEach(property => {
+          if (property.propertyState) {
+            locationSet.add(property.propertyState);
           }
+        });
+        
+        // Create location objects with coordinates
+        const locationArray = Array.from(locationSet).map(locationName => {
+          const propertiesInLocation = propertiesWithCoords.filter(p => p.propertyState === locationName);
+          const count = propertiesInLocation.length;
           
-          // Now fetch properties
-          fetchPropertiesInEffect();
-        };
-        script.onerror = () => {
-          if (!isMounted) return;
-          console.error('Failed to load Leaflet script');
-          setError('Failed to load map library');
-          setLoading(false);
-        };
-        document.head.appendChild(script);
-      };
-      
-      // Start loading process
-      loadScript();
-    }
-    
-    // Cleanup function
-    return () => {
-      isMounted = false;
-      if (window.map) {
-        console.log('Cleaning up map on unmount...');
-        window.map.remove();
-        window.map = null;
-        window.markers = [];
+          // Use the first property's coordinates for the location
+          const coordinates = propertiesInLocation.length > 0 ?
+            { lat: propertiesInLocation[0].latitude, lng: propertiesInLocation[0].longitude } :
+            defaultCenter;
+          
+          return { name: locationName, coordinates, count };
+        });
+        
+        setLocations(locationArray);
+        setLoading(false);
+        
+        // Initialize map after properties are loaded
+        if (isMounted && mapContainerRef.current) {
+          initializeMap(propertiesWithCoords);
+        }
+      } catch (err) {
+        if (!isMounted) return;
+        console.error('Error fetching properties:', err);
+        setError(err.message);
+        setLoading(false);
       }
     };
-  }, []); // Empty dependency array to run only once on mount
+
+    fetchProperties();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [category]);
 
   // Handle back button click
   const handleBack = () => {
@@ -230,237 +129,281 @@ const MapView = () => {
   const handleLocationSelect = (loc) => {
     setSelectedLocation(loc.coordinates);
     
-    // Fly to the location
-    if (window.map) {
-      try {
-        window.map.flyTo(loc.coordinates, 13, {
-          animate: true,
-          duration: 1.5
-        });
-      } catch (err) {
-        console.error('Error navigating to location:', err);
-      }
+    // Update map view
+    if (mapRef.current) {
+      mapRef.current.setCenter(loc.coordinates);
+      mapRef.current.setZoom(13);
     }
   };
-  
+
   // Initialize map function
   const initializeMap = (propertiesData) => {
-    // Check if Leaflet is loaded
-    if (!window.L) {
-      console.error('Leaflet not loaded');
-      setError('Map library not loaded properly');
-      return;
-    }
-    
-    // Get map container using ref
-    const mapContainer = mapContainerRef.current;
-    if (!mapContainer) {
-      console.error('Map container ref not found');
-      return;
-    }
-    
-    console.log('Map container dimensions:', mapContainer.offsetWidth, 'x', mapContainer.offsetHeight);
-    
-    // Check if map is already initialized
-    if (window.map) {
-      console.log('Map already exists, updating data...');
-      
-      // Clear existing markers
-      if (window.markers && window.markers.length) {
-        window.markers.forEach(marker => {
-          if (marker) marker.remove();
+    if (!mapContainerRef.current) return;
+
+    try {
+      // Load Google Maps JavaScript API and MarkerClusterer
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyAb7m_WnewNIpg_xU2_5vhfZmCSD-Y9suU&callback=initMapCallback`;
+      script.async = true;
+      script.defer = true;
+
+      // Load MarkerClusterer library
+      const clustererScript = document.createElement('script');
+      clustererScript.src = 'https://unpkg.com/@googlemaps/markerclusterer@2.4.0/dist/index.min.js';
+      clustererScript.async = true;
+      clustererScript.defer = true;
+
+      window.initMapCallback = () => {
+        if (!mapContainerRef.current) return;
+
+        const map = new google.maps.Map(mapContainerRef.current, {
+          center: defaultCenter,
+          zoom: 12,
+          mapTypeControl: true,
+          streetViewControl: true,
+          fullscreenControl: true,
         });
-      }
-      
-      // Reset markers array
-      window.markers = [];
-    } else {
-      console.log('Creating new map...');
-      
-      // Create map using the DOM element directly
-      try {
-        window.map = window.L.map(mapContainerRef.current).setView(defaultCenter, 12);
-        
-        // Add tile layer
-        window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(window.map);
-        
-        console.log('Map created successfully');
-      } catch (err) {
-        console.error('Error creating map:', err);
-        setError('Failed to initialize map: ' + err.message);
-        return;
-      }
+        mapRef.current = map;
+
+        markersRef.current.forEach(marker => marker.setMap(null));
+        infoWindowsRef.current.forEach(infoWindow => infoWindow.close());
+        markersRef.current = [];
+        infoWindowsRef.current = [];
+
+        // Custom house SVG icon for individual properties (blue)
+        const houseIcon = {
+          url: 'data:image/svg+xml;utf8,<svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="36" height="36" fill="none"/><path d="M18 7L7 17H11V29H25V17H29L18 7Z" fill="%232563eb" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="15" y="21" width="6" height="8" rx="1" fill="white"/></svg>',
+          scaledSize: new google.maps.Size(36, 36),
+          anchor: new google.maps.Point(18, 36)
+        };
+
+        // Red pointer SVG for clusters
+        const redPointerIcon = {
+          url: 'data:image/svg+xml;utf8,<svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="36" height="36" fill="none"/><path d="M18 2C11.3726 2 6 7.37258 6 14C6 23.25 18 34 18 34C18 34 30 23.25 30 14C30 7.37258 24.6274 2 18 2Z" fill="%23e53e3e" stroke="white" stroke-width="2"/><circle cx="18" cy="14" r="5" fill="white"/></svg>',
+          scaledSize: new google.maps.Size(36, 36),
+          anchor: new google.maps.Point(18, 36)
+        };
+
+        // Track open InfoWindow and marker
+        let openInfoWindow = null;
+        let openMarker = null;
+
+        // Create markers for each property
+        const markers = propertiesData.map((property, idx) => {
+          const position = {
+            lat: parseFloat(property.latitude),
+            lng: parseFloat(property.longitude)
+          };
+
+          const marker = new google.maps.Marker({
+            position,
+            map,
+            title: property.propertyTitle,
+            icon: houseIcon,
+            animation: google.maps.Animation.DROP
+          });
+
+          // InfoWindow with close button
+          const propertyId = property._id;
+          const propertyUrl = property.category === 'Off Plan' 
+            ? `/off-plan-single/${propertyId}`
+            : `/property-details/${propertyId}`;
+          const infoWindow = new google.maps.InfoWindow({
+            content: `
+              <div class="property-popup property-popup-modern" onclick="window.location.href='${propertyUrl}'" style="cursor:pointer;">
+                <div class="property-popup-image" style="position:relative;">
+                  <img src="${property.propertyFeaturedImage || property.mainImage}" alt="${property.propertyTitle}" style="width:100%;height:100%;object-fit:cover;display:block;" />
+                  <div class="property-popup-badge" style="position:absolute;top:14px;left:14px;z-index:10;">${property.category}</div>
+                  <button class="property-popup-close" style="position:absolute;top:14px;right:14px;z-index:999;background:#fff;border:none;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.18);cursor:pointer;" onclick="event.stopPropagation();window.closeMapInfoWindow && window.closeMapInfoWindow()">
+                    <svg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='#e53e3e' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><line x1='18' y1='6' x2='6' y2='18'></line><line x1='6' y1='6' x2='18' y2='18'></line></svg>
+                  </button>
+                </div>
+                <div class="property-popup-body">
+                  <div class="property-popup-title">${property.propertyTitle}</div>
+                  <div class="property-popup-price">${formatPrice(property.propertyPrice)}</div>
+                  <div class="property-popup-location">
+                    <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='#2563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='margin-right:4px;vertical-align:middle;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg>
+                    ${property.propertyAddress}
+                  </div>
+                </div>
+              </div>
+            `
+          });
+
+          marker.addListener('click', () => {
+            // Toggle logic: if already open, close; else open
+            if (openInfoWindow && openMarker === marker) {
+              openInfoWindow.close();
+              openInfoWindow = null;
+              openMarker = null;
+            } else {
+              if (openInfoWindow) openInfoWindow.close();
+              infoWindow.open(map, marker);
+              openInfoWindow = infoWindow;
+              openMarker = marker;
+              // Attach close logic to window
+              window.closeMapInfoWindow = () => {
+                infoWindow.close();
+                openInfoWindow = null;
+                openMarker = null;
+              };
+            }
+          });
+
+          markersRef.current.push(marker);
+          infoWindowsRef.current.push(infoWindow);
+
+          return marker;
+        });
+
+        // Custom cluster renderer: always use the red pointer icon, no number
+        function setupClusterer() {
+          if (!window.markerClusterer) {
+            setTimeout(setupClusterer, 100);
+            return;
+          }
+          if (clustererRef.current) {
+            clustererRef.current.clearMarkers();
+          }
+          clustererRef.current = new window.markerClusterer.MarkerClusterer({
+            map,
+            markers,
+            renderer: {
+              render: ({ count, position, markers }) => {
+                if (count === 1) {
+                  return new google.maps.Marker({
+                    position,
+                    icon: houseIcon,
+                    zIndex: Number(google.maps.Marker.MAX_ZINDEX) + 1
+                  });
+                }
+                return new google.maps.Marker({
+                  position,
+                  icon: redPointerIcon,
+                  zIndex: Number(google.maps.Marker.MAX_ZINDEX) + count
+                });
+              }
+            }
+          });
+
+          // Add robust cluster click event
+          google.maps.event.addListener(clustererRef.current, 'clusterclick', function(event) {
+            const cluster = event.cluster;
+            const bounds = new google.maps.LatLngBounds();
+            cluster.markers.forEach(marker => bounds.extend(marker.getPosition()));
+            map.fitBounds(bounds, 80); // 80px padding
+          });
+        }
+        setupClusterer();
+      };
+
+      document.head.appendChild(script);
+      document.head.appendChild(clustererScript);
+
+      return () => {
+        if (script.parentNode) {
+          script.parentNode.removeChild(script);
+        }
+        if (clustererScript.parentNode) {
+          clustererScript.parentNode.removeChild(clustererScript);
+        }
+        delete window.initMapCallback;
+      };
+    } catch (error) {
+      console.error('Error initializing map:', error);
     }
-    
-    // Create custom icon
-    const propertyIcon = window.L.icon({
-      iconUrl: 'https://cdn-icons-png.flaticon.com/512/3177/3177361.png',
-      iconSize: [35, 35],
-      iconAnchor: [17, 35],
-      popupAnchor: [0, -35]
-    });
-    
-    // Initialize markers array if it doesn't exist
-    if (!window.markers) window.markers = [];
-    
-    // Add markers for properties
-    propertiesData.forEach(property => {
-      if (!property.latitude || !property.longitude) return;
-      
-      try {
-        const marker = window.L.marker([property.latitude, property.longitude], { icon: propertyIcon })
-          .addTo(window.map);
-        
-        // Store marker reference for later cleanup
-        window.markers.push(marker);
-        
-        // Create popup content with enhanced styling
-        const popupContent = document.createElement('div');
-        popupContent.className = 'property-popup';
-        
-        // Format price properly using the formatPrice utility
-        const formattedPrice = property.propertyPrice ? 
-          formatPrice(property.propertyPrice).replace('AED ', '') : '0';
-        
-        // Get a clean title
-        const propertyTitle = property.propertyTitle || 
-          `${property.propertyBedrooms || 0} Bedroom ${property.propertyType || 'Property'}`;
-        
-        // Get location
-        const location = [
-          property.propertyAddress, 
-          property.propertyState
-        ].filter(Boolean).join(', ');
-        
-        popupContent.innerHTML = `
-          <div class="property-popup-image">
-            <img 
-              src="${property.propertyFeaturedImage || 'https://via.placeholder.com/400x300?text=Property'}"
-              alt="${propertyTitle}"
-              onerror="this.src='https://via.placeholder.com/400x300?text=Property'"
-            />
-            <div class="property-popup-badge">${property.category}</div>
-          </div>
-          
-          <div class="property-popup-content">
-            <div class="property-popup-title">${propertyTitle}</div>
-            
-            <div class="property-popup-price">
-              AED ${formattedPrice}
-              ${property.category === 'Rent' ? '<span>/month</span>' : ''}
-            </div>
-            
-            <div class="property-popup-location">
-              ${location || 'Location not specified'}
-            </div>
-            
-            <div class="property-popup-features">
-              <span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M3 22v-8a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8"></path>
-                  <path d="M1 22h22"></path>
-                  <path d="M14 10v-4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"></path>
-                </svg>
-                ${property.propertyBedrooms || 0} Beds
-              </span>
-              <span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M9 6 6.5 3.5a1.5 1.5 0 0 0-1-.5C4.683 3 4 3.683 4 4.5V17a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"></path>
-                  <line x1="10" y1="5" x2="8" y2="7"></line>
-                  <line x1="2" y1="16" x2="22" y2="16"></line>
-                </svg>
-                ${property.propertyBathrooms || 0} Baths
-              </span>
-              <span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-                </svg>
-                ${property.propertySize || 0} sq.ft
-              </span>
-            </div>
-            
-            <button 
-              class="property-popup-button"
-              onclick="window.location.href='/property-details/${property._id}'"
-            >
-              View Details
-            </button>
-          </div>
-        `;
-        
-        marker.bindPopup(popupContent);
-      } catch (err) {
-        console.error('Error creating marker:', err);
-      }
-    });
-    
-    console.log('Map markers added successfully');
   };
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="flex flex-col h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white shadow-sm p-4 flex flex-col">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center">
-            <button
-              onClick={handleBack}
-              className="mr-3 bg-gray-100 p-2 rounded-full hover:bg-gray-200 transition-colors"
-            >
-              <FaArrowLeft className="text-gray-700" />
-            </button>
-            <h1 className="text-xl font-bold text-gray-800">
-              {urlCategory.includes('commercial') ? 'Commercial' : ''} Properties {category.includes('Buy') ? 'for sale' : 'for rent'} on Map
-            </h1>
-          </div>
-          <div className="text-sm bg-red-50 text-red-600 px-3 py-1 rounded-md">
-            {properties.length} Properties
-          </div>
+      <div className="bg-white shadow-sm p-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <button
+            onClick={handleBack}
+            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            <FaArrowLeft />
+            <span>Back to Properties</span>
+          </button>
+          
+          <h1 className="text-xl font-semibold text-gray-800">
+            {category} Properties Map View
+          </h1>
         </div>
-        
-        {/* Quick Navigation */}
-        {locations.length > 0 && (
-          <div className="mt-4 overflow-x-auto">
-            <div className="flex items-center space-x-1 mb-2">
-              <FaLocationArrow className="text-red-600" />
-              <span className="font-medium">Quick Navigation:</span>
-            </div>
-            
-            <div className="flex flex-nowrap overflow-x-auto pb-2 space-x-2">
-              {locations.map((loc) => (
-                <button
-                  key={loc.name}
-                  onClick={() => handleLocationSelect(loc)}
-                  className={`flex items-center space-x-1 px-3 py-1.5 rounded-full text-sm whitespace-nowrap transition-colors ${
-                    selectedLocation && 
-                    selectedLocation[0] === loc.coordinates[0] && 
-                    selectedLocation[1] === loc.coordinates[1] 
-                      ? 'bg-red-600 text-white' 
-                      : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
-                  }`}
-                >
-                  <FaMapMarkerAlt />
-                  <span>{loc.name}</span>
-                  <span className="bg-gray-200 text-gray-700 rounded-full px-1.5 py-0.5 text-xs ml-1">
-                    {loc.count}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
       
-      {/* Map Container */}
-      <div className="flex-grow relative">
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-          <div className="text-xl text-gray-600">
-            {loading ? 'Loading map...' : error ? `Error: ${error}` : ''}
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+        {/* Sidebar */}
+        <div className="w-full md:w-80 bg-white shadow-sm p-4 overflow-y-auto">
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold text-gray-800">
+              Properties in View
+            </h2>
+            
+            {properties.map((property) => (
+              <div
+                key={property._id}
+                className="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors cursor-pointer"
+                onClick={() => handleLocationSelect({
+                  coordinates: { lat: property.latitude, lng: property.longitude }
+                })}
+              >
+                <h3 className="font-medium text-gray-800 mb-2">
+                  {property.propertyTitle}
+                </h3>
+                <p className="text-gray-600 text-sm mb-2">
+                  {property.propertyAddress}
+                </p>
+                <p className="text-red-600 font-semibold">
+                  {formatPrice(property.propertyPrice)}
+                </p>
+              </div>
+            ))}
           </div>
+          
+          {locations.length > 0 && (
+            <div className="mt-4 overflow-x-auto">
+              <div className="flex items-center space-x-1 mb-2">
+                <FaLocationArrow className="text-red-600" />
+                <span className="font-medium">Quick Navigation:</span>
+              </div>
+              
+              <div className="flex flex-nowrap overflow-x-auto pb-2 space-x-2">
+                {locations.map((loc) => (
+                  <button
+                    key={loc.name}
+                    onClick={() => handleLocationSelect(loc)}
+                    className={`flex items-center space-x-1 px-3 py-1.5 rounded-full text-sm whitespace-nowrap transition-colors ${
+                      selectedLocation && 
+                      selectedLocation.lat === loc.coordinates.lat && 
+                      selectedLocation.lng === loc.coordinates.lng 
+                        ? 'bg-red-600 text-white' 
+                        : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
+                    }`}
+                  >
+                    <FaMapMarkerAlt />
+                    <span>{loc.name}</span>
+                    <span className="bg-gray-200 text-gray-700 rounded-full px-1.5 py-0.5 text-xs ml-1">
+                      {loc.count}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
-        <div ref={mapContainerRef} className="w-full h-full" style={{ minHeight: '500px', height: '70vh', position: 'relative', zIndex: 1 }}></div>
+        
+        {/* Map Container */}
+        <div className="flex-grow relative">
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+            <div className="text-xl text-gray-600">
+              {loading ? 'Loading map...' : error ? `Error: ${error}` : ''}
+            </div>
+          </div>
+          <div ref={mapContainerRef} className="w-full h-full" style={{ minHeight: '500px', height: '70vh', position: 'relative', zIndex: 1 }}></div>
+        </div>
       </div>
     </div>
   );

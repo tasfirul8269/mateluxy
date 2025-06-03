@@ -213,7 +213,7 @@ const OfficeInfo = () => {
           
           <div className="w-full h-[400px] rounded-lg overflow-hidden relative">
             <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3610.1785100219167!2d55.2835!3d25.1857!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f682def25f457%3A0x3dd4c4097970e887!2sBay%20Square%20Building%2013!5e0!3m2!1sen!2sae!4v1651234567890!5m2!1sen!2sae" 
+              src="https://www.google.com/maps/embed/v1/place?q=Bay+Square+Building+13+Business+Bay+Dubai+UAE&center=25.1857,55.2835&zoom=17&key=AIzaSyAb7m_WnewNIpg_xU2_5vhfZmCSD-Y9suU" 
               width="100%" 
               height="100%" 
               style={{ border: 0 }} 

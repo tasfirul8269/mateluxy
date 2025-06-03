@@ -108,9 +108,8 @@ const DragDropUpload = ({
 // Move MapPreview component outside of the main component
 const MapPreview = React.memo(({ latitude, longitude, zoomLevel, onMapClick }) => {
   const mapContainer = useRef(null);
-  const map = useRef(null);
-  const marker = useRef(null);
-  const tileLayer = useRef(null);
+  const mapRef = useRef(null);
+  const markerRef = useRef(null);
 
   // Validate coordinates
   const validLatitude = typeof latitude === 'number' && !isNaN(latitude) ? latitude : DEFAULT_COORDINATES.latitude;
@@ -122,74 +121,94 @@ const MapPreview = React.memo(({ latitude, longitude, zoomLevel, onMapClick }) =
     let isMounted = true;
 
     const initMap = () => {
-      if (!mapContainer.current || map.current || !isMounted) return;
+      if (!mapContainer.current || !isMounted) return;
 
       try {
-        // Initialize map
-        map.current = L.map(mapContainer.current, {
-          center: [validLatitude, validLongitude],
-          zoom: validZoom,
-          zoomControl: true
-        });
+        // Load Google Maps JavaScript API
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyAb7m_WnewNIpg_xU2_5vhfZmCSD-Y9suU&callback=initMapCallback`;
+        script.async = true;
+        script.defer = true;
 
-        // Add OpenStreetMap tiles
-        tileLayer.current = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          maxZoom: 19,
-          attribution: '© OpenStreetMap contributors'
-        }).addTo(map.current);
+        // Define the callback function
+        window.initMapCallback = () => {
+          if (!mapContainer.current || !isMounted) return;
 
-        // Add marker
-        marker.current = L.marker([validLatitude, validLongitude]).addTo(map.current);
+          // Create map instance
+          const map = new google.maps.Map(mapContainer.current, {
+            center: { lat: validLatitude, lng: validLongitude },
+            zoom: validZoom,
+            mapTypeControl: true,
+            streetViewControl: true,
+            fullscreenControl: true,
+          });
 
-        // Add click event
-        map.current.on('click', (e) => {
-          const { lat, lng } = e.latlng;
-          if (onMapClick) {
-            onMapClick(lat, lng);
+          // Create marker
+          const marker = new google.maps.Marker({
+            position: { lat: validLatitude, lng: validLongitude },
+            map: map,
+            draggable: true,
+          });
+
+          // Store references
+          mapRef.current = map;
+          markerRef.current = marker;
+
+          // Add click listener to map
+          map.addListener('click', (e) => {
+            const lat = e.latLng.lat();
+            const lng = e.latLng.lng();
+            
+            // Update marker position
+            marker.setPosition(e.latLng);
+            
+            // Call the callback with new coordinates
+            if (onMapClick) {
+              onMapClick(lat, lng);
+            }
+          });
+
+          // Add drag listener to marker
+          marker.addListener('dragend', (e) => {
+            const lat = e.latLng.lat();
+            const lng = e.latLng.lng();
+            
+            // Call the callback with new coordinates
+            if (onMapClick) {
+              onMapClick(lat, lng);
+            }
+          });
+        };
+
+        // Add script to document
+        document.head.appendChild(script);
+
+        // Cleanup function
+        return () => {
+          if (script.parentNode) {
+            script.parentNode.removeChild(script);
           }
-          if (marker.current) {
-            marker.current.setLatLng([lat, lng]);
-          }
-        });
+          delete window.initMapCallback;
+        };
       } catch (error) {
         console.error('Error initializing map:', error);
-        // Cleanup if initialization fails
-        if (map.current) {
-          map.current.remove();
-          map.current = null;
-        }
       }
     };
 
-    // Small delay to ensure DOM is ready
-    const timer = setTimeout(initMap, 100);
+    // Initialize map
+    initMap();
 
     // Cleanup function
     return () => {
       isMounted = false;
-      clearTimeout(timer);
-      if (map.current) {
-        map.current.remove();
-        map.current = null;
-        marker.current = null;
-        tileLayer.current = null;
+      if (mapRef.current) {
+        mapRef.current = null;
+      }
+      if (markerRef.current) {
+        markerRef.current = null;
       }
     };
-  }, []); // Empty dependency array since we only want to initialize once
-
-  // Update map when props change
-  useEffect(() => {
-    if (!map.current) return;
-
-    try {
-      map.current.setView([validLatitude, validLongitude], validZoom);
-      if (marker.current) {
-        marker.current.setLatLng([validLatitude, validLongitude]);
-      }
-    } catch (error) {
-      console.error('Error updating map:', error);
-    }
-  }, [validLatitude, validLongitude, validZoom]);
+  }, [validLatitude, validLongitude, validZoom, onMapClick]);
 
   return (
     <div ref={mapContainer} className="w-full h-[400px] rounded-lg overflow-hidden" />
@@ -1468,7 +1487,15 @@ const handleRemoveInteriorImage = (index) => {
                     <input
                       name="latitude"
                       value={form.latitude}
-                      onChange={handleInput}
+                      onChange={(e) => {
+                        const value = parseFloat(e.target.value);
+                        if (!isNaN(value)) {
+                          setForm(prev => ({
+                            ...prev,
+                            latitude: value
+                          }));
+                        }
+                      }}
                       placeholder="Latitude"
                       type="number"
                       step="0.000001"
@@ -1480,7 +1507,15 @@ const handleRemoveInteriorImage = (index) => {
                     <input
                       name="longitude"
                       value={form.longitude}
-                      onChange={handleInput}
+                      onChange={(e) => {
+                        const value = parseFloat(e.target.value);
+                        if (!isNaN(value)) {
+                          setForm(prev => ({
+                            ...prev,
+                            longitude: value
+                          }));
+                        }
+                      }}
                       placeholder="Longitude"
                       type="number"
                       step="0.000001"
@@ -1504,7 +1539,7 @@ const handleRemoveInteriorImage = (index) => {
               </div>
               <div className="h-[400px] rounded-lg overflow-hidden border border-[#e5e7eb]">
                 <MapPreview
-                  key={`map-${activeTab}`}
+                  key={`map-${activeTab}-${form.latitude}-${form.longitude}`}
                   latitude={form.latitude}
                   longitude={form.longitude}
                   zoomLevel={parseInt(form.zoomLevel)}
@@ -2210,7 +2245,15 @@ const handleRemoveInteriorImage = (index) => {
                           <input
                             name="latitude"
                             value={form.latitude}
-                            onChange={handleInput}
+                            onChange={(e) => {
+                              const value = parseFloat(e.target.value);
+                              if (!isNaN(value)) {
+                                setForm(prev => ({
+                                  ...prev,
+                                  latitude: value
+                                }));
+                              }
+                            }}
                             placeholder="Latitude"
                             type="number"
                             step="0.000001"
@@ -2222,7 +2265,15 @@ const handleRemoveInteriorImage = (index) => {
                           <input
                             name="longitude"
                             value={form.longitude}
-                            onChange={handleInput}
+                            onChange={(e) => {
+                              const value = parseFloat(e.target.value);
+                              if (!isNaN(value)) {
+                                setForm(prev => ({
+                                  ...prev,
+                                  longitude: value
+                                }));
+                              }
+                            }}
                             placeholder="Longitude"
                             type="number"
                             step="0.000001"

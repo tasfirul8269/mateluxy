@@ -422,7 +422,7 @@ const Contact = () => {
 
             <div className="w-full h-[500px] rounded-2xl overflow-hidden shadow-lg relative">
               <iframe
-                src="https://www.google.com/maps/embed/v1/place?q=MateLuxy&center=25.1862288,55.2811068&zoom=17&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8"
+                src="https://www.google.com/maps/embed/v1/place?q=MateLuxy&center=25.1862288,55.2811068&zoom=17&key=AIzaSyAb7m_WnewNIpg_xU2_5vhfZmCSD-Y9suU"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
