@@ -13,6 +13,14 @@
   z-index: 1;
 }
 
+/* Map Info */
+.gm-style-iw-ch {
+  padding: 0 !important;
+  border-radius: 20px !important;
+  overflow: hidden !important;
+}
+
+
 /* Fix for marker icons */
 .leaflet-marker-icon {
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
