@@ -1,5 +1,5 @@
 import express from "express";
-import { agents, getAgent, updateAgent, deleteAgent, checkUsernameAvailability } from "../controllers/agents.controller.js";
+import { agents, getAgent, updateAgent, deleteAgent, checkUsernameAvailability, getAgentByUsername } from "../controllers/agents.controller.js";
 import { agentSignIn } from "../controllers/agentSignIn.controller.js";
 import jwt from "jsonwebtoken";
 import { errorHandler } from "../utils/erros.js";
@@ -80,5 +80,6 @@ router.get("/check-username", checkUsernameAvailability);
 router.get("/agents/:id", getAgent);
 router.put("/agents/:id", updateAgent);
 router.delete("/agents/:id", deleteAgent);
+router.get("/agents/username/:username", getAgentByUsername);
 
 export default router;

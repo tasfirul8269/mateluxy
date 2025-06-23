@@ -7,7 +7,7 @@ const TeamMember = ({ member }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/agent/${member.id}`); 
+    navigate(`/agent/${member.username}`); 
   };
 
   return (

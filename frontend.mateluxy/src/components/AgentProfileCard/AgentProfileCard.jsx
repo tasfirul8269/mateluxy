@@ -14,7 +14,7 @@ const AgentProfileCard = () => {
   const [expanded, setExpanded] = useState(false);
   const contactSectionRef = useRef(null);
   const aboutSectionRef = useRef(null);
-  const { id } = useParams();
+  const { username } = useParams();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -22,11 +22,11 @@ const AgentProfileCard = () => {
         setLoading(true);
         
         // Fetch agent data
-        const agentResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/agents/${id}`);
+        const agentResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/agents/username/${username}`);
         setAgentData(agentResponse.data);
         
         // Fetch properties where this agent is assigned
-        const propertiesResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/properties?agent=${id}`);
+        const propertiesResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/properties?agent=${agentResponse.data._id}`);
         setAgentProperties(propertiesResponse.data);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -36,7 +36,7 @@ const AgentProfileCard = () => {
     };
     
     fetchData();
-  }, [id])
+  }, [username]);
   
 
   const handleDownloadVCard = async () => {
@@ -110,6 +110,26 @@ const AgentProfileCard = () => {
           <div className="rounded-full bg-gray-200 h-24 w-24 mb-4"></div>
           <div className="h-4 bg-gray-200 rounded w-48 mb-2"></div>
           <div className="h-3 bg-gray-200 rounded w-32"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!agentData || Object.keys(agentData).length === 0) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-20">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Agent Not Found</h2>
+          <p className="text-gray-600 mb-8">The agent you're looking for could not be found.</p>
+          <Link 
+            to="/our-team" 
+            className="inline-flex items-center text-red-600 hover:text-red-700 font-medium"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+            </svg>
+            Back to Team
+          </Link>
         </div>
       </div>
     );

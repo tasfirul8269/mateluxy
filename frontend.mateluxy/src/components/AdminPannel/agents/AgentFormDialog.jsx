@@ -33,9 +33,16 @@ import { uploadFileToS3 } from '../../../utils/s3Upload.js';
 
 // Form validation schema
 const formSchema = z.object({
-  username: z.string().min(3, {
-    message: "Username must be at least 3 characters.",
-  }),
+  username: z.string()
+    .min(3, {
+      message: "Username must be at least 3 characters.",
+    })
+    .regex(/^[a-z0-9_-]+$/, {
+      message: "Username can only contain lowercase letters, numbers, underscores, and hyphens.",
+    })
+    .refine((val) => !val.includes(" "), {
+      message: "Username cannot contain spaces.",
+    }),
   fullName: z.string().min(2, {
     message: "Full name must be at least 2 characters.",
   }),
@@ -313,16 +320,22 @@ export function AgentFormDialog({ open, onOpenChange, onAgentAdded, agent, onAge
 
   // Handle username input change
   const handleUsernameChange = (e) => {
-    const username = e.target.value;
+    // Convert to lowercase and remove spaces
+    const username = e.target.value.toLowerCase().replace(/\s+/g, '');
     form.setValue('username', username);
     
     if (usernameCheckTimeout.current) {
       clearTimeout(usernameCheckTimeout.current);
     }
     
-    usernameCheckTimeout.current = setTimeout(() => {
-      checkUsernameAvailability(username);
-    }, 500);
+    // Only check availability if username is valid
+    if (username.length >= 3 && /^[a-z0-9_-]+$/.test(username)) {
+      usernameCheckTimeout.current = setTimeout(() => {
+        checkUsernameAvailability(username);
+      }, 500);
+    } else {
+      setIsUsernameAvailable(null);
+    }
   };
 
   // Add new social link
@@ -613,11 +626,13 @@ export function AgentFormDialog({ open, onOpenChange, onAgentAdded, agent, onAge
           <FormControl>
             <div className="relative">
               <Input 
-                placeholder="Enter username" 
+                placeholder="Enter username (lowercase letters, numbers, _ or -)" 
                 {...field} 
                 onChange={handleUsernameChange}
                 className="text-center bg-gray-50 border-0" 
                 disabled={isEditing && !isEditingProfile}
+                pattern="[a-z0-9_-]*"
+                value={field.value.toLowerCase()}
               />
               {isCheckingUsername && (
                 <div className="absolute right-2 top-2.5">

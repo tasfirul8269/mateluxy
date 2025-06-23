@@ -5,7 +5,16 @@ const AgentSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    trim: true
+    trim: true,
+    lowercase: true,
+    match: [/^[a-z0-9_-]+$/, 'Username can only contain lowercase letters, numbers, underscores, and hyphens'],
+    minlength: [3, 'Username must be at least 3 characters long'],
+    validate: {
+      validator: function(v) {
+        return !v.includes(" ") && v === v.toLowerCase();
+      },
+      message: props => `Username must be lowercase and cannot contain spaces`
+    }
   },
   //General
   fullName: {

@@ -169,8 +169,20 @@ export const checkUsernameAvailability = async (req, res) => {
             return res.status(400).json({ message: "Username is required" });
         }
 
-        // Build query to check username availability
-        const query = { username: username.toLowerCase() };
+        // Validate username format
+        if (!/^[a-z0-9_-]+$/.test(username.toLowerCase())) {
+            return res.json({ 
+                available: false,
+                message: "Username can only contain lowercase letters, numbers, underscores, and hyphens"
+            });
+        }
+
+        // Build query to check username availability (case-insensitive)
+        const query = { 
+            username: { 
+                $regex: new RegExp(`^${username}$`, 'i') // case-insensitive exact match
+            }
+        };
         
         // If currentId is provided, exclude the current agent from the check
         if (currentId) {
@@ -179,9 +191,31 @@ export const checkUsernameAvailability = async (req, res) => {
 
         const existingAgent = await Agent.findOne(query);
         
-        res.json({ available: !existingAgent });
+        res.json({ 
+            available: !existingAgent,
+            message: existingAgent ? "Username already taken" : null
+        });
     } catch (error) {
         console.error("Error checking username availability:", error);
         res.status(500).json({ message: "Error checking username availability" });
+    }
+};
+
+export const getAgentByUsername = async (req, res, next) => {
+    try {
+        const { username } = req.params;
+        
+        const agent = await Agent.findOne({ username });
+        
+        if (!agent) {
+            return next(errorHandler(404, "Agent not found"));
+        }
+        
+        // Remove sensitive data
+        const { password, ...agentData } = agent._doc;
+        
+        res.status(200).json(agentData);
+    } catch (error) {
+        next(error);
     }
 };

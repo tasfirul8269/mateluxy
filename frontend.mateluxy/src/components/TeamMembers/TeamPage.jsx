@@ -215,6 +215,7 @@ const TeamPage = () => {
                       <TeamMember 
                         member={{
                           id: member._id,
+                          username: member.username,
                           name: member.fullName,
                           position: member.position,
                           department: member.department || '',

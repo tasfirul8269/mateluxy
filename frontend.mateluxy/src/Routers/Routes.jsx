@@ -98,10 +98,10 @@ const router = createBrowserRouter([
                 element: <Contact></Contact>
             },
             {
-                path: "/agent/:id",
+                path: "/agent/:username",
                 loading: async ({params}) => {
                     try {
-                        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/agents/${params.id}`);
+                        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/agents/username/${params.username}`);
                         if (!response.ok) {
                             throw new Error(`Failed to fetch agent: ${response.status}`);
                         }
