@@ -59,6 +59,7 @@ const propertySchema = new mongoose.Schema({
     // Location
     latitude: { type: Number },
     longitude: { type: Number },
+    locationDescription: { type: String }, // Description of the location and surroundings
     
     // Features and Amenities
     features: [{ type: String }],

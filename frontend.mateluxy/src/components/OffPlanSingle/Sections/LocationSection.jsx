@@ -124,9 +124,17 @@ const LocationSection = ({ property }) => {
         </a>
       </div>
       
-      <div className="rounded-xl overflow-hidden h-[400px] border border-red-200">
+      <div className="rounded-xl overflow-hidden h-[400px] border border-red-200 mb-6">
         <div ref={mapContainer} className="w-full h-full" />
       </div>
+      
+      {/* Location Description */}
+      {property?.locationDescription && (
+        <div className="mt-6 bg-gray-50 p-6 rounded-xl">
+          <h3 className="text-xl font-semibold text-gray-800 mb-3">About the Location</h3>
+          <p className="text-gray-700 whitespace-pre-line">{property.locationDescription}</p>
+        </div>
+      )}
     </section>
   );
 };

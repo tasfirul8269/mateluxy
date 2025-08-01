@@ -312,6 +312,7 @@ export default function TabbedPropertyForm({ onSubmit, onCancel, selectedCategor
         latitude: initialData.latitude || DEFAULT_COORDINATES.latitude,
         longitude: initialData.longitude || DEFAULT_COORDINATES.longitude,
         zoomLevel: initialData.zoomLevel || DEFAULT_COORDINATES.zoom.toString(),
+        locationDescription: initialData.locationDescription || "",
 
         // Features and amenities
         features: initialData.features || [],
@@ -347,6 +348,7 @@ export default function TabbedPropertyForm({ onSubmit, onCancel, selectedCategor
       propertyCountry: "UAE", // Default to UAE
       propertyState: "",
       propertyZip: "",
+      locationDescription: "",
       featuredImage: "",
       media: [],
       propertyType: "Apartment",

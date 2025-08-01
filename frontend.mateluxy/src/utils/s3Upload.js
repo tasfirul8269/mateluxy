@@ -86,8 +86,8 @@ export const uploadFileToS3 = async (file, folder = '') => {
       throw new Error('Cannot upload empty file');
     }
     
-    // For large files, use a direct presigned URL approach instead of form data
-    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB - typical limit for many servers
+    // For very large files, use a direct presigned URL approach instead of form data
+    const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB - increased limit for larger files
     const isLargeFile = file.size > MAX_FILE_SIZE;
     
     // Generate a unique file name

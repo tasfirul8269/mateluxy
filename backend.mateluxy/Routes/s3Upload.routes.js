@@ -12,8 +12,10 @@ const router = express.Router();
 // Configure multer for file uploads
 const storage = multer.memoryStorage();
 const upload = multer({ 
-  storage
-  // No file size limit - allowing uploads of any size
+  storage,
+  limits: {
+    fileSize: Infinity // No file size limit
+  }
 });
 
 // Check for required environment variables

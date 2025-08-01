@@ -4,16 +4,16 @@ import { BiWallet } from 'react-icons/bi';
 import { formatPrice } from '../../../utils/formatPrice';
 
 const PaymentPlanSection = ({ property }) => {
-  // Default values if not provided in the database
-  const downPayment = property.afterBookingPercentage || 10;
-  const onConstruction = property.duringConstructionPercentage || 55;
-  const onHandover = property.afterHandoverPercentage || 35;
+  // Get payment plan percentages from property data with fallback to default values
+  const downPayment = property.afterBookingPercentage || 20;
+  const onConstruction = property.duringConstructionPercentage || 50;
+  const onHandover = property.afterHandoverPercentage || 30;
   
   // Calculate actual payment amounts if property price is available
   const propertyPrice = property.propertyPrice || 0;
-  const downPaymentAmount = (propertyPrice * downPayment) / 100;
-  const onConstructionAmount = (propertyPrice * onConstruction) / 100;
-  const onHandoverAmount = (propertyPrice * onHandover) / 100;
+  const downPaymentAmount = propertyPrice ? (propertyPrice * downPayment) / 100 : 0;
+  const onConstructionAmount = propertyPrice ? (propertyPrice * onConstruction) / 100 : 0;
+  const onHandoverAmount = propertyPrice ? (propertyPrice * onHandover) / 100 : 0;
   
   // Calculate total percentage (should be 100%)
   const totalPercentage = downPayment + onConstruction + onHandover;

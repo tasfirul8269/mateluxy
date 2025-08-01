@@ -4,8 +4,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "NODE_ENV=development nodemon index.js",
-    "start": "NODE_ENV=production node index.js"
+    "dev": "cross-env NODE_ENV=development nodemon index.js",
+    "start": "cross-env NODE_ENV=production node index.js"
   },
   "keywords": [],
   "author": "",
@@ -34,5 +34,8 @@
     "react-redux": "^9.2.0",
     "uuid": "^11.1.0",
     "xss-clean": "^0.1.4"
+  },
+  "devDependencies": {
+    "cross-env": "^10.0.0"
   }
 }
