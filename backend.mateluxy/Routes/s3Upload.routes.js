@@ -14,8 +14,18 @@ const storage = multer.memoryStorage();
 const upload = multer({ 
   storage,
   limits: {
-    fileSize: Infinity // No file size limit
-  }
+    fileSize: 100 * 1024 * 1024, // 100MB file size limit
+    files: 10, // Maximum number of files
+    fields: 100, // Maximum number of non-file fields
+    headerPairs: 2000, // Maximum number of header key-value pairs
+    parts: 100, // For multipart forms, max number of parts
+    fileSize: 100 * 1024 * 1024, // 100MB
+    files: 10,
+    fields: 100,
+    headerPairs: 2000,
+    parts: 100
+  },
+  preservePath: true
 });
 
 // Check for required environment variables

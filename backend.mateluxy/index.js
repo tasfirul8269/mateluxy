@@ -45,9 +45,14 @@ app.use(cors({
     credentials: true, // if you're using cookies/auth
   }));
 
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+// Increase request size limits for file uploads
+app.use(bodyParser.json({ limit: '100mb' }));
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ extended: true, limit: '100mb', parameterLimit: 1000000 }));
+
+// For raw body parsing (for webhooks and other raw data)
+app.use(bodyParser.raw({ type: 'application/octet-stream', limit: '100mb' }));
+app.use(bodyParser.text({ type: 'text/plain', limit: '100mb' }));
 app.use(cookieParser());
 
 // Extend timeout for large requests
