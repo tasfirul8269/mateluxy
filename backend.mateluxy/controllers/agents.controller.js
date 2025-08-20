@@ -36,6 +36,7 @@ export const updateAgent = async (req, res, next) => {
         
         const { 
             username, 
+            role,
             fullName, 
             email, 
             password, 
@@ -107,6 +108,7 @@ export const updateAgent = async (req, res, next) => {
         // Create update object with all fields
         const updateData = {
             username,
+            role: role === 'team' ? 'team' : role === 'agent' ? 'agent' : existingAgent.role,
             fullName,
             email,
             profileImage,

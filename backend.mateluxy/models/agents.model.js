@@ -16,6 +16,12 @@ const AgentSchema = new mongoose.Schema({
       message: props => `Username must be lowercase and cannot contain spaces`
     }
   },
+  // Role: 'agent' or 'team'
+  role: {
+    type: String,
+    enum: ['agent', 'team'],
+    default: 'agent',
+  },
   //General
   fullName: {
     type: String,

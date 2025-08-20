@@ -91,7 +91,12 @@ export function AgentCard({ agent, onAgentUpdated, onAgentDeleted }) {
             <h3 className="text-xl font-bold text-gray-800 overflow-hidden text-ellipsis whitespace-nowrap inline-block max-w-[200px] align-middle">
               {agent.fullName}
             </h3>
-            <p className="text-gray-600">{agent.position || "Real Estate Agent"}</p>
+            <div className="flex items-center justify-center gap-2">
+              <p className="text-gray-600">{agent.position || "Real Estate Agent"}</p>
+              <span className={`text-xs px-2 py-0.5 rounded-full ${agent.role === 'team' ? 'bg-gray-100 text-gray-700' : 'bg-green-100 text-green-700'}`}>
+                {agent.role === 'team' ? 'Team Member' : 'Agent'}
+              </span>
+            </div>
           </div>
 
           {/* Property Count */}

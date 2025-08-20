@@ -107,9 +107,24 @@ const router = createBrowserRouter([
                         }
                         return await response.json();
                     } catch (error) {
-                        // You might want to handle this error in your component
                         console.error("Loader error:", error);
-                        throw error; // Re-throw to let the router handle it
+                        throw error;
+                    }
+                },
+                element: <AgentProfileCard></AgentProfileCard>
+            },
+            {
+                path: "/team/:username",
+                loading: async ({params}) => {
+                    try {
+                        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/agents/username/${params.username}`);
+                        if (!response.ok) {
+                            throw new Error(`Failed to fetch team member: ${response.status}`);
+                        }
+                        return await response.json();
+                    } catch (error) {
+                        console.error("Loader error:", error);
+                        throw error;
                     }
                 },
                 element: <AgentProfileCard></AgentProfileCard>

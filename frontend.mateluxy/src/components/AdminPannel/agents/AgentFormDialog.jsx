@@ -43,6 +43,7 @@ const formSchema = z.object({
     .refine((val) => !val.includes(" "), {
       message: "Username cannot contain spaces.",
     }),
+  role: z.enum(["agent", "team"]).default("agent"),
   fullName: z.string().min(2, {
     message: "Full name must be at least 2 characters.",
   }),
@@ -104,6 +105,7 @@ export function AgentFormDialog({ open, onOpenChange, onAgentAdded, agent, onAge
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
+      role: "agent",
       fullName: "",
       email: "",
       password: "",
@@ -148,6 +150,7 @@ export function AgentFormDialog({ open, onOpenChange, onAgentAdded, agent, onAge
       // Reset form with all agent data and set preview URL from agent profile image
       const formValues = {
         username: agent.username || "",
+        role: agent.role || "agent",
         fullName: agent.fullName || "",
         email: agent.email || "",
         password: "********", // Set a placeholder for password
@@ -484,6 +487,7 @@ export function AgentFormDialog({ open, onOpenChange, onAgentAdded, agent, onAge
     if (isEditing) {
       const hasChanges = 
         values.username !== agent.username ||
+        values.role !== agent.role ||
         values.fullName !== agent.fullName ||
         values.email !== agent.email ||
         (values.password && values.password !== "********") ||
@@ -539,7 +543,8 @@ export function AgentFormDialog({ open, onOpenChange, onAgentAdded, agent, onAge
         languages: formattedLanguages,
         aboutMe: values.aboutMe || "",
         address: values.address || "",
-        socialLinks: formattedSocialLinks
+        socialLinks: formattedSocialLinks,
+        role: values.role
       };
 
       if (values.password && values.password !== "********") {
@@ -799,15 +804,33 @@ export function AgentFormDialog({ open, onOpenChange, onAgentAdded, agent, onAge
         <div className="w-full max-w-md space-y-4">
           <FormField
             control={form.control}
+            name="role"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Role</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a role" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="agent">Agent</SelectItem>
+                    <SelectItem value="team">Team Member</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
             name="fullName"
             render={({ field }) => (
               <FormItem>
+                <FormLabel>Full Name</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="Full Name"
-                    {...field}
-                    className="text-center font-medium text-lg bg-gray-50 border-0"
-                  />
+                  <Input placeholder="John Doe" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -1205,4 +1228,4 @@ export function AgentFormDialog({ open, onOpenChange, onAgentAdded, agent, onAge
       </DialogContent>
     </Dialog>
   );
-} 
+}

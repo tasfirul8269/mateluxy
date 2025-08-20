@@ -7,7 +7,8 @@ const TeamMember = ({ member }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/agent/${member.username}`); 
+    const base = member.role === 'team' ? '/team' : '/agent';
+    navigate(`${base}/${member.username}`); 
   };
 
   return (

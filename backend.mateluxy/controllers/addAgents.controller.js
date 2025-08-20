@@ -8,6 +8,7 @@ export const addAgents = async (req, res, next) => {
         
         const {
             username,
+            role,
             fullName,
             email,
             password,
@@ -61,6 +62,7 @@ export const addAgents = async (req, res, next) => {
         // Create new agent with all fields
         const newAgent = new Agent({
             username,
+            role: role === 'team' ? 'team' : 'agent',
             fullName,
             email,
             password: hashedPassword,

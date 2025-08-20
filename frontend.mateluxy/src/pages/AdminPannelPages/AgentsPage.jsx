@@ -75,6 +75,7 @@ const AgentsPage = () => {
           
           return {
             id: agentId,
+            role: agent.role || 'agent',
             username: agent.username,
             fullName: agent.fullName,
             profileImage: agent.profileImage,

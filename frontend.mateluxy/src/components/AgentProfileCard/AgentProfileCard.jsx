@@ -25,9 +25,14 @@ const AgentProfileCard = () => {
         const agentResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/agents/username/${username}`);
         setAgentData(agentResponse.data);
         
-        // Fetch properties where this agent is assigned
-        const propertiesResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/properties?agent=${agentResponse.data._id}`);
-        setAgentProperties(propertiesResponse.data);
+        // If this is a team member, skip fetching properties
+        if (agentResponse.data?.role === 'team') {
+          setAgentProperties([]);
+        } else {
+          // Fetch properties where this agent is assigned
+          const propertiesResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/properties?agent=${agentResponse.data._id}`);
+          setAgentProperties(propertiesResponse.data);
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -208,10 +213,12 @@ const AgentProfileCard = () => {
 
               
               <div className="flex flex-wrap justify-center lg:justify-start gap-6 mb-8">
-                <div className="flex items-center">
-                  <Briefcase className="h-5 w-5 mr-2 text-red-300" />
-                  <span>{agentProperties.length} Listings</span>
-                </div>
+                {agentData?.role !== 'team' && (
+                  <div className="flex items-center">
+                    <Briefcase className="h-5 w-5 mr-2 text-red-300" />
+                    <span>{agentProperties.length} Listings</span>
+                  </div>
+                )}
                 
                 <div className="flex items-center">
                   <Globe className="h-5 w-5 mr-2 text-red-300" />
@@ -433,6 +440,7 @@ const AgentProfileCard = () => {
       
     
       {/* Available listings section */}
+      {agentData?.role !== 'team' && (
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -548,6 +556,7 @@ const AgentProfileCard = () => {
           </div>
         )}
       </motion.div>
+      )}
     </div>
   );
 };

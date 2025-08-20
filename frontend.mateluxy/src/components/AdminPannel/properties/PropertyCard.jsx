@@ -90,11 +90,13 @@ export function PropertyCard({ property, onEdit, onDelete }) {
             <div className="mb-3 text-sm text-left text-gray-500">
               <span className="flex items-center justify-start">
                 <Calendar size={16} className="mr-1.5 flex-shrink-0" />
-                Delivery: {new Date(property.completionDate).toLocaleDateString('en-US', { 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}
+                Delivery: {typeof property.completionDate === 'string' 
+                  ? property.completionDate 
+                  : new Date(property.completionDate).toLocaleDateString('en-US', { 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}
               </span>
             </div>
           )}
